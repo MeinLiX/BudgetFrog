@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Text;
 
@@ -53,20 +54,20 @@ namespace BudgetFrogServer
                               $"Body: {Environment.NewLine}");
 
                     //TODO:sander 
-                    /*
-                    using (var reader = new StreamReader(context.Request.Body,
-                                                         encoding: Encoding.UTF8,
-                                                         detectEncodingFromByteOrderMarks: false,
-                                                         bufferSize: 1024,
-                                                         leaveOpen: true))
+                    var bodyStr = "";
+                    var req = context.Request;
+                    req.EnableBuffering();
+                    using (StreamReader reader = new StreamReader(req.Body,
+                                                                 encoding: Encoding.UTF8,
+                                                                 detectEncodingFromByteOrderMarks: false,
+                                                                 bufferSize: 1024,
+                                                                 leaveOpen: true))
                     {
-                        var body = await reader.ReadToEndAsync();
-                        sb.Append(body + Environment.NewLine);
-                        context.Request.Body.Position = 0;
-                    }*/
-
+                        bodyStr = await reader.ReadToEndAsync();
+                        sb.Append(bodyStr + Environment.NewLine);
+                    }
+                    req.Body.Position = 0;
                     logger.LogInformation(sb.ToString());
-
                     await next();
                 });
                 app.UseSwaggerUI(c =>
