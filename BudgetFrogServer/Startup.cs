@@ -36,13 +36,14 @@ namespace BudgetFrogServer
             });
 
             services.AddControllers();
+            services.AddSwaggerGen();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
         {
             if (env.IsDevelopment())
             {
-
+                app.UseSwagger();
                 app.UseDeveloperExceptionPage();
                 app.Use(async (context, next) =>
                 {
@@ -67,6 +68,10 @@ namespace BudgetFrogServer
                     logger.LogInformation(sb.ToString());
 
                     await next();
+                });
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
                 });
             }
 
