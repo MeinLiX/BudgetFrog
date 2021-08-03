@@ -42,6 +42,7 @@ namespace BudgetFrogServer
         {
             if (env.IsDevelopment())
             {
+
                 app.UseDeveloperExceptionPage();
                 app.Use(async (context, next) =>
                 {
@@ -49,20 +50,20 @@ namespace BudgetFrogServer
                     sb.Append($"Http Request Information: {Environment.NewLine}" +
                               $"Host: {context.Request.Host}{context.Request.Path}{Environment.NewLine}" +
                               $"Body: {Environment.NewLine}");
-                    try
-                    {
-                        using var reader = new StreamReader(
-                            context.Request.Body,
-                            encoding: Encoding.UTF8,
-                            detectEncodingFromByteOrderMarks: false,
-                            bufferSize: 1024,
-                            leaveOpen: true);
 
-                        var body = reader.ReadToEndAsync();
-                        sb.Append(await body + Environment.NewLine);
+                    //TODO:sander 
+                    /*
+                    using (var reader = new StreamReader(context.Request.Body,
+                                                         encoding: Encoding.UTF8,
+                                                         detectEncodingFromByteOrderMarks: false,
+                                                         bufferSize: 1024,
+                                                         leaveOpen: true))
+                    {
+                        var body = await reader.ReadToEndAsync();
+                        sb.Append(body + Environment.NewLine);
                         context.Request.Body.Position = 0;
-                    }
-                    catch { }
+                    }*/
+
                     logger.LogInformation(sb.ToString());
 
                     await next();
