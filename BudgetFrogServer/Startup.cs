@@ -53,20 +53,18 @@ namespace BudgetFrogServer
                               $"Host: {context.Request.Host}{context.Request.Path}{Environment.NewLine}" +
                               $"Body: {Environment.NewLine}");
 
-                    //TODO:sander 
-                    var bodyStr = "";
-                    var req = context.Request;
-                    req.EnableBuffering();
-                    using (StreamReader reader = new StreamReader(req.Body,
-                                                                 encoding: Encoding.UTF8,
-                                                                 detectEncodingFromByteOrderMarks: false,
-                                                                 bufferSize: 1024,
-                                                                 leaveOpen: true))
+                    var bodyContext = "";
+                    context.Request.EnableBuffering();
+                    using (StreamReader reader = new(context.Request.Body,
+                                                     encoding: Encoding.UTF8,
+                                                     detectEncodingFromByteOrderMarks: false,
+                                                     bufferSize: 1024,
+                                                     leaveOpen: true))
                     {
-                        bodyStr = await reader.ReadToEndAsync();
-                        sb.Append(bodyStr + Environment.NewLine);
+                        bodyContext = await reader.ReadToEndAsync();
+                        sb.Append(bodyContext + Environment.NewLine);
                     }
-                    req.Body.Position = 0;
+                    context.Request.Body.Position = 0;
                     logger.LogInformation(sb.ToString());
                     await next();
                 });
