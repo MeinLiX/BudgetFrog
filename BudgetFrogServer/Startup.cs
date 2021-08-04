@@ -27,6 +27,8 @@ namespace BudgetFrogServer
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
+
             string connectionIdentity = Configuration.GetConnectionString("IdentityConnection");
             services.AddDbContext<DB_IdentityContext>(options => options.UseSqlServer(connectionIdentity));
 
@@ -75,6 +77,12 @@ namespace BudgetFrogServer
             }
 
             app.UseRouting();
+
+            app.UseCors(x => x
+               .AllowAnyMethod()
+               .AllowAnyHeader()
+               .SetIsOriginAllowed(origin => true)
+               .AllowCredentials());
 
             app.UseAuthentication();
             app.UseAuthorization();
