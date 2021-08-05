@@ -12,7 +12,7 @@ using BudgetFrogServer.Utils;
 
 namespace BudgetFrogServer.Controllers
 {
-    [Route("api")]
+    [Route("")]
     [ApiController]
     public class IdentityUsersController : ControllerBase
     {

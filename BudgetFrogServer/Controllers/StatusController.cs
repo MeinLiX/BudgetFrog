@@ -5,7 +5,7 @@ using BudgetFrogServer.Utils;
 
 namespace BudgetFrogServer.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class StatusController : ControllerBase
     {
