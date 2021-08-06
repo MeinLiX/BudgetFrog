@@ -51,8 +51,8 @@ namespace BudgetFrogServer
                 app.Use(async (context, next) =>
                 {
                     StringBuilder sb = new();
-                    sb.Append($"Http Request Information: {Environment.NewLine}" +
-                              $"Host: {context.Request.Host}{context.Request.Path}{Environment.NewLine}" +
+                    sb.Append($"Time: {DateTime.Now:G}{Environment.NewLine}" +
+                              $"URI: {context.Request.Host}{context.Request.Path}{Environment.NewLine}" +
                               $"Body: {Environment.NewLine}");
 
                     var bodyContext = "";
