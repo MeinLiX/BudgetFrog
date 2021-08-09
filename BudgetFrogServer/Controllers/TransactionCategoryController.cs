@@ -75,7 +75,7 @@ namespace BudgetFrogServer.Controllers
                     {
                         StatusCode = StatusCodes.Status200OK
                     },
-                    _ => new JsonResult(JsonSerialize.Data(null))
+                    _ => new JsonResult(JsonSerialize.Data(null, "Transaction category not found."))
                     {
                         StatusCode = StatusCodes.Status200OK
                     }

@@ -32,7 +32,7 @@ namespace BudgetFrogServer.Controllers
                 StatusCode = StatusCodes.Status200OK
             },
 
-            false => new JsonResult(JsonSerialize.MessageText("User is not Auth!"))
+            false => new JsonResult(JsonSerialize.ErrorMessageText("User is not Auth!"))
             {
                 StatusCode = StatusCodes.Status401Unauthorized
             }
