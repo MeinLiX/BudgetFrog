@@ -4,7 +4,7 @@ using BudgetFrogServer.Models.Basis;
 
 namespace BudgetFrogServer.Models.Auth
 {
-    public class IdentityUser
+    public class AppIdentityUser
     {
         [Key]
         [Required]

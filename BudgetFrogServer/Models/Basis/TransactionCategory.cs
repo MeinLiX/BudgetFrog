@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using BudgetFrogServer.Models.Auth;
+using System.Text.Json.Serialization;
 
 namespace BudgetFrogServer.Models.Basis
 {
@@ -19,8 +20,8 @@ namespace BudgetFrogServer.Models.Basis
         [Required]
         public bool TransactionCategoryIncome { get; set; } = false;
 
-
         [Required]
-        public IdentityUser IdentityUser { get; set; }
+        [JsonIgnore]
+        public AppIdentityUser IdentityUser { get; set; }
     }
 }

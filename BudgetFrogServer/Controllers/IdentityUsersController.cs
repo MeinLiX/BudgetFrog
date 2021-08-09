@@ -31,9 +31,9 @@ namespace BudgetFrogServer.Controllers
         [HttpPost("login")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> LogInUser([FromBody] IdentityUser authUser)
+        public async Task<IActionResult> LogInUser([FromBody] AppIdentityUser authUser)
         {
-            //IllegalActionsWithInputData(authUser);
+            IllegalActionsWithInputData(authUser);
 
             if (User.Identity.IsAuthenticated)
             {
@@ -52,6 +52,8 @@ namespace BudgetFrogServer.Controllers
                 };
             }
 
+            User.AddIdentity(identity);
+
             return new JsonResult(new
             {
                 token = JWT.GenerateToken(identity.Claims),
@@ -69,7 +71,7 @@ namespace BudgetFrogServer.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> LogUpUser([FromBody] IdentityUser authUser)
+        public async Task<IActionResult> LogUpUser([FromBody] AppIdentityUser authUser)
         {
             IllegalActionsWithInputData(authUser);
             if (User.Identity.IsAuthenticated)
@@ -82,13 +84,12 @@ namespace BudgetFrogServer.Controllers
 
             try
             {
+                #region Trying to add a new user to the database
                 var NameValid = _context.IdentityUser.Where(o => o.Email.ToLower() == authUser.Email.ToLower()).FirstOrDefault();
                 if (NameValid is not null)
-                {
                     throw new Exception("Login is already taken.");
-                }
 
-                var newIdentityUser = new IdentityUser
+                var newIdentityUser = new AppIdentityUser
                 {
                     Email = authUser.Email,
                     Password = CryptoHash.GetHashValue(authUser.Password),
@@ -96,10 +97,10 @@ namespace BudgetFrogServer.Controllers
                     LastName = authUser?.LastName
                 };
                 _context.IdentityUser.Add(newIdentityUser);
-
                 await _context.SaveChangesAsync();
+                #endregion
 
-                #region Adding default TransactionCategories
+                #region Adding default TransactionCategories for new user
                 _context.TransactionCategory.AddRange(new[] {
                     new TransactionCategory()
                     {
@@ -131,7 +132,6 @@ namespace BudgetFrogServer.Controllers
                         TransactionCategoryIncome = false,
                         IdentityUser = newIdentityUser
                     },
-
                     new TransactionCategory()
                     {
                         TransactionCategoryName = "Scholarship",
@@ -144,10 +144,24 @@ namespace BudgetFrogServer.Controllers
                         TransactionCategoryIncome = true,
                         IdentityUser = newIdentityUser
                     }
-                }); ;
-                #endregion
+                });
 
                 await _context.SaveChangesAsync();
+                #endregion
+
+                var identity = await GetIdentity(authUser);
+                if (identity is null)
+                    throw new Exception("Some error... Contact support or try again.");
+                User.AddIdentity(identity);
+
+                return new JsonResult(new
+                {
+                    token = JWT.GenerateToken(identity.Claims),
+                    username = identity.Name
+                })
+                {
+                    StatusCode = StatusCodes.Status201Created
+                };
             }
             catch (Exception ex)
             {
@@ -156,30 +170,12 @@ namespace BudgetFrogServer.Controllers
                     StatusCode = StatusCodes.Status400BadRequest
                 };
             }
-
-            var identity = await GetIdentity(authUser);
-            if (identity is null)
-            {
-                return new JsonResult(JsonSerialize.ErrorMessageText("Some error... Contact support or try again."))
-                {
-                    StatusCode = StatusCodes.Status400BadRequest
-                };
-            }
-
-            return new JsonResult(new
-            {
-                token = JWT.GenerateToken(identity.Claims),
-                username = identity.Name
-            })
-            {
-                StatusCode = StatusCodes.Status201Created
-            };
         }
 
         /// <summary>
         /// TOTAL SECRET, SORRY!
         /// </summary>
-        private static bool IllegalActionsWithInputData(IdentityUser user)
+        private static bool IllegalActionsWithInputData(AppIdentityUser user)
         {
             try
             {
@@ -197,17 +193,17 @@ namespace BudgetFrogServer.Controllers
         /// <summary>
         /// Searching user in db and validation of password.
         /// </summary>
-        private async Task<ClaimsIdentity> GetIdentity(IdentityUser myUser)
+        private async Task<ClaimsIdentity> GetIdentity(AppIdentityUser loggingUser)
         {
-            if (myUser is not null)
+            if (loggingUser is not null)
             {
-                IdentityUser FoundUser = await _context.IdentityUser.FirstOrDefaultAsync(x => x.Email == myUser.Email);
-
-                if (FoundUser is not null && CryptoHash.EqualHashValue(myUser.Password, FoundUser?.Password))
+                AppIdentityUser FoundUser = await _context.IdentityUser.FirstOrDefaultAsync(x => x.Email == loggingUser.Email);
+                if (FoundUser is not null && CryptoHash.EqualHashValue(loggingUser.Password, FoundUser?.Password))
                 {
                     List<Claim> claims = new()
                     {
-                        new Claim(ClaimsIdentity.DefaultNameClaimType, FoundUser.Email)
+                        new Claim(ClaimsIdentity.DefaultNameClaimType, FoundUser.Email),
+                        new Claim("UserId", $"{FoundUser.UserId}"),
                     };
 
                     return new(
