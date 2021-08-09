@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using BudgetFrogServer.Models.Basis;
 
 namespace BudgetFrogServer.Models.Auth
 {
@@ -25,5 +27,9 @@ namespace BudgetFrogServer.Models.Auth
         [MaxLength(128, ErrorMessage = "The maximum length of the password field is 128")]
         [MinLength(1, ErrorMessage = "The minimum length of the password field is 1")]
         public string Password { get; set; } //like a simple passwords
+
+
+
+        public List<TransactionCategory> TransactionCategories { get; set; } = new List<TransactionCategory>();
     }
 }

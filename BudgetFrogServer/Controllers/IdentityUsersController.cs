@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 
+using BudgetFrogServer.Models;
 using BudgetFrogServer.Models.Auth;
+using BudgetFrogServer.Models.Basis;
 using BudgetFrogServer.Utils;
 
 namespace BudgetFrogServer.Controllers
@@ -16,9 +18,9 @@ namespace BudgetFrogServer.Controllers
     [ApiController]
     public class IdentityUsersController : ControllerBase
     {
-        private readonly DB_IdentityContext _context;
+        private readonly DB_Context _context;
 
-        public IdentityUsersController(DB_IdentityContext context)
+        public IdentityUsersController(DB_Context context)
         {
             _context = context;
         }
@@ -86,14 +88,65 @@ namespace BudgetFrogServer.Controllers
                     throw new Exception("Login is already taken.");
                 }
 
-                var userToRegister = new IdentityUser
+                var newIdentityUser = new IdentityUser
                 {
                     Email = authUser.Email,
                     Password = CryptoHash.GetHashValue(authUser.Password),
                     FirstName = authUser?.FirstName,
                     LastName = authUser?.LastName
                 };
-                _context.IdentityUser.Add(userToRegister);
+                _context.IdentityUser.Add(newIdentityUser);
+
+                await _context.SaveChangesAsync();
+
+                #region Adding default TransactionCategories
+                _context.TransactionCategory.AddRange(new[] {
+                    new TransactionCategory()
+                    {
+                        TransactionCategoryName = "Housing",
+                        TransactionCategoryIncome = false,
+                        IdentityUser = newIdentityUser
+                    },
+                    new TransactionCategory()
+                    {
+                        TransactionCategoryName = "Transport",
+                        TransactionCategoryIncome = false,
+                        IdentityUser = newIdentityUser
+                    },
+                    new TransactionCategory()
+                    {
+                        TransactionCategoryName = "Food",
+                        TransactionCategoryIncome = false,
+                        IdentityUser = newIdentityUser
+                    },
+                    new TransactionCategory()
+                    {
+                        TransactionCategoryName = "Utilities",
+                        TransactionCategoryIncome = false,
+                        IdentityUser = newIdentityUser
+                    },
+                    new TransactionCategory()
+                    {
+                        TransactionCategoryName = "Entertainment",
+                        TransactionCategoryIncome = false,
+                        IdentityUser = newIdentityUser
+                    },
+
+                    new TransactionCategory()
+                    {
+                        TransactionCategoryName = "Scholarship",
+                        TransactionCategoryIncome = true,
+                        IdentityUser = newIdentityUser
+                    },
+                    new TransactionCategory()
+                    {
+                        TransactionCategoryName = "Salary",
+                        TransactionCategoryIncome = true,
+                        IdentityUser = newIdentityUser
+                    }
+                }); ;
+                #endregion
+
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)
@@ -107,7 +160,7 @@ namespace BudgetFrogServer.Controllers
             var identity = await GetIdentity(authUser);
             if (identity is null)
             {
-                return new JsonResult(JsonSerialize.ErrorMessageText("Invalid email or password."))
+                return new JsonResult(JsonSerialize.ErrorMessageText("Some error... Contact support or try again."))
                 {
                     StatusCode = StatusCodes.Status400BadRequest
                 };

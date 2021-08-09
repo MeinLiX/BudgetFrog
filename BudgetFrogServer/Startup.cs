@@ -8,11 +8,11 @@ using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using System;
+using System.IO;
 using System.Text;
 
 using BudgetFrogServer.Utils;
-using BudgetFrogServer.Models.Auth;
-using System.IO;
+using BudgetFrogServer.Models;
 
 namespace BudgetFrogServer
 {
@@ -30,7 +30,7 @@ namespace BudgetFrogServer
             services.AddCors();
 
             string connectionIdentity = Configuration.GetConnectionString("IdentityConnection");
-            services.AddDbContext<DB_IdentityContext>(options => options.UseSqlServer(connectionIdentity));
+            services.AddDbContext<DB_Context>(options => options.UseSqlServer(connectionIdentity));
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(jwtBearerOptions =>
