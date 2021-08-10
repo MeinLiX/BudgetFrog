@@ -7,7 +7,7 @@ namespace BudgetFrogServer.Controllers
         /// <summary>
         /// Method for extracting user ID
         /// </summary>
-        public int? GetUserId()
+        protected int? GetUserId()
         {
             if (int.TryParse(User.FindFirst("UserId").Value, out int userId))
                 return userId;
