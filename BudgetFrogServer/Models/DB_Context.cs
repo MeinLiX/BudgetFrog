@@ -9,7 +9,8 @@ namespace BudgetFrogServer.Models
     {
         public virtual DbSet<AppIdentityUser> IdentityUser { get; set; }
         public virtual DbSet<TransactionCategory> TransactionCategory { get; set; }
-            
+        public virtual DbSet<Transaction> Transaction { get; set; }
+
         public DB_Context(DbContextOptions options) : base(options)
         {
             //Database.EnsureDeleted();

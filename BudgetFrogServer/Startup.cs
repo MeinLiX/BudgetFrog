@@ -33,12 +33,11 @@ namespace BudgetFrogServer
             services.AddDbContext<DB_Context>(options => options.UseSqlServer(connectionIdentity));
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(jwtBearerOptions =>
-            {
-                jwtBearerOptions.TokenValidationParameters = AuthOptions.TokenValidationParameters;
-            });
+                    .AddJwtBearer(jwtBearerOptions => jwtBearerOptions.TokenValidationParameters = AuthOptions.TokenValidationParameters);
 
-            services.AddControllers();
+            services.AddControllers()
+                    .ConfigureApiBehaviorOptions(options => options.SuppressModelStateInvalidFilter = true);
+
             services.AddSwaggerGen();
         }
 

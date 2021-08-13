@@ -5,51 +5,56 @@ namespace BudgetFrogServer.Utils
 {
     public class JsonSerialize
     {
+        private static string Time => DateTime.Now.ToString("G");
+
+        private static bool Success(object data)
+        {
+            if (data is not null)
+                return true;
+
+            return false;
+        }
+
         public static object MessageText(string message) => new
         {
             message,
-            success = true,
-            time = DateTime.Now.ToString("G"),
+            succes = Success(message),
+            Time,
         };
 
         public static object ErrorMessageText(string message) => new
         {
-            error = new
+            errors = new
             {
                 message,
             },
+            succes = false,
+            Time,
+        };
+
+        public static object Error(object data) => new
+        {
+            errors = new
+            {
+                data,
+            },
             success = false,
-            time = DateTime.Now.ToString("G"),
+            Time,
         };
 
-        public static object Data<T>(List<T> data) => new
+        public static object Data(object data, bool _success = true) => new
         {
             data,
-            success = data is not null,
-            time = DateTime.Now.ToString("G"),
+            success = Success(data) && _success,
+            Time,
         };
 
-        public static object Data(object data) => new
-        {
-            data,
-            success = data is not null,
-            time = DateTime.Now.ToString("G"),
-        };
-
-        public static object Data<T>(List<T> data, string message) => new
+        public static object Data(object data, string message, bool _success = true) => new
         {
             data,
             message,
-            success = data is not null,
-            time = DateTime.Now.ToString("G"),
-        };
-
-        public static object Data(object data, string message) => new
-        {
-            data,
-            message,
-            success = data is not null,
-            time = DateTime.Now.ToString("G"),
+            success = Success(data) && _success,
+            Time,
         };
     }
 }

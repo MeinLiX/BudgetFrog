@@ -1,14 +1,21 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using BudgetFrogServer.Models.Basis;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using BudgetFrogServer.Models.Common;
 
 namespace BudgetFrogServer.Models.Auth
 {
-    public class AppIdentityUser
+    public class AppIdentityUser : ModelBase
     {
-        [Key]
         [Required]
-        public int UserId { get; set; }
+        [Column(TypeName = "decimal(18,2)")]
+        public decimal Balance { get; set; } = .00m;
+
+        //TODO: to take out in the external module  (MAYBE)
+        [Required]
+        [MaxLength(3, ErrorMessage = "The maximum length of the Currency is 3")]
+        [MinLength(3, ErrorMessage = "The minimum length of the Currency is 3")]
+        [RegularExpression("(USD)|(EUR)|(UAH)|(RUB)", ErrorMessage = "Invalid currency!")]
+        public string Currency { get; set; } = "USD";
 
         [Required]
         [MaxLength(32, ErrorMessage = "The maximum length of the email field is 32")]
@@ -27,9 +34,5 @@ namespace BudgetFrogServer.Models.Auth
         [MaxLength(128, ErrorMessage = "The maximum length of the password field is 128")]
         [MinLength(1, ErrorMessage = "The minimum length of the password field is 1")]
         public string Password { get; set; } //like a simple passwords
-
-
-
-        public List<TransactionCategory> TransactionCategories { get; set; } = new List<TransactionCategory>();
     }
 }

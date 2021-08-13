@@ -33,11 +33,15 @@ namespace BudgetFrogServer.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> LogInUser([FromBody] AppIdentityUser authUser)
         {
+            if (!ModelState.IsValid)
+            {
+                //todo
+            }
             IllegalActionsWithInputData(authUser);
 
             if (User.Identity.IsAuthenticated)
             {
-                return new JsonResult(JsonSerialize.MessageText("You already log in."))
+                return new JsonResult(JsonSerialize.ErrorMessageText("You already log in."))
                 {
                     StatusCode = StatusCodes.Status200OK
                 };
@@ -54,11 +58,12 @@ namespace BudgetFrogServer.Controllers
 
             User.AddIdentity(identity);
 
-            return new JsonResult(new
-            {
-                token = JWT.GenerateToken(identity.Claims),
-                username = identity.Name
-            })
+            return new JsonResult(JsonSerialize.Data(
+                new
+                {
+                    token = JWT.GenerateToken(identity.Claims),
+                    username = identity.Name
+                }))
             {
                 StatusCode = StatusCodes.Status200OK
             };
@@ -76,7 +81,7 @@ namespace BudgetFrogServer.Controllers
             IllegalActionsWithInputData(authUser);
             if (User.Identity.IsAuthenticated)
             {
-                return new JsonResult(JsonSerialize.MessageText("You already log in."))
+                return new JsonResult(JsonSerialize.ErrorMessageText("You already log in."))
                 {
                     StatusCode = StatusCodes.Status200OK
                 };
@@ -104,44 +109,44 @@ namespace BudgetFrogServer.Controllers
                 _context.TransactionCategory.AddRange(new[] {
                     new TransactionCategory()
                     {
-                        TransactionCategoryName = "Housing",
-                        TransactionCategoryIncome = false,
+                        Name = "Housing",
+                        Income = false,
                         IdentityUser = newIdentityUser
                     },
                     new TransactionCategory()
                     {
-                        TransactionCategoryName = "Transport",
-                        TransactionCategoryIncome = false,
+                        Name = "Transport",
+                        Income = false,
                         IdentityUser = newIdentityUser
                     },
                     new TransactionCategory()
                     {
-                        TransactionCategoryName = "Food",
-                        TransactionCategoryIncome = false,
+                        Name = "Food",
+                        Income = false,
                         IdentityUser = newIdentityUser
                     },
                     new TransactionCategory()
                     {
-                        TransactionCategoryName = "Utilities",
-                        TransactionCategoryIncome = false,
+                        Name = "Utilities",
+                        Income = false,
                         IdentityUser = newIdentityUser
                     },
                     new TransactionCategory()
                     {
-                        TransactionCategoryName = "Entertainment",
-                        TransactionCategoryIncome = false,
+                        Name = "Entertainment",
+                        Income = false,
                         IdentityUser = newIdentityUser
                     },
                     new TransactionCategory()
                     {
-                        TransactionCategoryName = "Scholarship",
-                        TransactionCategoryIncome = true,
+                        Name = "Scholarship",
+                        Income = true,
                         IdentityUser = newIdentityUser
                     },
                     new TransactionCategory()
                     {
-                        TransactionCategoryName = "Salary",
-                        TransactionCategoryIncome = true,
+                        Name = "Salary",
+                        Income = true,
                         IdentityUser = newIdentityUser
                     }
                 });
@@ -154,11 +159,12 @@ namespace BudgetFrogServer.Controllers
                     throw new Exception("Some error... Contact support or try again.");
                 User.AddIdentity(identity);
 
-                return new JsonResult(new
-                {
-                    token = JWT.GenerateToken(identity.Claims),
-                    username = identity.Name
-                })
+                return new JsonResult(JsonSerialize.Data(
+                    new
+                    {
+                        token = JWT.GenerateToken(identity.Claims),
+                        username = identity.Name
+                    }))
                 {
                     StatusCode = StatusCodes.Status201Created
                 };
@@ -203,7 +209,7 @@ namespace BudgetFrogServer.Controllers
                     List<Claim> claims = new()
                     {
                         new Claim(ClaimsIdentity.DefaultNameClaimType, FoundUser.Email),
-                        new Claim("UserId", $"{FoundUser.UserId}"),
+                        new Claim("UserId", $"{FoundUser.ID}"),
                     };
 
                     return new(

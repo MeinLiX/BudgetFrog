@@ -27,6 +27,8 @@ namespace BudgetFrogServer.Controllers
         }
 
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult Get()
         {
             try
@@ -34,20 +36,18 @@ namespace BudgetFrogServer.Controllers
                 int userId = GetUserId() ?? throw new Exception("Some error... Contact support or try again.");
 
                 var foundCategories = _context.TransactionCategory
-                                          .Where(category => category.IdentityUser.UserId == userId)
+                                          .Where(category => category.IdentityUser.ID == userId)
                                           .ToList();
 
-                return foundCategories switch
+                return new JsonResult(JsonSerialize.Data(
+                        new
+                        {
+                            TransactionCategories = foundCategories
+                        }))
                 {
-                    not null => new JsonResult(JsonSerialize.Data(foundCategories))
-                    {
-                        StatusCode = StatusCodes.Status200OK
-                    },
-                    _ => new JsonResult(JsonSerialize.Data(Array.Empty<object>()))
-                    {
-                        StatusCode = StatusCodes.Status200OK
-                    }
+                    StatusCode = StatusCodes.Status200OK
                 };
+
             }
             catch (Exception ex)
             {
@@ -59,6 +59,8 @@ namespace BudgetFrogServer.Controllers
         }
 
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult Get(int id)
         {
             try
@@ -66,8 +68,8 @@ namespace BudgetFrogServer.Controllers
                 int userId = GetUserId() ?? throw new Exception("Some error... Contact support or try again.");
 
                 var foundCategories = _context.TransactionCategory
-                                              .FirstOrDefault(category => category.TransactionCategoryId == id
-                                                                 && category.IdentityUser.UserId == userId);
+                                              .FirstOrDefault(category => category.ID == id
+                                                                 && category.IdentityUser.ID == userId);
 
                 return foundCategories switch
                 {
@@ -91,6 +93,9 @@ namespace BudgetFrogServer.Controllers
         }
 
         [HttpPost]
+        //       [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public IActionResult Post([FromBody] TransactionCategory transactionCategory)
         {
             try
@@ -112,6 +117,9 @@ namespace BudgetFrogServer.Controllers
         }
 
         [HttpPut("{id}")]
+        //       [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
         public IActionResult Put(int id, [FromBody] TransactionCategory transactionCategory)
         {
             try
@@ -133,6 +141,8 @@ namespace BudgetFrogServer.Controllers
         }
 
         [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Delete(int id)
         {
             try
@@ -140,8 +150,8 @@ namespace BudgetFrogServer.Controllers
                 int userId = GetUserId() ?? throw new Exception("Some error... Contact support or try again.");
 
                 var foundCategory = _context.TransactionCategory
-                                              .FirstOrDefault(category => category.TransactionCategoryId == id
-                                                                 && category.IdentityUser.UserId == userId);
+                                              .FirstOrDefault(category => category.ID == id
+                                                                 && category.IdentityUser.ID == userId);
 
                 if (foundCategory is null)
                 {
