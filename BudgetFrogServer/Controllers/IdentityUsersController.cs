@@ -11,18 +11,58 @@ using BudgetFrogServer.Models;
 using BudgetFrogServer.Models.Auth;
 using BudgetFrogServer.Models.Basis;
 using BudgetFrogServer.Utils;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BudgetFrogServer.Controllers
 {
     [Route("")]
     [ApiController]
-    public class IdentityUsersController : ControllerBase
+    public class IdentityUsersController : BaseController
     {
         private readonly DB_Context _context;
 
         public IdentityUsersController(DB_Context context)
         {
             _context = context;
+        }
+
+        [HttpGet("me")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult Get()
+        {
+            try
+            {
+                int userId = GetUserId() ?? throw new Exception("Some error... Contact support or try again.");
+
+                var user = _context.IdentityUser
+                                          .Where(user => user.ID == userId)
+                                          .Select(user => new { user.ID, user.Email, user.FirstName, user.LastName, user.Balance, user.Currency })
+                                          .FirstOrDefault();
+                if (user is null)
+                {
+                    throw new Exception("Some error... Contact support or try again.");
+                }
+
+
+                return new JsonResult(JsonSerialize.Data(
+                        new
+                        {
+                            user
+                        }))
+                {
+                    StatusCode = StatusCodes.Status200OK
+                };
+
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(JsonSerialize.ErrorMessageText(ex.Message))
+                {
+                    StatusCode = StatusCodes.Status400BadRequest
+                };
+            }
         }
 
         /// <summary>
@@ -33,10 +73,7 @@ namespace BudgetFrogServer.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> LogInUser([FromBody] AppIdentityUser authUser)
         {
-            if (!ModelState.IsValid)
-            {
-                //todo
-            }
+
             IllegalActionsWithInputData(authUser);
 
             if (User.Identity.IsAuthenticated)

@@ -13,6 +13,8 @@ using System.Text;
 
 using BudgetFrogServer.Utils;
 using BudgetFrogServer.Models;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BudgetFrogServer
 {
@@ -36,7 +38,10 @@ namespace BudgetFrogServer
                     .AddJwtBearer(jwtBearerOptions => jwtBearerOptions.TokenValidationParameters = AuthOptions.TokenValidationParameters);
 
             services.AddControllers()
-                    .ConfigureApiBehaviorOptions(options => options.SuppressModelStateInvalidFilter = true);
+                    .ConfigureApiBehaviorOptions(options =>
+                    {
+                        options.InvalidModelStateResponseFactory = actionContext => new BadRequestObjectResult(new ApiBehavior().ErrorFormatResponseValidation(actionContext.ModelState));
+                    });
 
             services.AddSwaggerGen();
         }

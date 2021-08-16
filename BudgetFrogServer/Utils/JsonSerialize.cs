@@ -18,7 +18,7 @@ namespace BudgetFrogServer.Utils
         public static object MessageText(string message) => new
         {
             message,
-            succes = Success(message),
+            success = Success(message),
             Time,
         };
 
@@ -28,7 +28,7 @@ namespace BudgetFrogServer.Utils
             {
                 message,
             },
-            succes = false,
+            success = false,
             Time,
         };
 
