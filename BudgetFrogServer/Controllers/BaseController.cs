@@ -9,9 +9,14 @@ namespace BudgetFrogServer.Controllers
         /// </summary>
         protected int? GetUserId()
         {
-            if (int.TryParse(User.FindFirst("UserId").Value, out int userId))
-                return userId;
-            else return null;
+            try
+            {
+                return int.Parse(User?.FindFirst("UserId")?.Value);
+            }
+            catch
+            {
+                return null;
+            };
         }
     }
 }

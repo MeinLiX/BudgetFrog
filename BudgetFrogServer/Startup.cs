@@ -13,7 +13,6 @@ using System.Text;
 
 using BudgetFrogServer.Utils;
 using BudgetFrogServer.Models;
-using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BudgetFrogServer
@@ -31,8 +30,12 @@ namespace BudgetFrogServer
         {
             services.AddCors();
 
-            string connectionIdentity = Configuration.GetConnectionString("IdentityConnection");
-            services.AddDbContext<DB_Context>(options => options.UseSqlServer(connectionIdentity));
+            services.AddDbContext<DB_Context>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("BasicDBConnection")));
+
+            services.AddDbContext<DB_ExchangeRatesContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("ExchangeRatesConnection")));
+
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(jwtBearerOptions => jwtBearerOptions.TokenValidationParameters = AuthOptions.TokenValidationParameters);

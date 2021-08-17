@@ -19,7 +19,7 @@ namespace BudgetFrogServer.Models.Auth
 
         [Required]
         [MaxLength(32, ErrorMessage = "The maximum length of the email field is 32")]
-        [RegularExpression("[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", ErrorMessage = "Invalid email!")]
+        [EmailAddress(ErrorMessage = "Invalid email!")]
         public string Email { get; set; }
 
         [MaxLength(32, ErrorMessage = "The maximum length of the firstname field is 32")]

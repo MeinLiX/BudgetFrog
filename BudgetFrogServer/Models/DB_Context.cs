@@ -11,9 +11,9 @@ namespace BudgetFrogServer.Models
         public virtual DbSet<TransactionCategory> TransactionCategory { get; set; }
         public virtual DbSet<Transaction> Transaction { get; set; }
 
-        public DB_Context(DbContextOptions options) : base(options)
+        public DB_Context(DbContextOptions<DB_Context> options) : base(options)
         {
-            //Database.EnsureDeleted();
+            Database.EnsureDeleted();
             Database.EnsureCreated();
         }
     }
