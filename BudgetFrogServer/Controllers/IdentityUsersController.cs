@@ -36,7 +36,7 @@ namespace BudgetFrogServer.Controllers
             {
                 int userId = GetUserId() ?? throw new Exception("Some error... Contact support or try again.");
 
-                var user = _context.IdentityUser
+                var user = _context.AppIdentityUser
                                           .Where(user => user.ID == userId)
                                           .Select(user => new { user.ID, user.Email, user.FirstName, user.LastName, user.Balance, user.Currency })
                                           .FirstOrDefault();
@@ -127,7 +127,7 @@ namespace BudgetFrogServer.Controllers
             try
             {
                 #region Trying to add a new user to the database
-                var NameValid = _context.IdentityUser.Where(o => o.Email.ToLower() == authUser.Email.ToLower()).FirstOrDefault();
+                var NameValid = _context.AppIdentityUser.Where(o => o.Email.ToLower() == authUser.Email.ToLower()).FirstOrDefault();
                 if (NameValid is not null)
                     throw new Exception("Login is already taken.");
 
@@ -138,7 +138,7 @@ namespace BudgetFrogServer.Controllers
                     FirstName = authUser?.FirstName,
                     LastName = authUser?.LastName
                 };
-                _context.IdentityUser.Add(newIdentityUser);
+                _context.AppIdentityUser.Add(newIdentityUser);
                 await _context.SaveChangesAsync();
                 #endregion
 
@@ -240,7 +240,7 @@ namespace BudgetFrogServer.Controllers
         {
             if (loggingUser is not null)
             {
-                AppIdentityUser FoundUser = await _context.IdentityUser.FirstOrDefaultAsync(x => x.Email == loggingUser.Email);
+                AppIdentityUser FoundUser = await _context.AppIdentityUser.FirstOrDefaultAsync(x => x.Email == loggingUser.Email);
                 if (FoundUser is not null && CryptoHash.EqualHashValue(loggingUser.Password, FoundUser?.Password))
                 {
                     List<Claim> claims = new()

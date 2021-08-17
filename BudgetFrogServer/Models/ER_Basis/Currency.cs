@@ -12,7 +12,7 @@ namespace BudgetFrogServer.Models.ER_Basis
         [RegularExpression("(USD)|(EUR)|(UAH)|(RUB)", ErrorMessage = "Invalid currency!")]
         public string Name { get; set; } = "USD";
 
-        //public ICollection<Currency> Currencies { get; set; }
+        public ICollection<Currency> Currencies { get; set; }
         public ICollection<CurencyRelationship> FirstCurencyRelationship { get; set; }
         public ICollection<CurencyRelationship> SecondCurencyRelationship { get; set; }
     }

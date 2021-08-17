@@ -11,8 +11,7 @@ namespace BudgetFrogServer.Models
         public DB_ExchangeRatesContext(DbContextOptions<DB_ExchangeRatesContext> options) : base(options)
         {
             //Database.EnsureDeleted();
-            //TODO: fix crash and create  many-to-many relationships (Currency-CurrencyRealationship-Currency)
-            //Database.EnsureCreated();
+            Database.EnsureCreated();
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -23,33 +22,22 @@ namespace BudgetFrogServer.Models
             modelBuilder.Entity<CurencyRelationship>()
             .HasOne(er => er.FirstCurrency)
             .WithMany(cur => cur.FirstCurencyRelationship)
-            .HasForeignKey(er => er.FirstCurrencyID);
+            .HasForeignKey(er => er.FirstCurrencyID)
+            .OnDelete(DeleteBehavior.ClientSetNull);
 
             modelBuilder.Entity<CurencyRelationship>()
             .HasOne(er => er.SecondCurrency)
             .WithMany(cur => cur.SecondCurencyRelationship)
-            .HasForeignKey(er => er.SecondCurrencyID);
+            .HasForeignKey(er => er.SecondCurrencyID)
+            .OnDelete(DeleteBehavior.ClientSetNull);
 
-
-
-            /* 
-            modelBuilder
-                .Entity<Currency>()
-                .HasMany(currency => currency.Currencies)
-                .WithMany(currency => currency.Currencies)
-                .UsingEntity<ExchangeRate>(
-                   j => j
-                    .HasOne(exchangeRate => exchangeRate.FirstCurrency)
-                    .WithMany(currency => currency.ExchangeRates)
-                    .HasForeignKey(exchangeRate => exchangeRate.FirstCurrencyID),
-                j => j
-                    .HasOne(exchangeRate => exchangeRate.SecondCurrency)
-                    .WithMany(currency => currency.ExchangeRates)
-                    .HasForeignKey(exchangeRate => exchangeRate.SecondCurrencyID),
-                j => j
-                .ToTable("ExchangeRates")
+            modelBuilder.Entity<Currency>()
+                .HasData(
+                    new { ID = 1, Name = "USD" },
+                    new { ID = 2, Name = "EUR" },
+                    new { ID = 3, Name = "UAH" },
+                    new { ID = 4, Name = "RUB" }
                 );
-             */
         }
 
     }
