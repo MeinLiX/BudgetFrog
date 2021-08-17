@@ -19,11 +19,11 @@ namespace BudgetFrogServer.Controllers
     [ApiController]
     public class TransactionCategoryController : BaseController
     {
-        private readonly DB_Context _context;
+        private readonly DB_Context _base_context;
 
-        public TransactionCategoryController(DB_Context context)
+        public TransactionCategoryController(DB_Context base_context)
         {
-            _context = context;
+            _base_context = base_context;
         }
 
         [HttpGet]
@@ -35,8 +35,8 @@ namespace BudgetFrogServer.Controllers
             {
                 int userId = GetUserId() ?? throw new Exception("Some error... Contact support or try again.");
 
-                var foundCategories = _context.TransactionCategory
-                                          .Where(category => category.IdentityUser.ID == userId)
+                var foundCategories = _base_context.TransactionCategory
+                                          .Where(category => category.AppIdentityUser.ID == userId)
                                           .ToList();
 
                 return new JsonResult(JsonSerialize.Data(
@@ -67,9 +67,9 @@ namespace BudgetFrogServer.Controllers
             {
                 int userId = GetUserId() ?? throw new Exception("Some error... Contact support or try again.");
 
-                var foundCategories = _context.TransactionCategory
+                var foundCategories = _base_context.TransactionCategory
                                               .FirstOrDefault(category => category.ID == id
-                                                                 && category.IdentityUser.ID == userId);
+                                                                 && category.AppIdentityUser.ID == userId);
 
                 return foundCategories switch
                 {
@@ -93,18 +93,33 @@ namespace BudgetFrogServer.Controllers
         }
 
         [HttpPost]
-        //       [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public IActionResult Post([FromBody] TransactionCategory transactionCategory)
+        public async Task<IActionResult> Post([FromBody] TransactionCategory transactionCategory)
         {
             try
             {
                 int userId = GetUserId() ?? throw new Exception("Some error... Contact support or try again.");
 
-                return new JsonResult(JsonSerialize.MessageText("A response to the request is being developed."))
+                #region Trying to add a new Transaction Category to the database
+                var tc = new TransactionCategory
                 {
-                    StatusCode = StatusCodes.Status403Forbidden
+                    Name = transactionCategory?.Name,
+                    Income = transactionCategory.Income,
+                    AppIdentityUser = _base_context.AppIdentityUser.FirstOrDefault(u => u.ID == userId),
+                };
+                _base_context.TransactionCategory.Add(tc);
+                await _base_context.SaveChangesAsync();
+                #endregion
+
+                return new JsonResult(JsonSerialize.Data(
+                       new
+                       {
+                           TransactionCategory = tc
+                       },
+                       "Transaction category was created"))
+                {
+                    StatusCode = StatusCodes.Status200OK
                 };
             }
             catch (Exception ex)
@@ -149,9 +164,9 @@ namespace BudgetFrogServer.Controllers
             {
                 int userId = GetUserId() ?? throw new Exception("Some error... Contact support or try again.");
 
-                var foundCategory = _context.TransactionCategory
+                var foundCategory = _base_context.TransactionCategory
                                               .FirstOrDefault(category => category.ID == id
-                                                                 && category.IdentityUser.ID == userId);
+                                                                 && category.AppIdentityUser.ID == userId);
 
                 if (foundCategory is null)
                 {
@@ -161,8 +176,8 @@ namespace BudgetFrogServer.Controllers
                     };
                 }
 
-                _context.TransactionCategory.Remove(foundCategory);
-                await _context.SaveChangesAsync();
+                _base_context.TransactionCategory.Remove(foundCategory);
+                await _base_context.SaveChangesAsync();
 
                 return new JsonResult(JsonSerialize.Data(foundCategory), "Transaction category was deleted.")
                 {

@@ -6,8 +6,7 @@ namespace BudgetFrogServer.Models.Common
 {
     public abstract class UserModelBase : ModelBase
     {
-        [Required]
         [JsonIgnore]
-        public AppIdentityUser IdentityUser { get; set; }
+        public AppIdentityUser AppIdentityUser { get; set; }
     }
 }

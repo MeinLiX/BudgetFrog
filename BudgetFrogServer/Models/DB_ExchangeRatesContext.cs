@@ -10,7 +10,7 @@ namespace BudgetFrogServer.Models
 
         public DB_ExchangeRatesContext(DbContextOptions<DB_ExchangeRatesContext> options) : base(options)
         {
-            //Database.EnsureDeleted();
+            Database.EnsureDeleted();
             Database.EnsureCreated();
         }
 

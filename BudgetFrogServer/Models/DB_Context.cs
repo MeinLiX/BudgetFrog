@@ -13,7 +13,7 @@ namespace BudgetFrogServer.Models
 
         public DB_Context(DbContextOptions<DB_Context> options) : base(options)
         {
-            //Database.EnsureDeleted();
+            Database.EnsureDeleted();
             Database.EnsureCreated();
         }
     }

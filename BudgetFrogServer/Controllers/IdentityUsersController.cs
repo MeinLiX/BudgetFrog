@@ -19,11 +19,11 @@ namespace BudgetFrogServer.Controllers
     [ApiController]
     public class IdentityUsersController : BaseController
     {
-        private readonly DB_Context _context;
+        private readonly DB_Context _base_context;
 
-        public IdentityUsersController(DB_Context context)
+        public IdentityUsersController(DB_Context base_context)
         {
-            _context = context;
+            _base_context = base_context;
         }
 
         [HttpGet("me")]
@@ -36,7 +36,7 @@ namespace BudgetFrogServer.Controllers
             {
                 int userId = GetUserId() ?? throw new Exception("Some error... Contact support or try again.");
 
-                var user = _context.AppIdentityUser
+                var user = _base_context.AppIdentityUser
                                           .Where(user => user.ID == userId)
                                           .Select(user => new { user.ID, user.Email, user.FirstName, user.LastName, user.Balance, user.Currency })
                                           .FirstOrDefault();
@@ -127,7 +127,7 @@ namespace BudgetFrogServer.Controllers
             try
             {
                 #region Trying to add a new user to the database
-                var NameValid = _context.AppIdentityUser.Where(o => o.Email.ToLower() == authUser.Email.ToLower()).FirstOrDefault();
+                var NameValid = _base_context.AppIdentityUser.Where(o => o.Email.ToLower() == authUser.Email.ToLower()).FirstOrDefault();
                 if (NameValid is not null)
                     throw new Exception("Login is already taken.");
 
@@ -138,57 +138,57 @@ namespace BudgetFrogServer.Controllers
                     FirstName = authUser?.FirstName,
                     LastName = authUser?.LastName
                 };
-                _context.AppIdentityUser.Add(newIdentityUser);
-                await _context.SaveChangesAsync();
+                _base_context.AppIdentityUser.Add(newIdentityUser);
+                await _base_context.SaveChangesAsync();
                 #endregion
 
                 #region Adding default TransactionCategories for new user
-                _context.TransactionCategory.AddRange(new[] {
+                _base_context.TransactionCategory.AddRange(new[] {
                     new TransactionCategory()
                     {
                         Name = "Housing",
                         Income = false,
-                        IdentityUser = newIdentityUser
+                        AppIdentityUser = newIdentityUser
                     },
                     new TransactionCategory()
                     {
                         Name = "Transport",
                         Income = false,
-                        IdentityUser = newIdentityUser
+                        AppIdentityUser = newIdentityUser
                     },
                     new TransactionCategory()
                     {
                         Name = "Food",
                         Income = false,
-                        IdentityUser = newIdentityUser
+                        AppIdentityUser = newIdentityUser
                     },
                     new TransactionCategory()
                     {
                         Name = "Utilities",
                         Income = false,
-                        IdentityUser = newIdentityUser
+                        AppIdentityUser = newIdentityUser
                     },
                     new TransactionCategory()
                     {
                         Name = "Entertainment",
                         Income = false,
-                        IdentityUser = newIdentityUser
+                        AppIdentityUser = newIdentityUser
                     },
                     new TransactionCategory()
                     {
                         Name = "Scholarship",
                         Income = true,
-                        IdentityUser = newIdentityUser
+                        AppIdentityUser = newIdentityUser
                     },
                     new TransactionCategory()
                     {
                         Name = "Salary",
                         Income = true,
-                        IdentityUser = newIdentityUser
+                        AppIdentityUser = newIdentityUser
                     }
                 });
 
-                await _context.SaveChangesAsync();
+                await _base_context.SaveChangesAsync();
                 #endregion
 
                 var identity = await GetIdentity(authUser);
@@ -240,7 +240,7 @@ namespace BudgetFrogServer.Controllers
         {
             if (loggingUser is not null)
             {
-                AppIdentityUser FoundUser = await _context.AppIdentityUser.FirstOrDefaultAsync(x => x.Email == loggingUser.Email);
+                AppIdentityUser FoundUser = await _base_context.AppIdentityUser.FirstOrDefaultAsync(x => x.Email == loggingUser.Email);
                 if (FoundUser is not null && CryptoHash.EqualHashValue(loggingUser.Password, FoundUser?.Password))
                 {
                     List<Claim> claims = new()

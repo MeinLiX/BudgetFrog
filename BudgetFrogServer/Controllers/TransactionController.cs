@@ -14,9 +14,9 @@ using System.Threading.Tasks;
 namespace BudgetFrogServer.Controllers
 {
     [Route("[controller]")]
-    //[Authorize]
+    [Authorize]
     [ApiController]
-    public class TransactionController:BaseController
+    public class TransactionController : BaseController
     {
         private readonly DB_Context _base_context;
         private readonly DB_ExchangeRatesContext _ER_context;
@@ -34,12 +34,18 @@ namespace BudgetFrogServer.Controllers
         {
             try
             {
-                //int userId = GetUserId() ?? throw new Exception("Some error... Contact support or try again.");
+                int userId = GetUserId() ?? throw new Exception("Some error... Contact support or try again.");
 
-                //List<Currency> currency = _ER_context.Сurrency.ToList();
-                //List<AppIdentityUser> appIdentityUsers = _base_context.AppIdentityUser.ToList();
 
-                return new JsonResult(JsonSerialize.MessageText("TRANSACTION"))
+                var foundTransactions = _base_context.Transaction
+                                          .Where(fc => fc.AppIdentityUser.ID == userId)
+                                          .ToList();
+
+                return new JsonResult(JsonSerialize.Data(
+                        new
+                        {
+                            Transactions = foundTransactions
+                        }))
                 {
                     StatusCode = StatusCodes.Status200OK
                 };
