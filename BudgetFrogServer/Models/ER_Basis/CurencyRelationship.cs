@@ -1,4 +1,5 @@
 ﻿using BudgetFrogServer.Models.Common;
+using System;
 
 namespace BudgetFrogServer.Models.ER_Basis
 {
@@ -10,6 +11,7 @@ namespace BudgetFrogServer.Models.ER_Basis
         public int SecondCurrencyID { get; set; }
         public Currency SecondCurrency { get; set; }
 
+        public DateTime Date { get; set; } = DateTime.Now;
         public double Relation { get; set; } = 0.0;
     }
 }

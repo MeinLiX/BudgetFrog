@@ -14,6 +14,7 @@ using System.Text;
 using BudgetFrogServer.Utils;
 using BudgetFrogServer.Models;
 using Microsoft.AspNetCore.Mvc;
+using BudgetFrogServer.Services;
 
 namespace BudgetFrogServer
 {
@@ -29,13 +30,13 @@ namespace BudgetFrogServer
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
+            services.AddSwaggerGen();
 
             services.AddDbContext<DB_Context>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("BasicDBConnection")));
 
             services.AddDbContext<DB_ExchangeRatesContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("ExchangeRatesConnection")));
-
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(jwtBearerOptions => jwtBearerOptions.TokenValidationParameters = AuthOptions.TokenValidationParameters);
@@ -46,7 +47,7 @@ namespace BudgetFrogServer
                         options.InvalidModelStateResponseFactory = actionContext => new BadRequestObjectResult(new ApiBehavior().ErrorFormatResponseValidation(actionContext.ModelState));
                     });
 
-            services.AddSwaggerGen();
+            services.AddHostedService<ExchangeRatesUpdater>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
