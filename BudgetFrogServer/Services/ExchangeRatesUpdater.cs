@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Collections.Generic;
 using System.Net.Http;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using BudgetFrogServer.Models;
-using System.Linq;
 using BudgetFrogServer.Models.ER_Basis;
 
 namespace BudgetFrogServer.Services
@@ -19,7 +16,7 @@ namespace BudgetFrogServer.Services
         private Timer _timer;
         private readonly DB_ExchangeRatesContext _ER_context;
         private readonly HttpClient client = new();
-        private readonly Uri uri = new("https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5");
+        private readonly Uri uri = new("https://api.fastforex.io/fetch-all?from=USD&api_key=a81cd79963-b664094635-qy20m7");//trial api_key, nevermind
 
         public ExchangeRatesUpdater(IServiceProvider serviceProvider)
         {
@@ -30,30 +27,10 @@ namespace BudgetFrogServer.Services
         {
             var response = await client.GetAsync(uri.AbsoluteUri);
             var stringContent = await response.Content.ReadAsStringAsync();
-            var currencies = _ER_context.Сurrency.ToList();
 
-            var responseModel = JsonSerializer.Deserialize<List<CcyModel>>(stringContent);
-            responseModel.ForEach(ccy =>
-            {
-                if (ccy.ccy == "RUR")
-                    ccy.ccy = "RUB";
 
-                var firstcurr = currencies.FirstOrDefault(cr => cr.Name == ccy.ccy);
-                var secondcurr = currencies.FirstOrDefault(cr => cr.Name == ccy.base_ccy);
-                if (firstcurr is not null && secondcurr is not null)
-                {
-                    var fcr = firstcurr.FirstCurencyRelationship.FirstOrDefault(cr => cr.SecondCurrency == secondcurr);
-                    if (fcr is null)
-                    {
-                        firstcurr.FirstCurencyRelationship.Add(new CurencyRelationship() { FirstCurrency = firstcurr, SecondCurrency = secondcurr, Relation = ccy.Relation });
-                    }
-                    else
-                    {
-                        fcr.Relation = ccy.Relation;
-                        fcr.Date = DateTime.Now;
-                    }
-                }
-            });
+            var responseModel = JsonSerializer.Deserialize<ExchangeRates>(stringContent);
+            _ER_context.ExchangeRates.Add(responseModel);
 
             await _ER_context.SaveChangesAsync();
         }
@@ -76,16 +53,6 @@ namespace BudgetFrogServer.Services
             _timer?.Dispose();
         }
 
-        private class CcyModel
-        {
-            public string ccy { get; set; }
-            public string base_ccy { get; set; }
-            public string buy { get; set; }
-            public string sale { get; set; }
-
-            [JsonIgnore]
-            public double Relation => (double.Parse(buy) + double.Parse(sale)) / 2;
-        }
     }
 }
 
