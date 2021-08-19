@@ -19,6 +19,8 @@ namespace BudgetFrogServer.Models.Basis
         public string Currency { get; set; }
 
         [Required]
+        public int TransactionCategoryID { get; set; }
+
         [JsonIgnore]
         public TransactionCategory TransactionCategory { get; set; }
     }

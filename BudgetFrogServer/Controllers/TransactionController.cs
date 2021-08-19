@@ -1,14 +1,12 @@
 ﻿using BudgetFrogServer.Models;
-using BudgetFrogServer.Models.Auth;
-using BudgetFrogServer.Models.ER_Basis;
+using BudgetFrogServer.Models.Basis;
 using BudgetFrogServer.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 
 namespace BudgetFrogServer.Controllers
@@ -35,8 +33,6 @@ namespace BudgetFrogServer.Controllers
             try
             {
                 int userId = GetUserId() ?? throw new Exception("Some error... Contact support or try again.");
-
-
                 var foundTransactions = _base_context.Transaction
                                           .Where(fc => fc.AppIdentityUser.ID == userId)
                                           .ToList();
@@ -44,12 +40,157 @@ namespace BudgetFrogServer.Controllers
                 return new JsonResult(JsonSerialize.Data(
                         new
                         {
-                            Transactions = foundTransactions
+                            transactions = foundTransactions
                         }))
                 {
                     StatusCode = StatusCodes.Status200OK
                 };
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(JsonSerialize.ErrorMessageText(ex.Message))
+                {
+                    StatusCode = StatusCodes.Status400BadRequest
+                };
+            }
+        }
+        [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult Get(int id)
+        {
+            try
+            {
+                int userId = GetUserId() ?? throw new Exception("Some error... Contact support or try again.");
+                var foundTransaction = _base_context.Transaction
+                                          .FirstOrDefault(transaction => transaction.AppIdentityUser.ID == userId && transaction.ID == id);
 
+                return new JsonResult(JsonSerialize.Data(
+                        new
+                        {
+                            transaction = foundTransaction
+                        }))
+                {
+                    StatusCode = StatusCodes.Status200OK
+                };
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(JsonSerialize.ErrorMessageText(ex.Message))
+                {
+                    StatusCode = StatusCodes.Status400BadRequest
+                };
+            }
+        }
+
+        [HttpPost]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Post([FromBody] Transaction transaction)
+        {
+            try
+            {
+                int userId = GetUserId() ?? throw new Exception("Some error... Contact support or try again.");
+
+                #region Trying to add a new Transaction to the database
+                var transactionCategory = await _base_context.TransactionCategory.FirstOrDefaultAsync(tc => tc.ID == transaction.TransactionCategoryID && tc.AppIdentityUser.ID == userId);
+                if (transactionCategory is null)
+                    throw new Exception("Transaction category not found.");
+
+                var newTransaction = new Transaction
+                {
+                    Balance = transaction.Balance,
+                    Currency = transaction.Currency,
+                    TransactionCategory = transactionCategory,
+                    AppIdentityUser = _base_context.AppIdentityUser.FirstOrDefault(u => u.ID == userId),
+                };
+
+                _base_context.Transaction.Add(newTransaction);
+
+                #region User balance
+                var exchangeRates = await _ER_context.ExchangeRates
+                                              .Include(er => er.results)
+                                              .OrderByDescending(er => er.ID)
+                                              .FirstOrDefaultAsync();
+
+                decimal transactionBalance = (decimal)exchangeRates.Convert(newTransaction.Currency, newTransaction.AppIdentityUser.Currency, (float)newTransaction.Balance);
+                newTransaction.AppIdentityUser.Balance += newTransaction.TransactionCategory.Income ? transactionBalance : -transactionBalance;
+                #endregion
+                await _base_context.SaveChangesAsync();
+                #endregion
+
+                return new JsonResult(JsonSerialize.Data(
+                       new
+                       {
+                           UerBalance = newTransaction.AppIdentityUser.Balance,
+                           transaction = newTransaction,
+                       },
+                       "Transaction was created"))
+                {
+                    StatusCode = StatusCodes.Status201Created
+                };
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(JsonSerialize.ErrorMessageText(ex.Message))
+                {
+                    StatusCode = StatusCodes.Status400BadRequest
+                };
+            }
+        }
+
+        [HttpDelete("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                int userId = GetUserId() ?? throw new Exception("Some error... Contact support or try again.");
+
+                #region Trying to remove a Transaction from the database
+                var foundTransaction = _base_context.Transaction
+                                                .Include(t => t.AppIdentityUser)
+                                                .Include(t => t.TransactionCategory)
+                                                .FirstOrDefault(transaction => transaction.ID == id
+                                                                 && transaction.AppIdentityUser.ID == userId);
+
+                if (foundTransaction is null)
+                {
+                    return new JsonResult(JsonSerialize.Data(null, "Transaction not found."))
+                    {
+                        StatusCode = StatusCodes.Status200OK
+                    };
+                }
+
+                #region User balance
+                var exchangeRates = await _ER_context.ExchangeRates
+                                              .Include(er => er.results)
+                                              .OrderByDescending(er => er.ID)
+                                              .FirstOrDefaultAsync();
+
+                decimal transactionBalance = (decimal)exchangeRates.Convert(foundTransaction.Currency, foundTransaction.AppIdentityUser.Currency, (float)foundTransaction.Balance);
+                foundTransaction.AppIdentityUser.Balance -= foundTransaction.TransactionCategory.Income ? transactionBalance : -transactionBalance;
+                #endregion
+                _base_context.Transaction.Remove(foundTransaction);
+                await _base_context.SaveChangesAsync();
+                #endregion
+
+                return new JsonResult(JsonSerialize.Data(
+                       new
+                       {
+                           UerBalance = foundTransaction.AppIdentityUser.Balance,
+                           transaction = new Transaction()
+                           {
+                               ID = foundTransaction.ID,
+                               Balance = foundTransaction.Balance,
+                               Currency = foundTransaction.Currency,
+                               TransactionCategoryID = foundTransaction.TransactionCategoryID
+                           },
+                       }, "Transaction was deleted."))
+                {
+                    StatusCode = StatusCodes.Status200OK
+                };
             }
             catch (Exception ex)
             {

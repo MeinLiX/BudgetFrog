@@ -71,7 +71,7 @@ namespace BudgetFrogServer.Controllers
                 return new JsonResult(JsonSerialize.Data(
                         new
                         {
-                            @base = from,
+                            from,
                             to,
                             rate = exchangeRates.GetRate(from, to)
                         }))
@@ -109,7 +109,7 @@ namespace BudgetFrogServer.Controllers
                 return new JsonResult(JsonSerialize.Data(
                         new
                         {
-                            @base = from,
+                            from,
                             fromAmount = amount,
                             to,
                             toAmount = exchangeRates.Convert(from, to, amount),
