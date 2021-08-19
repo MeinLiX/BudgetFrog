@@ -28,7 +28,7 @@ namespace BudgetFrogServer.Models.ER_Basis
                 return dict[to];
 
             if (from != @base && to == @base)
-                return 1 / dict[to];
+                return 1 / dict[from];
 
             return dict[from] / dict[to];
         }
