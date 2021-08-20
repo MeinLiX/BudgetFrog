@@ -12,6 +12,7 @@ using BudgetFrogServer.Models.Auth;
 using BudgetFrogServer.Models.Basis;
 using BudgetFrogServer.Utils;
 using Microsoft.AspNetCore.Authorization;
+using System.Text.RegularExpressions;
 
 namespace BudgetFrogServer.Controllers
 {
@@ -20,10 +21,12 @@ namespace BudgetFrogServer.Controllers
     public class IdentityUsersController : BaseController
     {
         private readonly DB_Context _base_context;
+        private readonly DB_ExchangeRatesContext _ER_context;
 
-        public IdentityUsersController(DB_Context base_context)
+        public IdentityUsersController(DB_Context base_context, DB_ExchangeRatesContext ER_context)
         {
             _base_context = base_context;
+            _ER_context = ER_context;
         }
 
         [HttpGet("me")]
@@ -50,6 +53,67 @@ namespace BudgetFrogServer.Controllers
                         new
                         {
                             user
+                        }))
+                {
+                    StatusCode = StatusCodes.Status200OK
+                };
+
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(JsonSerialize.ErrorMessageText(ex.Message))
+                {
+                    StatusCode = StatusCodes.Status400BadRequest
+                };
+            }
+        }
+
+        //TODO: currency validation, (and take out validation for currrency (user))
+        [HttpGet("changeCurrency")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Get(string currency)
+        {
+            try
+            {
+                if (!Regex.IsMatch(currency, "(USD)|(EUR)|(UAH)|(RUB)"))
+                {
+                    throw new Exception("Invalid currency!");
+                }
+                int userId = GetUserId() ?? throw new Exception("Some error... Contact support or try again.");
+
+                var user = _base_context.AppIdentityUser
+                                          .Where(user => user.ID == userId)
+                                          .FirstOrDefault();
+                if (user is null)
+                {
+                    throw new Exception("Some error... Contact support or try again.");
+                }
+
+                var exchangeRates = await _ER_context.ExchangeRates
+                                              .Include(er => er.results)
+                                              .OrderByDescending(er => er.ID)
+                                              .FirstOrDefaultAsync();
+
+                decimal newBalance = (decimal)exchangeRates.Convert(user.Currency, currency, (float)user.Balance);
+                user.Balance = newBalance;
+                user.Currency = currency;
+
+                await _base_context.SaveChangesAsync();
+
+                return new JsonResult(JsonSerialize.Data(
+                        new
+                        {
+                            user = new AppIdentityUser()
+                            {
+                                ID = user.ID,
+                                Email = user.Email,
+                                FirstName = user.FirstName,
+                                LastName = user.LastName,
+                                Balance = user.Balance,
+                                Currency = user.Currency
+                            }
                         }))
                 {
                     StatusCode = StatusCodes.Status200OK

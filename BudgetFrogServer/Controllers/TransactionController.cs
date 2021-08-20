@@ -102,7 +102,7 @@ namespace BudgetFrogServer.Controllers
                     Balance = transaction.Balance,
                     Currency = transaction.Currency,
                     TransactionCategory = transactionCategory,
-                    ReceiptBase64=transaction?.ReceiptBase64,
+                    ReceiptBase64 = transaction?.ReceiptBase64,
                     AppIdentityUser = _base_context.AppIdentityUser.FirstOrDefault(u => u.ID == userId),
                 };
 
@@ -123,7 +123,8 @@ namespace BudgetFrogServer.Controllers
                 return new JsonResult(JsonSerialize.Data(
                        new
                        {
-                           UerBalance = newTransaction.AppIdentityUser.Balance,
+                           UserBalance = newTransaction.AppIdentityUser.Balance,
+                           UserCurrency = newTransaction.AppIdentityUser.Currency,
                            transaction = newTransaction,
                        },
                        "Transaction was created"))
