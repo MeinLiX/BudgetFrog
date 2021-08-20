@@ -102,6 +102,7 @@ namespace BudgetFrogServer.Controllers
                     Balance = transaction.Balance,
                     Currency = transaction.Currency,
                     TransactionCategory = transactionCategory,
+                    ReceiptBase64=transaction?.ReceiptBase64,
                     AppIdentityUser = _base_context.AppIdentityUser.FirstOrDefault(u => u.ID == userId),
                 };
 

@@ -18,6 +18,9 @@ namespace BudgetFrogServer.Models.Basis
         [RegularExpression("(USD)|(EUR)|(UAH)|(RUB)", ErrorMessage = "Invalid currency!")]
         public string Currency { get; set; }
 
+        [MaxLength]
+        public string ReceiptBase64 { get; set; }
+
         [Required]
         public int TransactionCategoryID { get; set; }
 
