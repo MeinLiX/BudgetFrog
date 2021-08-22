@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -83,6 +84,50 @@ namespace BudgetFrogServer.Controllers
             }
         }
 
+        [HttpGet("group")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult GetGroup()
+        {
+            try
+            {
+                int userId = GetUserId() ?? throw new Exception("Some error... Contact support or try again.");
+                var foundTransactions = _base_context.Transaction
+                                          .Where(fc => fc.AppIdentityUser.ID == userId)
+                                          .ToList();
+
+                Dictionary<string, List<Transaction>> transactions = new();
+                foundTransactions.ForEach(transaction =>
+                {
+                    string keyDate = $"{transaction.Date:d}";
+                    if (transactions.ContainsKey(keyDate))
+                    {
+                        transactions[keyDate].Add(transaction);
+                    }
+                    else
+                    {
+                        transactions.Add(keyDate, new List<Transaction>() { transaction });
+                    }
+                });
+
+                //TODO SORT?
+                return new JsonResult(JsonSerialize.Data(
+                        new
+                        {
+                            transactions = transactions
+                        }))
+                {
+                    StatusCode = StatusCodes.Status200OK
+                };
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(JsonSerialize.ErrorMessageText(ex.Message))
+                {
+                    StatusCode = StatusCodes.Status400BadRequest
+                };
+            }
+        }
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -93,6 +138,9 @@ namespace BudgetFrogServer.Controllers
                 int userId = GetUserId() ?? throw new Exception("Some error... Contact support or try again.");
 
                 #region Trying to add a new Transaction to the database
+                if (!transaction.IsValidDate())
+                    throw new Exception("Invalid date!");
+
                 var transactionCategory = await _base_context.TransactionCategory.FirstOrDefaultAsync(tc => tc.ID == transaction.TransactionCategoryID && tc.AppIdentityUser.ID == userId);
                 if (transactionCategory is null)
                     throw new Exception("Transaction category not found.");
@@ -100,6 +148,7 @@ namespace BudgetFrogServer.Controllers
                 var newTransaction = new Transaction
                 {
                     Balance = transaction.Balance,
+                    Date = transaction.Date,
                     Currency = transaction.Currency,
                     TransactionCategory = transactionCategory,
                     ReceiptBase64 = transaction?.ReceiptBase64,
