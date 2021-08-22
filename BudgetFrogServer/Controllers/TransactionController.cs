@@ -97,7 +97,7 @@ namespace BudgetFrogServer.Controllers
                                           .ToList();
 
                 Dictionary<string, List<Transaction>> transactions = new();
-                foundTransactions.ForEach(transaction =>
+                foundTransactions.OrderByDescending(t => t.Date).ToList().ForEach(transaction =>
                 {
                     string keyDate = $"{transaction.Date:d}";
                     if (transactions.ContainsKey(keyDate))
@@ -110,7 +110,6 @@ namespace BudgetFrogServer.Controllers
                     }
                 });
 
-                //TODO SORT?
                 return new JsonResult(JsonSerialize.Data(
                         new
                         {
