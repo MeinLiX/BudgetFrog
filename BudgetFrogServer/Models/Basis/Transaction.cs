@@ -16,7 +16,7 @@ namespace BudgetFrogServer.Models.Basis
 
         [Required]
         [Column(TypeName = "decimal(18,2)")]
-        public decimal Balance { get; set; } = .00m;
+        public decimal? Balance { get; set; } = .00m;
 
         //TODO: to take out in the external module (MAYBE)
         [Required]
@@ -32,7 +32,7 @@ namespace BudgetFrogServer.Models.Basis
         public string ReceiptBase64 { get; set; }
 
         [Required]
-        public int TransactionCategoryID { get; set; }
+        public int? TransactionCategoryID { get; set; }
 
         [JsonIgnore]
         public TransactionCategory TransactionCategory { get; set; }

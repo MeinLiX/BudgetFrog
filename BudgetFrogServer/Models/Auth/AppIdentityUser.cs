@@ -8,7 +8,7 @@ namespace BudgetFrogServer.Models.Auth
     {
         [Required]
         [Column(TypeName = "decimal(18,2)")]
-        public decimal Balance { get; set; } = .00m;
+        public decimal? Balance { get; set; } = .00m;
 
         //TODO: to take out in the external module  (MAYBE)
         [Required]

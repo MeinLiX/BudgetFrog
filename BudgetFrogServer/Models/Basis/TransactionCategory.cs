@@ -12,6 +12,6 @@ namespace BudgetFrogServer.Models.Basis
         public string Name { get; set; }
 
         [Required]
-        public bool Income { get; set; } = false;
+        public bool? Income { get; set; } = false;
     }
 }

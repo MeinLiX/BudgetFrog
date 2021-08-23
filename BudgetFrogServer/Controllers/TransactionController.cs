@@ -163,7 +163,7 @@ namespace BudgetFrogServer.Controllers
                                               .FirstOrDefaultAsync();
 
                 decimal transactionBalance = (decimal)exchangeRates.Convert(newTransaction.Currency, newTransaction.AppIdentityUser.Currency, (float)newTransaction.Balance);
-                newTransaction.AppIdentityUser.Balance += newTransaction.TransactionCategory.Income ? transactionBalance : -transactionBalance;
+                newTransaction.AppIdentityUser.Balance += (newTransaction.TransactionCategory.Income ?? true) ? transactionBalance : -transactionBalance;
                 #endregion
                 await _base_context.SaveChangesAsync();
                 #endregion
@@ -220,7 +220,7 @@ namespace BudgetFrogServer.Controllers
                                               .FirstOrDefaultAsync();
 
                 decimal transactionBalance = (decimal)exchangeRates.Convert(foundTransaction.Currency, foundTransaction.AppIdentityUser.Currency, (float)foundTransaction.Balance);
-                foundTransaction.AppIdentityUser.Balance -= foundTransaction.TransactionCategory.Income ? transactionBalance : -transactionBalance;
+                foundTransaction.AppIdentityUser.Balance -= (foundTransaction.TransactionCategory.Income ?? true) ? transactionBalance : -transactionBalance;
                 #endregion
                 _base_context.Transaction.Remove(foundTransaction);
                 await _base_context.SaveChangesAsync();
