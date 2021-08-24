@@ -93,7 +93,8 @@ namespace BudgetFrogServer.Controllers
             {
                 int userId = GetUserId() ?? throw new Exception("Some error... Contact support or try again.");
                 var foundTransactions = _base_context.Transaction
-                                          .Where(fc => fc.AppIdentityUser.ID == userId)
+                                          .Include(transaction => transaction.TransactionCategory)
+                                          .Where(transaction => transaction.AppIdentityUser.ID == userId)
                                           .ToList();
 
                 Dictionary<string, List<Transaction>> transactions = new();

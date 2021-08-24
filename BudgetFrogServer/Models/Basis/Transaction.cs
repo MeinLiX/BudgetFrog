@@ -34,7 +34,7 @@ namespace BudgetFrogServer.Models.Basis
         [Required]
         public int? TransactionCategoryID { get; set; }
 
-        [JsonIgnore]
+        //[JsonIgnore]
         public TransactionCategory TransactionCategory { get; set; }
 
         //TODO: move to external attribute
