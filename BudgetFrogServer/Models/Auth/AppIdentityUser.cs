@@ -10,10 +10,7 @@ namespace BudgetFrogServer.Models.Auth
         [Column(TypeName = "decimal(18,2)")]
         public decimal? Balance { get; set; } = .00m;
 
-        //TODO: to take out in the external module  (MAYBE)
         [Required]
-        [MaxLength(3, ErrorMessage = "The maximum length of the Currency is 3")]
-        [MinLength(3, ErrorMessage = "The minimum length of the Currency is 3")]
         [RegularExpression("(USD)|(EUR)|(UAH)|(RUB)", ErrorMessage = "Invalid currency!")]
         public string Currency { get; set; } = "USD";
 
