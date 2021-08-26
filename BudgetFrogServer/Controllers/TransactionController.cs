@@ -148,6 +148,7 @@ namespace BudgetFrogServer.Controllers
                     Balance = transaction.Balance,
                     Date = transaction.Date,
                     Currency = transaction.Currency,
+                    Notes = transaction.Notes,
                     TransactionCategory = (await transactionCategory) ?? throw new Exception("Transaction category not found."),
                     ReceiptBase64 = transaction?.ReceiptBase64,
                     AppIdentityUser = _base_context.AppIdentityUser.FirstOrDefault(u => u.ID == userId),
@@ -200,21 +201,22 @@ namespace BudgetFrogServer.Controllers
                 if (!transactionBODY.IsValidDate())
                     throw new Exception("Invalid date!");
 
-                var transactionCategory = _base_context.TransactionCategory
-                                                .FirstOrDefaultAsync(tc => tc.ID == transactionBODY.TransactionCategoryID && tc.AppIdentityUser.ID == userId);
-
                 var transactionFound = await _base_context.Transaction
+                                                   .Include(t => t.AppIdentityUser)
                                                    .FirstOrDefaultAsync(transactionQ => transactionQ.ID == transactionBODY.ID && transactionQ.AppIdentityUser.ID == userId);
-
                 if (transactionFound is null)
                     throw new Exception("Transaction not found.");
 
                 if (transactionFound == transactionBODY)
                     throw new Exception("Transaction already up.");
 
+                var transactionCategory = _base_context.TransactionCategory
+                                               .FirstOrDefaultAsync(tc => tc.ID == transactionBODY.TransactionCategoryID && tc.AppIdentityUser.ID == userId);
+
                 transactionFound.Balance = transactionBODY.Balance;
                 transactionFound.Date = transactionBODY.Date;
                 transactionFound.Currency = transactionBODY.Currency;
+                transactionFound.Notes = transactionBODY.Notes;
                 transactionFound.TransactionCategory = (await transactionCategory) ?? throw new Exception("Transaction category not found.");
                 transactionFound.ReceiptBase64 = transactionBODY?.ReceiptBase64;
 
