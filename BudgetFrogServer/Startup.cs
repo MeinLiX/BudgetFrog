@@ -47,7 +47,7 @@ namespace BudgetFrogServer
                         options.InvalidModelStateResponseFactory = actionContext => new BadRequestObjectResult(new ApiBehavior().ErrorFormatResponseValidation(actionContext.ModelState));
                     });
 
-            services.AddHostedService<ExchangeRatesUpdater>();
+            //services.AddHostedService<ExchangeRatesUpdater>(); //TOKEN EXPIRED
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILogger<Startup> logger)
