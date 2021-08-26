@@ -141,16 +141,14 @@ namespace BudgetFrogServer.Controllers
                 if (!transaction.IsValidDate())
                     throw new Exception("Invalid date!");
 
-                var transactionCategory = await _base_context.TransactionCategory.FirstOrDefaultAsync(tc => tc.ID == transaction.TransactionCategoryID && tc.AppIdentityUser.ID == userId);
-                if (transactionCategory is null)
-                    throw new Exception("Transaction category not found.");
+                var transactionCategory = _base_context.TransactionCategory.FirstOrDefaultAsync(tc => tc.ID == transaction.TransactionCategoryID && tc.AppIdentityUser.ID == userId);
 
                 var newTransaction = new Transaction
                 {
                     Balance = transaction.Balance,
                     Date = transaction.Date,
                     Currency = transaction.Currency,
-                    TransactionCategory = transactionCategory,
+                    TransactionCategory = (await transactionCategory) ?? throw new Exception("Transaction category not found."),
                     ReceiptBase64 = transaction?.ReceiptBase64,
                     AppIdentityUser = _base_context.AppIdentityUser.FirstOrDefault(u => u.ID == userId),
                 };
@@ -179,6 +177,71 @@ namespace BudgetFrogServer.Controllers
                        "Transaction was created"))
                 {
                     StatusCode = StatusCodes.Status201Created
+                };
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(JsonSerialize.ErrorMessageText(ex.Message))
+                {
+                    StatusCode = StatusCodes.Status400BadRequest
+                };
+            }
+        }
+
+        [HttpPatch]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> Patch([FromBody] Transaction transactionBODY)
+        {
+            try
+            {
+                int userId = GetUserId() ?? throw new Exception("Some error... Contact support or try again.");
+                #region Trying to add a new Transaction to the database
+                if (!transactionBODY.IsValidDate())
+                    throw new Exception("Invalid date!");
+
+                var transactionCategory = _base_context.TransactionCategory
+                                                .FirstOrDefaultAsync(tc => tc.ID == transactionBODY.TransactionCategoryID && tc.AppIdentityUser.ID == userId);
+
+                var transactionFound = await _base_context.Transaction
+                                                   .FirstOrDefaultAsync(transactionQ => transactionQ.ID == transactionBODY.ID && transactionQ.AppIdentityUser.ID == userId);
+
+                if (transactionFound is null)
+                    throw new Exception("Transaction not found.");
+
+                if (transactionFound == transactionBODY)
+                    throw new Exception("Transaction already up.");
+
+                transactionFound.Balance = transactionBODY.Balance;
+                transactionFound.Date = transactionBODY.Date;
+                transactionFound.Currency = transactionBODY.Currency;
+                transactionFound.TransactionCategory = (await transactionCategory) ?? throw new Exception("Transaction category not found.");
+                transactionFound.ReceiptBase64 = transactionBODY?.ReceiptBase64;
+
+                _base_context.Transaction.Update(transactionFound);
+
+                #region User balance
+                var exchangeRates = await _ER_context.ExchangeRates
+                                              .Include(er => er.results)
+                                              .OrderByDescending(er => er.ID)
+                                              .FirstOrDefaultAsync();
+
+                decimal transactionBalance = (decimal)exchangeRates.Convert(transactionFound.Currency, transactionFound.AppIdentityUser.Currency, (float)transactionFound.Balance);
+                transactionFound.AppIdentityUser.Balance += (transactionFound.TransactionCategory.Income ?? true) ? transactionBalance : -transactionBalance;
+                #endregion
+                await _base_context.SaveChangesAsync();
+                #endregion
+
+                return new JsonResult(JsonSerialize.Data(
+                       new
+                       {
+                           UserBalance = transactionFound.AppIdentityUser.Balance,
+                           UserCurrency = transactionFound.AppIdentityUser.Currency,
+                           transaction = transactionFound,
+                       },
+                       "Transaction was updated"))
+                {
+                    StatusCode = StatusCodes.Status200OK
                 };
             }
             catch (Exception ex)

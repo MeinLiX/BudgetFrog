@@ -6,7 +6,7 @@ namespace BudgetFrogServer.Models.Auth
 {
     public class AppIdentityUser : ModelBase
     {
-        [Required]
+        [Required, Range(0, 999_999_999_999_999_999.99, ErrorMessage = "The balance field must be between 0 and 999_999_999_999_999_999.99!")]
         [Column(TypeName = "decimal(18,2)")]
         public decimal? Balance { get; set; } = .00m;
 
