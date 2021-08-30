@@ -8,7 +8,7 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 
-namespace BudgetFrogServer.Bots.Telegram.Handlers
+namespace BudgetFrogTelegramBot.Handlers
 {
     public class Handler
     {
