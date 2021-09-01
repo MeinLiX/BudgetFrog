@@ -207,48 +207,56 @@ namespace BudgetFrogServer.Controllers
                 #endregion
 
                 #region Adding default TransactionCategories for new user
+                // TODO: Make json config for default transaction category
                 _base_context.TransactionCategory.AddRange(new[] {
                     new TransactionCategory()
                     {
                         Name = "Housing",
                         Income = false,
-                        AppIdentityUser = newIdentityUser
+                        AppIdentityUser = newIdentityUser,
+                        Color = "#9ef293",
                     },
                     new TransactionCategory()
                     {
                         Name = "Transport",
                         Income = false,
-                        AppIdentityUser = newIdentityUser
+                        AppIdentityUser = newIdentityUser,
+                        Color = "#93eaed"
                     },
                     new TransactionCategory()
                     {
                         Name = "Food",
                         Income = false,
-                        AppIdentityUser = newIdentityUser
+                        AppIdentityUser = newIdentityUser,
+                        Color = "#db3d47"
                     },
                     new TransactionCategory()
                     {
                         Name = "Utilities",
                         Income = false,
-                        AppIdentityUser = newIdentityUser
+                        AppIdentityUser = newIdentityUser,
+                        Color = "#eaa7ef"
                     },
                     new TransactionCategory()
                     {
                         Name = "Entertainment",
                         Income = false,
-                        AppIdentityUser = newIdentityUser
+                        AppIdentityUser = newIdentityUser,
+                        Color = "#ff33a0"
                     },
                     new TransactionCategory()
                     {
                         Name = "Scholarship",
                         Income = true,
-                        AppIdentityUser = newIdentityUser
+                        AppIdentityUser = newIdentityUser,
+                        Color = "#5533ff"
                     },
                     new TransactionCategory()
                     {
                         Name = "Salary",
                         Income = true,
-                        AppIdentityUser = newIdentityUser
+                        AppIdentityUser = newIdentityUser,
+                        Color = "#004cff"
                     }
                 });
 

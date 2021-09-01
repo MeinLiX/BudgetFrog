@@ -106,6 +106,7 @@ namespace BudgetFrogServer.Controllers
                 {
                     Name = transactionCategory?.Name,
                     Income = transactionCategory.Income,
+                    Color = transactionCategory.Color,
                     AppIdentityUser = _base_context.AppIdentityUser.FirstOrDefault(u => u.ID == userId),
                 };
                 _base_context.TransactionCategory.Add(tc);
