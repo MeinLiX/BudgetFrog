@@ -31,45 +31,35 @@ namespace BudgetFrogServer.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult Get()
         {
+            return Get(null);
+        }
+
+        [HttpGet("{days}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult Get(int? days)
+        {
             try
             {
                 int userId = GetUserId() ?? throw new Exception("Some error... Contact support or try again.");
-                var foundTransactions = _base_context.Transaction
-                                          .Where(fc => fc.AppIdentityUser.ID == userId)
-                                          .ToList();
+                int daysAge = days ?? 0;
+                List<Transaction> foundTransactions = daysAge switch
+                {
+                    <= 0 => _base_context.Transaction
+                                         .Where(fc => fc.AppIdentityUser.ID == userId)
+                                         .ToList(),
+
+                    _ => _base_context.Transaction
+                                          .Where(transaction =>
+                                              transaction.AppIdentityUser.ID == userId &&
+                                              (transaction.Date.AddDays(daysAge) >= DateTime.Now))
+                                          .ToList()
+                };
 
                 return new JsonResult(JsonSerialize.Data(
                         new
                         {
                             transactions = foundTransactions
-                        }))
-                {
-                    StatusCode = StatusCodes.Status200OK
-                };
-            }
-            catch (Exception ex)
-            {
-                return new JsonResult(JsonSerialize.ErrorMessageText(ex.Message))
-                {
-                    StatusCode = StatusCodes.Status400BadRequest
-                };
-            }
-        }
-        [HttpGet("{id}")]
-        [ProducesResponseType(StatusCodes.Status200OK)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult Get(int id)
-        {
-            try
-            {
-                int userId = GetUserId() ?? throw new Exception("Some error... Contact support or try again.");
-                var foundTransaction = _base_context.Transaction
-                                          .FirstOrDefault(transaction => transaction.AppIdentityUser.ID == userId && transaction.ID == id);
-
-                return new JsonResult(JsonSerialize.Data(
-                        new
-                        {
-                            transaction = foundTransaction
                         }))
                 {
                     StatusCode = StatusCodes.Status200OK
