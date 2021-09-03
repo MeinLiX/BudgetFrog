@@ -74,6 +74,56 @@ namespace BudgetFrogServer.Controllers
             }
         }
 
+        [HttpGet("graph/{days}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult GetBarGraph(int? days)
+        {
+            try
+            {
+                int userId = GetUserId() ?? throw new Exception("Some error... Contact support or try again.");
+                int daysAge = days ?? 0;
+                List<Transaction> foundTransactions = daysAge switch
+                {
+                    <= 0 => _base_context.Transaction
+                                         .Include(t => t.TransactionCategory)
+                                         .Where(t => t.AppIdentityUser.ID == userId)
+                                         .ToList(),
+
+                    _ => _base_context.Transaction
+                                          .Include(t => t.TransactionCategory)
+                                          .Where(transaction =>
+                                              transaction.AppIdentityUser.ID == userId &&
+                                              (transaction.Date.AddDays(daysAge) >= DateTime.Now))
+                                          .ToList()
+                };
+
+                TransactionGraph.Bar Bar = new();
+                /*Bar.labels.Add("test1");
+                Bar.labels.Add("test2");
+                Bar.datasets.Add(new TransactionGraph.DataSet("line", "Balance", "#09d3ac", 2, false, new() { 2, 14 }));
+                Bar.datasets.Add(new TransactionGraph.DataSet("bar", "DataSet", "#09d3ac", 2, true, new() { 3, 8 }));*/
+                
+
+
+                return new JsonResult(JsonSerialize.Data(
+                        new
+                        {
+                            Bar
+                        }))
+                {
+                    StatusCode = StatusCodes.Status200OK
+                };
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(JsonSerialize.ErrorMessageText(ex.Message))
+                {
+                    StatusCode = StatusCodes.Status400BadRequest
+                };
+            }
+        }
+
         [HttpGet("group")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
