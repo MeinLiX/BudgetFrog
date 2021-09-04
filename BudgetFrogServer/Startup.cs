@@ -42,6 +42,10 @@ namespace BudgetFrogServer
                     .AddJwtBearer(jwtBearerOptions => jwtBearerOptions.TokenValidationParameters = AuthOptions.TokenValidationParameters);
 
             services.AddControllers()
+                    .AddJsonOptions(options =>
+                    {
+                        options.JsonSerializerOptions.Converters.Add(new DateTimeConverter());
+                    })
                     .ConfigureApiBehaviorOptions(options =>
                     {
                         options.InvalidModelStateResponseFactory = actionContext => new BadRequestObjectResult(new ApiBehavior().ErrorFormatResponseValidation(actionContext.ModelState));
