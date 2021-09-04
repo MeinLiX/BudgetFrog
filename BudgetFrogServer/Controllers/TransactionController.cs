@@ -1,6 +1,7 @@
 ﻿using BudgetFrogServer.Models;
 using BudgetFrogServer.Models.Basis;
 using BudgetFrogServer.Utils;
+using BudgetFrogServer.Utils.Charts;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -98,14 +99,13 @@ namespace BudgetFrogServer.Controllers
                                           .ToList()
                 };
 
-                TransactionGraph.Bar Bar = new();
-                /*Bar.labels.Add("test1");
-                Bar.labels.Add("test2");
-                Bar.datasets.Add(new TransactionGraph.DataSet("line", "Balance", "#09d3ac", 2, false, new() { 2, 14 }));
-                Bar.datasets.Add(new TransactionGraph.DataSet("bar", "DataSet", "#09d3ac", 2, true, new() { 3, 8 }));*/
-                
+                List<TransactionCategory> foundTransactionCategories = _base_context.TransactionCategory
+                                          .Where(tc => tc.AppIdentityUser.ID == userId)
+                                          .ToList();
 
 
+                TransactionCharts transactionCharts = new (foundTransactions, foundTransactionCategories);
+                TransactionGraph.Bar Bar= transactionCharts.BuildBar(daysAge);
                 return new JsonResult(JsonSerialize.Data(
                         new
                         {
@@ -134,6 +134,7 @@ namespace BudgetFrogServer.Controllers
                 int userId = GetUserId() ?? throw new Exception("Some error... Contact support or try again.");
                 var foundTransactions = _base_context.Transaction
                                           .Include(transaction => transaction.TransactionCategory)
+                                          .Include(transaction => transaction.AppIdentityUser)
                                           .Where(transaction => transaction.AppIdentityUser.ID == userId)
                                           .ToList();
 
