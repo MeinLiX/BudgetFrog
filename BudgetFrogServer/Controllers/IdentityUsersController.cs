@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using BudgetFrogServer.Services;
 
 using BudgetFrogServer.Models;
 using BudgetFrogServer.Models.Auth;
@@ -22,11 +23,16 @@ namespace BudgetFrogServer.Controllers
     {
         private readonly DB_Context _base_context;
         private readonly DB_ExchangeRatesContext _ER_context;
+        private readonly EmailConfirmationService _emailConfirmationService;
 
-        public IdentityUsersController(DB_Context base_context, DB_ExchangeRatesContext ER_context)
+        public IdentityUsersController(
+            DB_Context base_context,
+            DB_ExchangeRatesContext ER_context,
+            EmailConfirmationService emailConfirmationService)
         {
             _base_context = base_context;
             _ER_context = ER_context;
+            _emailConfirmationService = emailConfirmationService;
         }
 
         [HttpGet("me")]
@@ -201,6 +207,7 @@ namespace BudgetFrogServer.Controllers
                     Password = CryptoHash.GetHashValue(authUser.Password),
                     FirstName = authUser?.FirstName,
                     LastName = authUser?.LastName
+
                 };
                 _base_context.AppIdentityUser.Add(newIdentityUser);
                 await _base_context.SaveChangesAsync();
@@ -268,6 +275,8 @@ namespace BudgetFrogServer.Controllers
                     throw new Exception("Some error... Contact support or try again.");
                 User.AddIdentity(identity);
 
+                var key = _emailConfirmationService.AddConfiramtion(authUser);
+
                 return new JsonResult(JsonSerialize.Data(
                     new
                     {
@@ -284,6 +293,21 @@ namespace BudgetFrogServer.Controllers
                 {
                     StatusCode = StatusCodes.Status400BadRequest
                 };
+            }
+        }
+
+        [HttpGet("confirm")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> ConfirmEmail([FromQuery] string key)
+        {
+            if (_emailConfirmationService.Confirm(key))
+            {
+                return Ok();
+            }
+            else
+            {
+                return new BadRequestResult();
             }
         }
 

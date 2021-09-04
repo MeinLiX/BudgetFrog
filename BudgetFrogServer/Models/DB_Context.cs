@@ -8,6 +8,7 @@ namespace BudgetFrogServer.Models
     public class DB_Context : DbContext
     {
         public virtual DbSet<AppIdentityUser> AppIdentityUser { get; set; }
+        public virtual DbSet<EmailConfirmationKey> EmailConfirmationKey { get; set; }
         public virtual DbSet<TransactionCategory> TransactionCategory { get; set; }
         public virtual DbSet<Transaction> Transaction { get; set; }
 
