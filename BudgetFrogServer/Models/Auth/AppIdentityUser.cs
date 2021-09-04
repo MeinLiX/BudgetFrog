@@ -11,7 +11,7 @@ namespace BudgetFrogServer.Models.Auth
         public decimal? Balance { get; set; } = .00m;
 
         [Required]
-        [RegularExpression("(USD)|(EUR)|(UAH)|(RUB)", ErrorMessage = "Invalid currency!")]
+        [RegularExpression("USD|EUR|UAH|RUB", ErrorMessage = "Invalid currency!")]
         public string Currency { get; set; } = "USD";
 
         [Required]

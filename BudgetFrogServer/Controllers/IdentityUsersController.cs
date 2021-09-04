@@ -83,7 +83,7 @@ namespace BudgetFrogServer.Controllers
         {
             try
             {
-                if (!Regex.IsMatch(currency, "(USD)|(EUR)|(UAH)|(RUB)"))
+                if (!Regex.IsMatch(currency, "USD|EUR|UAH|RUB"))
                 {
                     throw new Exception("Invalid currency!");
                 }
@@ -275,7 +275,7 @@ namespace BudgetFrogServer.Controllers
                     throw new Exception("Some error... Contact support or try again.");
                 User.AddIdentity(identity);
 
-                var key = _emailConfirmationService.AddConfiramtion(authUser);
+                // var key = _emailConfirmationService.AddConfiramtion(authUser); //TODO: EmailSending should not throw exceptions
 
                 return new JsonResult(JsonSerialize.Data(
                     new
