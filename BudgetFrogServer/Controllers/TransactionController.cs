@@ -75,10 +75,10 @@ namespace BudgetFrogServer.Controllers
             }
         }
 
-        [HttpGet("graph/{days}")]
+        [HttpGet("graph/{number}/{days}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetBarGraph(int? days)
+        public IActionResult GetBarGraph(int? graphNumber, int? days)
         {
             try
             {
@@ -103,13 +103,23 @@ namespace BudgetFrogServer.Controllers
                                           .Where(tc => tc.AppIdentityUser.ID == userId)
                                           .ToList();
 
+                TransactionGraph.Bar Bar = null;
 
-                TransactionCharts transactionCharts = new (foundTransactions, foundTransactionCategories);
-                TransactionGraph.Bar Bar= transactionCharts.BuildBar(daysAge);
+                switch (graphNumber ?? 1)
+                {
+                    case 1:
+                        TransactionCharts transactionCharts = new(foundTransactions, foundTransactionCategories);
+                        Bar = transactionCharts.BuildBar(daysAge);
+                        break;
+                    default:
+                        break;
+
+                }
+
                 return new JsonResult(JsonSerialize.Data(
                         new
                         {
-                            Bar
+                            graph = Bar
                         }))
                 {
                     StatusCode = StatusCodes.Status200OK

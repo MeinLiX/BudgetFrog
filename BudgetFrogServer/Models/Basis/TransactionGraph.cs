@@ -7,7 +7,7 @@ namespace BudgetFrogServer.Models.Basis
         public class Bar
         {
             public List<string> labels { get; set; } = new();
-            public List<DataSet> datasets { get; set; }=new();
+            public List<DataSet> datasets { get; set; } = new();
         }
 
         public class DataSet
@@ -23,6 +23,7 @@ namespace BudgetFrogServer.Models.Basis
             {
 
             }
+
             public DataSet(string type, string label, string backgroundColor, int borderWidth, bool fill, List<int> data = null)
             {
                 this.type = type;
