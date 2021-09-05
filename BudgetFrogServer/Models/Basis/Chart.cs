@@ -2,13 +2,10 @@
 
 namespace BudgetFrogServer.Models.Basis
 {
-    public class TransactionGraph
+    public class Chart
     {
-        public class Bar
-        {
-            public List<string> labels { get; set; } = new();
-            public List<DataSet> datasets { get; set; } = new();
-        }
+        public List<string> labels { get; set; } = new();
+        public List<DataSet> datasets { get; set; } = new();
 
         public class DataSet
         {
@@ -19,10 +16,7 @@ namespace BudgetFrogServer.Models.Basis
             public bool fill { get; set; }
             public List<int> data { get; set; }
 
-            public DataSet()
-            {
-
-            }
+            public DataSet() { }
 
             public DataSet(string type, string label, string backgroundColor, int borderWidth, bool fill, List<int> data = null)
             {

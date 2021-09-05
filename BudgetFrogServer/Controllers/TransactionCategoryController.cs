@@ -2,15 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System;
-using System.Text.Json;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 using BudgetFrogServer.Models;
 using BudgetFrogServer.Models.Basis;
 using BudgetFrogServer.Utils;
-
+using BudgetFrogServer.Utils.Charts.TransactionCategories;
 
 namespace BudgetFrogServer.Controllers
 {
@@ -81,6 +79,29 @@ namespace BudgetFrogServer.Controllers
                     {
                         StatusCode = StatusCodes.Status200OK
                     }
+                };
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(JsonSerialize.ErrorMessageText(ex.Message))
+                {
+                    StatusCode = StatusCodes.Status400BadRequest
+                };
+            }
+        }
+
+        [HttpGet("graph/{graphNumber}")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        public IActionResult GetGraph(int? graphNumber)
+        {
+            try
+            {
+                int userId = GetUserId() ?? throw new Exception("Some error... Contact support or try again.");
+
+                return new JsonResult(JsonSerialize.MessageText("A response to the request is being developed."))
+                {
+                    StatusCode = StatusCodes.Status403Forbidden
                 };
             }
             catch (Exception ex)

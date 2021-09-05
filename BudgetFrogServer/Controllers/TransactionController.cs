@@ -1,8 +1,4 @@
-﻿using BudgetFrogServer.Models;
-using BudgetFrogServer.Models.Basis;
-using BudgetFrogServer.Utils;
-using BudgetFrogServer.Utils.Charts;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+using BudgetFrogServer.Models;
+using BudgetFrogServer.Models.Basis;
+using BudgetFrogServer.Utils;
+using BudgetFrogServer.Utils.Charts.Transactions;
 
 namespace BudgetFrogServer.Controllers
 {
@@ -75,7 +76,7 @@ namespace BudgetFrogServer.Controllers
             }
         }
 
-        [HttpGet("graph/{number}/{days}")]
+        [HttpGet("graph/{graphNumber}/{days}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetBarGraph(int? graphNumber, int? days)
@@ -103,23 +104,13 @@ namespace BudgetFrogServer.Controllers
                                           .Where(tc => tc.AppIdentityUser.ID == userId)
                                           .ToList();
 
-                TransactionGraph.Bar Bar = null;
-
-                switch (graphNumber ?? 1)
-                {
-                    case 1:
-                        TransactionCharts transactionCharts = new(foundTransactions, foundTransactionCategories);
-                        Bar = transactionCharts.BuildBar(daysAge);
-                        break;
-                    default:
-                        break;
-
-                }
+                TransactionCharts transactionCharts = new(foundTransactions, foundTransactionCategories);
+                Chart chart = transactionCharts.BuildChart(graphNumber ?? 1, daysAge);
 
                 return new JsonResult(JsonSerialize.Data(
                         new
                         {
-                            graph = Bar
+                            graph = chart
                         }))
                 {
                     StatusCode = StatusCodes.Status200OK
