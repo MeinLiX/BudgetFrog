@@ -34,35 +34,10 @@ namespace BudgetFrogServer.Utils.Charts.Transactions
             this.lastDays = lastDays;
         }
 
-        public async Task InitialData()
-        {
-            Task<ExchangeRates> exchangeRatesTask = _ER_context.ExchangeRates
-                                                                 .Include(er => er.results)
-                                                                 .OrderByDescending(er => er.ID)
-                                                                 .FirstOrDefaultAsync();
-            _transactions = lastDays switch
-            {
-                <= 0 => _base_context.Transaction
-                                     .Include(t => t.TransactionCategory)
-                                     .Where(t => t.AppIdentityUser.ID == userID)
-                                     .ToList(),
-                _ => _base_context.Transaction
-                                      .Include(t => t.TransactionCategory)
-                                      .Where(transaction =>
-                                                transaction.AppIdentityUser.ID == userID &&
-                                                (transaction.Date.AddDays(lastDays) >= DateTime.Now)
-                                            )
-                                      .ToList()
-            };
-
-            _transactionCategories = _base_context.TransactionCategory
-                                      .Where(tc => tc.AppIdentityUser.ID == userID)
-                                      .ToList();
-
-            _user = await _base_context.AppIdentityUser.FirstAsync(u => u.ID == userID); ;
-            _exchangeRates = await exchangeRatesTask;
-        }
-
+        /// <summary>
+        /// Transaction and balance chart by categories for a certain time.
+        /// </summary>
+        /// <returns>Chart type is Bar</returns>
         public Chart BuildChart()
         {
             LocalChart = new();
@@ -91,6 +66,35 @@ namespace BudgetFrogServer.Utils.Charts.Transactions
                     data: GetDataSetLineData()
             ));
             return LocalChart;
+        }
+
+        public async Task InitialData()
+        {
+            Task<ExchangeRates> exchangeRatesTask = _ER_context.ExchangeRates
+                                                                 .Include(er => er.results)
+                                                                 .OrderByDescending(er => er.ID)
+                                                                 .FirstOrDefaultAsync();
+            _transactions = lastDays switch
+            {
+                <= 0 => _base_context.Transaction
+                                     .Include(t => t.TransactionCategory)
+                                     .Where(t => t.AppIdentityUser.ID == userID)
+                                     .ToList(),
+                _ => _base_context.Transaction
+                                      .Include(t => t.TransactionCategory)
+                                      .Where(transaction =>
+                                                transaction.AppIdentityUser.ID == userID &&
+                                                (transaction.Date.AddDays(lastDays) >= DateTime.Now)
+                                            )
+                                      .ToList()
+            };
+
+            _transactionCategories = _base_context.TransactionCategory
+                                      .Where(tc => tc.AppIdentityUser.ID == userID)
+                                      .ToList();
+
+            _user = await _base_context.AppIdentityUser.FirstAsync(u => u.ID == userID); ;
+            _exchangeRates = await exchangeRatesTask;
         }
 
         private List<float> GetDataSetBarData(TransactionCategory transactionCategory) =>

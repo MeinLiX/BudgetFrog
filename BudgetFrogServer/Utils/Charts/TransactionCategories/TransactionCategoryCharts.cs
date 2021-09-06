@@ -1,21 +1,26 @@
-﻿using BudgetFrogServer.Models.Basis;
-using System.Collections.Generic;
+﻿using BudgetFrogServer.Models;
+using BudgetFrogServer.Models.Basis;
 
 namespace BudgetFrogServer.Utils.Charts.TransactionCategories
 {
     public class TransactionCategoryCharts
     {
-        private readonly List<TransactionCategory> _transactionCategories;
+        private readonly DB_Context _base_context;
+        private readonly DB_ExchangeRatesContext _ER_context;
 
-        public TransactionCategoryCharts(List<TransactionCategory> transactionCategories)
+        public TransactionCategoryCharts(DB_Context base_context, DB_ExchangeRatesContext ER_context)
         {
-            _transactionCategories = transactionCategories;
+            _base_context = base_context;
+            _ER_context = ER_context;
         }
 
+        public TransactionCategoryCharts(DB_Context base_context) : this(base_context, null) { }
+
         //TODO C:
-        public Chart BuildChart(int graphNumber)=> graphNumber switch
-            {
-                _ => new Chart()
-            };
+        public Chart BuildChart(int graphNumber, int userID, int lastDays) => graphNumber switch
+        {
+            1 => new Graph1(_base_context, userID).BuildChart(),
+            _ => new Chart()
+        };
     }
 }

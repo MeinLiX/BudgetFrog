@@ -79,7 +79,7 @@ namespace BudgetFrogServer.Controllers
         [HttpGet("graph/{graphNumber}/{days}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetBarGraph(int? graphNumber, int? days)
+        public IActionResult GetGraph(int? graphNumber, int? days)
         {
             try
             {

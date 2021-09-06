@@ -2,7 +2,7 @@
 
 namespace BudgetFrogServer.Models.Basis
 {
-    public class Chart
+    public class Chart//TODO: <T> where T : struct
     {
         public List<string> labels { get; set; } = new();
         public List<DataSet> datasets { get; set; } = new();

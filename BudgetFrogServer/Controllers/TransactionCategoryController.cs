@@ -90,18 +90,25 @@ namespace BudgetFrogServer.Controllers
             }
         }
 
-        [HttpGet("graph/{graphNumber}")]
+        [HttpGet("graph/{graphNumber}/{days}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status403Forbidden)]
-        public IActionResult GetGraph(int? graphNumber)
+        public IActionResult GetGraph(int? graphNumber, int? days)
         {
             try
             {
                 int userId = GetUserId() ?? throw new Exception("Some error... Contact support or try again.");
 
-                return new JsonResult(JsonSerialize.MessageText("A response to the request is being developed."))
+                TransactionCategoryCharts transactionCategoryCharts = new(_base_context);
+                Chart chart = transactionCategoryCharts.BuildChart(graphNumber ?? 1, userId, days ?? 0);
+
+                return new JsonResult(JsonSerialize.Data(
+                        new
+                        {
+                            graph = chart
+                        }))
                 {
-                    StatusCode = StatusCodes.Status403Forbidden
+                    StatusCode = StatusCodes.Status200OK
                 };
             }
             catch (Exception ex)
