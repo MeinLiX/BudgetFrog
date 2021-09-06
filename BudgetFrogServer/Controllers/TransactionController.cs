@@ -309,6 +309,20 @@ namespace BudgetFrogServer.Controllers
                 await _base_context.SaveChangesAsync();
                 #endregion
 
+
+
+                #region shear adjustment balance
+                var AnyTransactions = await _base_context.Transaction
+                                                    .Include(t => t.AppIdentityUser)
+                                                    .Where(t => t.AppIdentityUser.ID == userId)
+                                                    .AnyAsync();
+                if (!AnyTransactions)
+                {
+                    foundTransaction.AppIdentityUser.Balance = 0m;
+                    await _base_context.SaveChangesAsync();
+                }
+                #endregion
+
                 return new JsonResult(JsonSerialize.Data(
                        new
                        {
