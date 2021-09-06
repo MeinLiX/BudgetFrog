@@ -47,7 +47,7 @@ namespace BudgetFrogServer.Controllers
 
                 var user = _base_context.AppIdentityUser
                                           .Where(user => user.ID == userId)
-                                          .Select(user => new { user.ID, user.Email, user.FirstName, user.LastName, user.Balance, user.Currency })
+                                          .Select(user => new { user.ID, user.Email, user.FirstName, user.LastName, user.Balance, user.Currency, user.IsConfirmed })
                                           .FirstOrDefault();
                 if (user is null)
                 {
