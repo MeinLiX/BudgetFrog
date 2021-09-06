@@ -14,11 +14,11 @@ namespace BudgetFrogServer.Models.Basis
             public string backgroundColor { get; set; }
             public int borderWidth { get; set; }
             public bool fill { get; set; }
-            public List<int> data { get; set; }
+            public List<float> data { get; set; }
 
             public DataSet() { }
 
-            public DataSet(string type, string label, string backgroundColor, int borderWidth, bool fill, List<int> data = null)
+            public DataSet(string type, string label, string backgroundColor, int borderWidth, bool fill, List<float> data = null)
             {
                 this.type = type;
                 this.label = label;

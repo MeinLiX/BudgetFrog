@@ -84,28 +84,9 @@ namespace BudgetFrogServer.Controllers
             try
             {
                 int userId = GetUserId() ?? throw new Exception("Some error... Contact support or try again.");
-                int daysAge = days ?? 0;
-                List<Transaction> foundTransactions = daysAge switch
-                {
-                    <= 0 => _base_context.Transaction
-                                         .Include(t => t.TransactionCategory)
-                                         .Where(t => t.AppIdentityUser.ID == userId)
-                                         .ToList(),
 
-                    _ => _base_context.Transaction
-                                          .Include(t => t.TransactionCategory)
-                                          .Where(transaction =>
-                                              transaction.AppIdentityUser.ID == userId &&
-                                              (transaction.Date.AddDays(daysAge) >= DateTime.Now))
-                                          .ToList()
-                };
-
-                List<TransactionCategory> foundTransactionCategories = _base_context.TransactionCategory
-                                          .Where(tc => tc.AppIdentityUser.ID == userId)
-                                          .ToList();
-
-                TransactionCharts transactionCharts = new(foundTransactions, foundTransactionCategories);
-                Chart chart = transactionCharts.BuildChart(graphNumber ?? 1, daysAge);
+                TransactionCharts transactionCharts = new(_base_context, _ER_context);
+                Chart chart = transactionCharts.BuildChart(graphNumber ?? 1, userId, days ?? 0);
 
                 return new JsonResult(JsonSerialize.Data(
                         new

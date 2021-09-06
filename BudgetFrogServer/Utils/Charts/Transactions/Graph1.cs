@@ -1,34 +1,81 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
+using BudgetFrogServer.Models;
+using BudgetFrogServer.Models.Auth;
 using BudgetFrogServer.Models.Basis;
+using BudgetFrogServer.Models.ER_Basis;
 using BudgetFrogServer.Utils.Charts.interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace BudgetFrogServer.Utils.Charts.Transactions
 {
     class Graph1 : IChartBuildComponents
     {
-        private readonly List<Transaction> _transactions;
-        private readonly List<TransactionCategory> _transactionCategories;
-        public readonly int _lastDays;
+        private readonly DB_Context _base_context;
+        private readonly DB_ExchangeRatesContext _ER_context;
+
+        public readonly int userID;
+        public readonly int lastDays;
+
+        private List<Transaction> _transactions;
+        private List<TransactionCategory> _transactionCategories;
+        private AppIdentityUser _user;
+        private ExchangeRates _exchangeRates;
 
         public Chart LocalChart { get; set; }
 
-        public Graph1(List<Transaction> transactions, List<TransactionCategory> transactionCategories, int lastDays)
+        public Graph1(DB_Context base_context, DB_ExchangeRatesContext ER_context, int userID, int lastDays)
         {
-            _transactions = transactions;
-            _transactionCategories = transactionCategories;
-            _lastDays = lastDays;
+            _base_context = base_context;
+            _ER_context = ER_context;
+            this.userID = userID;
+            this.lastDays = lastDays;
+        }
+
+        public async Task InitialData()
+        {
+            Task<ExchangeRates> exchangeRatesTask = _ER_context.ExchangeRates
+                                                                 .Include(er => er.results)
+                                                                 .OrderByDescending(er => er.ID)
+                                                                 .FirstOrDefaultAsync();
+            _transactions = lastDays switch
+            {
+                <= 0 => _base_context.Transaction
+                                     .Include(t => t.TransactionCategory)
+                                     .Where(t => t.AppIdentityUser.ID == userID)
+                                     .ToList(),
+                _ => _base_context.Transaction
+                                      .Include(t => t.TransactionCategory)
+                                      .Where(transaction =>
+                                                transaction.AppIdentityUser.ID == userID &&
+                                                (transaction.Date.AddDays(lastDays) >= DateTime.Now)
+                                            )
+                                      .ToList()
+            };
+
+            _transactionCategories = _base_context.TransactionCategory
+                                      .Where(tc => tc.AppIdentityUser.ID == userID)
+                                      .ToList();
+
+            _user = await _base_context.AppIdentityUser.FirstAsync(u => u.ID == userID); ;
+            _exchangeRates = await exchangeRatesTask;
         }
 
         public Chart BuildChart()
         {
             LocalChart = new();
+            Task.WaitAll(new[] {
+                InitialData()
+            });
+
             LocalChart.labels.AddRange(GetLabels());
+
             _transactionCategories
                 .ForEach(tc => LocalChart.datasets.Add(new Chart.DataSet(
                     type: "bar",
-                    label: tc.Name,
+                    label: $"{tc.Name } ({_transactions.Where(t => t.TransactionCategoryID == tc.ID).Count()})",
                     backgroundColor: tc.Color,
                     borderWidth: 2,
                     fill: true,
@@ -37,7 +84,7 @@ namespace BudgetFrogServer.Utils.Charts.Transactions
 
             LocalChart.datasets.Add(new Chart.DataSet(
                     type: "line",
-                    label: "User balance",
+                    label: "balance",
                     backgroundColor: "rgba(17,140,79,0.1)",
                     borderWidth: 4,
                     fill: true,
@@ -46,34 +93,50 @@ namespace BudgetFrogServer.Utils.Charts.Transactions
             return LocalChart;
         }
 
-        //TODO:  exchange transaction balance to user currency and fix logic x)
-        private List<int> GetDataSetBarData(TransactionCategory transactionCategory)
+        private List<float> GetDataSetBarData(TransactionCategory transactionCategory) =>
+            LocalChart.labels
+                      .Select(labelDate =>
+                      {
+                          float balance = 0;
+                          var transactions = _transactions
+                                                    .Where(t => t.TransactionCategoryID == transactionCategory.ID
+                                                                && t.Date.ToString("MM/dd/yyyy") == labelDate)
+                                                    .ToList();
+                          //if (transactions.Any())
+                          transactions.ForEach(t =>
+                          {
+                              float toBalance = _exchangeRates.Convert(t.Currency, _user.Currency, (float)t.Balance);
+                              balance += (t.TransactionCategory.Income ?? true) ? toBalance : -toBalance;
+                          });
+                          return balance;
+                      }).ToList();
+
+        private List<float> GetDataSetLineData()
         {
-            List<int> data = new();
-            data.AddRange(Enumerable.Range(1, new Random().Next(_lastDays))
-                                    .Select(idx =>
-                                    {
-                                        int balance = decimal.ToInt32(_transactions.Where(t => $"{t:d}" == LocalChart.labels[idx] && t.TransactionCategoryID == transactionCategory.ID).Sum(t => t.Balance) ?? 0);
-                                        return (transactionCategory.Income ?? true) ? balance : -balance;
-                                    }));
+            List<float> data = new();
+            //(float)_user.Balance
+            LocalChart.labels
+                      //.Skip(1).ToList()
+                      .ForEach(labelDate =>
+                        {
+                            float lastBalance = data.Any() ? data[^1] : 0;
+                            var transactions = _transactions
+                                                    .Where(t => t.Date.ToString("MM/dd/yyyy") == labelDate)
+                                                    .ToList();
+                            transactions.ForEach(t =>
+                            {
+                                float toBalance = _exchangeRates.Convert(t.Currency, _user.Currency, (float)t.Balance);
+                                lastBalance += (t.TransactionCategory.Income ?? true) ? toBalance : -toBalance;
+                            });
+                            data.Add(lastBalance);
+                        });
+
+
             return data;
         }
 
-        //todo  :)
-        private List<int> GetDataSetLineData()
-        {
-            List<int> data = new();
-            data.AddRange(Enumerable.Range(1, new Random().Next(_lastDays - 1))
-                                    .Select(i => new Random().Next(-50, 50)));
-
-            int lastBalance = data[^1];
-            data.AddRange(Enumerable.Range(0, _lastDays - data.Count)
-                                    .Select(i => lastBalance));
-            return data;
-        }
-
-        private List<string> GetLabels() => Enumerable.Range(1, _lastDays)
-                                                      .Select(i => $"{DateTime.Today.AddDays(-i):d}")
+        private List<string> GetLabels() => Enumerable.Range(0, lastDays)
+                                                      .Select(i => $"{DateTime.Today.AddDays(-i):MM/dd/yyyy}")
                                                       .ToList();
     }
 }
