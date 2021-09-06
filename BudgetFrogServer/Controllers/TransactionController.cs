@@ -227,8 +227,8 @@ namespace BudgetFrogServer.Controllers
                 var transactionFound = await _base_context.Transaction
                                                    .Include(t => t.AppIdentityUser)
                                                    .FirstOrDefaultAsync(transactionQ => transactionQ.ID == transactionBODY.ID && transactionQ.AppIdentityUser.ID == userId);
-                if (transactionFound is null)
-                    throw new Exception("Transaction not found.");
+
+                _ = transactionFound ?? throw new Exception("Transaction not found.");
 
                 if (transactionFound == transactionBODY)
                     throw new Exception("Transaction already up.");
@@ -294,13 +294,7 @@ namespace BudgetFrogServer.Controllers
                                                 .FirstOrDefault(transaction => transaction.ID == id
                                                                  && transaction.AppIdentityUser.ID == userId);
 
-                if (foundTransaction is null)
-                {
-                    return new JsonResult(JsonSerialize.Data(null, "Transaction not found."))
-                    {
-                        StatusCode = StatusCodes.Status200OK
-                    };
-                }
+                _ = foundTransaction ?? throw new Exception("Transaction not found.");
 
                 #region User balance
                 var exchangeRates = await _ER_context.ExchangeRates
