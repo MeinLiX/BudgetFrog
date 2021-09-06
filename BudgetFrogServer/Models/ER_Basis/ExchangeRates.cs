@@ -30,7 +30,7 @@ namespace BudgetFrogServer.Models.ER_Basis
             if (from != @base && to == @base)
                 return 1 / dict[from];
 
-            return dict[from] / dict[to];
+            return dict[to] /dict[from] ;
         }
 
         public float Exchange(float amount, float rate) => amount * rate;
