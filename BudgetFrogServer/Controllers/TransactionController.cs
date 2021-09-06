@@ -1,7 +1,4 @@
-﻿using BudgetFrogServer.Models;
-using BudgetFrogServer.Models.Basis;
-using BudgetFrogServer.Utils;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +6,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
+using BudgetFrogServer.Models;
+using BudgetFrogServer.Models.Basis;
+using BudgetFrogServer.Utils;
+using BudgetFrogServer.Utils.Charts.Transactions;
 
 namespace BudgetFrogServer.Controllers
 {
@@ -31,12 +33,30 @@ namespace BudgetFrogServer.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult Get()
         {
+            return Get(null);
+        }
+
+        [HttpGet("{days}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult Get(int? days)
+        {
             try
             {
                 int userId = GetUserId() ?? throw new Exception("Some error... Contact support or try again.");
-                var foundTransactions = _base_context.Transaction
-                                          .Where(fc => fc.AppIdentityUser.ID == userId)
-                                          .ToList();
+                int daysAge = days ?? 0;
+                List<Transaction> foundTransactions = daysAge switch
+                {
+                    <= 0 => _base_context.Transaction
+                                         .Where(fc => fc.AppIdentityUser.ID == userId)
+                                         .ToList(),
+
+                    _ => _base_context.Transaction
+                                          .Where(transaction =>
+                                              transaction.AppIdentityUser.ID == userId &&
+                                              (transaction.Date.AddDays(daysAge) >= DateTime.Now))
+                                          .ToList()
+                };
 
                 return new JsonResult(JsonSerialize.Data(
                         new
@@ -55,21 +75,23 @@ namespace BudgetFrogServer.Controllers
                 };
             }
         }
-        [HttpGet("{id}")]
+
+        [HttpGet("graph/{graphNumber}/{days}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult Get(int id)
+        public IActionResult GetGraph(int? graphNumber, int? days)
         {
             try
             {
                 int userId = GetUserId() ?? throw new Exception("Some error... Contact support or try again.");
-                var foundTransaction = _base_context.Transaction
-                                          .FirstOrDefault(transaction => transaction.AppIdentityUser.ID == userId && transaction.ID == id);
+
+                TransactionCharts transactionCharts = new(_base_context, _ER_context);
+                Chart chart = transactionCharts.BuildChart(graphNumber ?? 1, userId, days ?? 0);
 
                 return new JsonResult(JsonSerialize.Data(
                         new
                         {
-                            transaction = foundTransaction
+                            graph = chart
                         }))
                 {
                     StatusCode = StatusCodes.Status200OK
@@ -94,6 +116,7 @@ namespace BudgetFrogServer.Controllers
                 int userId = GetUserId() ?? throw new Exception("Some error... Contact support or try again.");
                 var foundTransactions = _base_context.Transaction
                                           .Include(transaction => transaction.TransactionCategory)
+                                          .Include(transaction => transaction.AppIdentityUser)
                                           .Where(transaction => transaction.AppIdentityUser.ID == userId)
                                           .ToList();
 
@@ -204,8 +227,8 @@ namespace BudgetFrogServer.Controllers
                 var transactionFound = await _base_context.Transaction
                                                    .Include(t => t.AppIdentityUser)
                                                    .FirstOrDefaultAsync(transactionQ => transactionQ.ID == transactionBODY.ID && transactionQ.AppIdentityUser.ID == userId);
-                if (transactionFound is null)
-                    throw new Exception("Transaction not found.");
+
+                _ = transactionFound ?? throw new Exception("Transaction not found.");
 
                 if (transactionFound == transactionBODY)
                     throw new Exception("Transaction already up.");
@@ -271,13 +294,7 @@ namespace BudgetFrogServer.Controllers
                                                 .FirstOrDefault(transaction => transaction.ID == id
                                                                  && transaction.AppIdentityUser.ID == userId);
 
-                if (foundTransaction is null)
-                {
-                    return new JsonResult(JsonSerialize.Data(null, "Transaction not found."))
-                    {
-                        StatusCode = StatusCodes.Status200OK
-                    };
-                }
+                _ = foundTransaction ?? throw new Exception("Transaction not found.");
 
                 #region User balance
                 var exchangeRates = await _ER_context.ExchangeRates
@@ -290,6 +307,20 @@ namespace BudgetFrogServer.Controllers
                 #endregion
                 _base_context.Transaction.Remove(foundTransaction);
                 await _base_context.SaveChangesAsync();
+                #endregion
+
+
+
+                #region shear adjustment balance
+                var AnyTransactions = await _base_context.Transaction
+                                                    .Include(t => t.AppIdentityUser)
+                                                    .Where(t => t.AppIdentityUser.ID == userId)
+                                                    .AnyAsync();
+                if (!AnyTransactions)
+                {
+                    foundTransaction.AppIdentityUser.Balance = 0m;
+                    await _base_context.SaveChangesAsync();
+                }
                 #endregion
 
                 return new JsonResult(JsonSerialize.Data(

@@ -11,7 +11,7 @@ namespace BudgetFrogServer.Models.Auth
         public decimal? Balance { get; set; } = .00m;
 
         [Required]
-        [RegularExpression("(USD)|(EUR)|(UAH)|(RUB)", ErrorMessage = "Invalid currency!")]
+        [RegularExpression("USD|EUR|UAH|RUB", ErrorMessage = "Invalid currency!")]
         public string Currency { get; set; } = "USD";
 
         [Required]
@@ -31,5 +31,7 @@ namespace BudgetFrogServer.Models.Auth
         [MaxLength(128, ErrorMessage = "The maximum length of the password field is 128")]
         [MinLength(1, ErrorMessage = "The minimum length of the password field is 1")]
         public string Password { get; set; } //like a simple passwords
+
+        public bool IsConfirmed { get; set; } = false;
     }
 }

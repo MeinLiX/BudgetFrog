@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using BudgetFrogServer.Services;
 
 using BudgetFrogServer.Models;
 using BudgetFrogServer.Models.Auth;
@@ -22,11 +23,16 @@ namespace BudgetFrogServer.Controllers
     {
         private readonly DB_Context _base_context;
         private readonly DB_ExchangeRatesContext _ER_context;
+        private readonly EmailConfirmationService _emailConfirmationService;
 
-        public IdentityUsersController(DB_Context base_context, DB_ExchangeRatesContext ER_context)
+        public IdentityUsersController(
+            DB_Context base_context,
+            DB_ExchangeRatesContext ER_context,
+            EmailConfirmationService emailConfirmationService)
         {
             _base_context = base_context;
             _ER_context = ER_context;
+            _emailConfirmationService = emailConfirmationService;
         }
 
         [HttpGet("me")]
@@ -41,7 +47,7 @@ namespace BudgetFrogServer.Controllers
 
                 var user = _base_context.AppIdentityUser
                                           .Where(user => user.ID == userId)
-                                          .Select(user => new { user.ID, user.Email, user.FirstName, user.LastName, user.Balance, user.Currency })
+                                          .Select(user => new { user.ID, user.Email, user.FirstName, user.LastName, user.Balance, user.Currency, user.IsConfirmed })
                                           .FirstOrDefault();
                 if (user is null)
                 {
@@ -77,7 +83,7 @@ namespace BudgetFrogServer.Controllers
         {
             try
             {
-                if (!Regex.IsMatch(currency, "(USD)|(EUR)|(UAH)|(RUB)"))
+                if (!Regex.IsMatch(currency, "USD|EUR|UAH|RUB"))
                 {
                     throw new Exception("Invalid currency!");
                 }
@@ -201,54 +207,63 @@ namespace BudgetFrogServer.Controllers
                     Password = CryptoHash.GetHashValue(authUser.Password),
                     FirstName = authUser?.FirstName,
                     LastName = authUser?.LastName
+
                 };
                 _base_context.AppIdentityUser.Add(newIdentityUser);
                 await _base_context.SaveChangesAsync();
                 #endregion
 
                 #region Adding default TransactionCategories for new user
+                // TODO: Make json config for default transaction category
                 _base_context.TransactionCategory.AddRange(new[] {
                     new TransactionCategory()
                     {
                         Name = "Housing",
                         Income = false,
-                        AppIdentityUser = newIdentityUser
+                        AppIdentityUser = newIdentityUser,
+                        Color = "#9ef293",
                     },
                     new TransactionCategory()
                     {
                         Name = "Transport",
                         Income = false,
-                        AppIdentityUser = newIdentityUser
+                        AppIdentityUser = newIdentityUser,
+                        Color = "#93eaed"
                     },
                     new TransactionCategory()
                     {
                         Name = "Food",
                         Income = false,
-                        AppIdentityUser = newIdentityUser
+                        AppIdentityUser = newIdentityUser,
+                        Color = "#db3d47"
                     },
                     new TransactionCategory()
                     {
                         Name = "Utilities",
                         Income = false,
-                        AppIdentityUser = newIdentityUser
+                        AppIdentityUser = newIdentityUser,
+                        Color = "#eaa7ef"
                     },
                     new TransactionCategory()
                     {
                         Name = "Entertainment",
                         Income = false,
-                        AppIdentityUser = newIdentityUser
+                        AppIdentityUser = newIdentityUser,
+                        Color = "#ff33a0"
                     },
                     new TransactionCategory()
                     {
                         Name = "Scholarship",
                         Income = true,
-                        AppIdentityUser = newIdentityUser
+                        AppIdentityUser = newIdentityUser,
+                        Color = "#5533ff"
                     },
                     new TransactionCategory()
                     {
                         Name = "Salary",
                         Income = true,
-                        AppIdentityUser = newIdentityUser
+                        AppIdentityUser = newIdentityUser,
+                        Color = "#004cff"
                     }
                 });
 
@@ -259,6 +274,8 @@ namespace BudgetFrogServer.Controllers
                 if (identity is null)
                     throw new Exception("Some error... Contact support or try again.");
                 User.AddIdentity(identity);
+
+                // var key = _emailConfirmationService.AddConfiramtion(authUser); //TODO: EmailSending should not throw exceptions
 
                 return new JsonResult(JsonSerialize.Data(
                     new
@@ -276,6 +293,21 @@ namespace BudgetFrogServer.Controllers
                 {
                     StatusCode = StatusCodes.Status400BadRequest
                 };
+            }
+        }
+
+        [HttpGet("confirm")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> ConfirmEmail([FromQuery] string key)
+        {
+            if (_emailConfirmationService.Confirm(key))
+            {
+                return Ok();
+            }
+            else
+            {
+                return new BadRequestResult();
             }
         }
 

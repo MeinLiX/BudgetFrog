@@ -13,5 +13,9 @@ namespace BudgetFrogServer.Models.Basis
 
         [Required]
         public bool? Income { get; set; } = false;
+
+        [Required]
+        [RegularExpression("^#(?:[0-9a-fA-F]{3}){1,2}$", ErrorMessage = "Invalid transaction category color string!")]
+        public string Color { get; set; } = "#000000";
     }
 }

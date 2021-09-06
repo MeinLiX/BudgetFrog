@@ -2,15 +2,13 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System;
-using System.Text.Json;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 using BudgetFrogServer.Models;
 using BudgetFrogServer.Models.Basis;
 using BudgetFrogServer.Utils;
-
+using BudgetFrogServer.Utils.Charts.TransactionCategories;
 
 namespace BudgetFrogServer.Controllers
 {
@@ -92,6 +90,36 @@ namespace BudgetFrogServer.Controllers
             }
         }
 
+        [HttpGet("graph/{graphNumber}/{days}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult GetGraph(int? graphNumber, int? days)
+        {
+            try
+            {
+                int userId = GetUserId() ?? throw new Exception("Some error... Contact support or try again.");
+
+                TransactionCategoryCharts transactionCategoryCharts = new(_base_context);
+                Chart chart = transactionCategoryCharts.BuildChart(graphNumber ?? 1, userId, days ?? 0);
+
+                return new JsonResult(JsonSerialize.Data(
+                        new
+                        {
+                            graph = chart
+                        }))
+                {
+                    StatusCode = StatusCodes.Status200OK
+                };
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(JsonSerialize.ErrorMessageText(ex.Message))
+                {
+                    StatusCode = StatusCodes.Status400BadRequest
+                };
+            }
+        }
+
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -106,6 +134,7 @@ namespace BudgetFrogServer.Controllers
                 {
                     Name = transactionCategory?.Name,
                     Income = transactionCategory.Income,
+                    Color = transactionCategory.Color,
                     AppIdentityUser = _base_context.AppIdentityUser.FirstOrDefault(u => u.ID == userId),
                 };
                 _base_context.TransactionCategory.Add(tc);

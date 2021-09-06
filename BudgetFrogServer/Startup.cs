@@ -41,11 +41,18 @@ namespace BudgetFrogServer
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer(jwtBearerOptions => jwtBearerOptions.TokenValidationParameters = AuthOptions.TokenValidationParameters);
 
+            services.AddTransient<EmailConfirmationService>();
+
             services.AddControllers()
+                    .AddJsonOptions(options =>
+                    {
+                        options.JsonSerializerOptions.Converters.Add(new DateTimeConverter());
+                    })
                     .ConfigureApiBehaviorOptions(options =>
                     {
                         options.InvalidModelStateResponseFactory = actionContext => new BadRequestObjectResult(new ApiBehavior().ErrorFormatResponseValidation(actionContext.ModelState));
                     });
+
 
             //services.AddHostedService<ExchangeRatesUpdater>(); //TOKEN EXPIRED
         }
