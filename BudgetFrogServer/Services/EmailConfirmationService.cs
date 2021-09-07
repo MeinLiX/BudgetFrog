@@ -6,6 +6,7 @@ using BudgetFrogServer.Models;
 using BudgetFrogServer.Models.Auth;
 using BudgetFrogServer.Utils;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace BudgetFrogServer.Services
 {
@@ -19,11 +20,14 @@ namespace BudgetFrogServer.Services
 
         private readonly IConfiguration _configuration;
 
-        public EmailConfirmationService(DB_Context base_context, IConfiguration configuration)
+        private readonly ILogger<EmailConfirmationService> _logger;
+
+        public EmailConfirmationService(DB_Context base_context, IConfiguration configuration, ILogger<EmailConfirmationService> logger)
         {
             _base_context = base_context;
             _emailSender = new EmailSender(configuration);
             _configuration = configuration;
+            _logger = logger;
         }
 
         public string AddConfiramtion(AppIdentityUser user)
@@ -38,14 +42,21 @@ namespace BudgetFrogServer.Services
             }
             else
             {
-                _base_context.EmailConfirmationKey.Add(new Models.Auth.EmailConfirmationKey
+                _base_context.EmailConfirmationKey.Add(new EmailConfirmationKey
                 {
                     Key = randomKey,
                     Email = user.Email,
                 });
             }
             _base_context.SaveChanges();
-            SendEmail(randomKey, user);
+            try
+            {
+                SendEmail(randomKey, user);
+            }
+            catch(Exception e)
+            {
+                _logger.LogError(e.Message);
+            }
             return randomKey;
         }
 

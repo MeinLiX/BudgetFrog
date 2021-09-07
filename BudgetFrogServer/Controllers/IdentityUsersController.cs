@@ -275,7 +275,7 @@ namespace BudgetFrogServer.Controllers
                     throw new Exception("Some error... Contact support or try again.");
                 User.AddIdentity(identity);
 
-                // var key = _emailConfirmationService.AddConfiramtion(authUser); //TODO: EmailSending should not throw exceptions
+                _emailConfirmationService.AddConfiramtion(authUser);
 
                 return new JsonResult(JsonSerialize.Data(
                     new
