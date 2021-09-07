@@ -251,7 +251,7 @@ namespace BudgetFrogServer.Controllers
                 transactionFound.RecepitBinary = (RecepitBinary is not null) ? new byte[RecepitBinary.Length] : transactionFound?.RecepitBinary;
                 transactionFound.RecepitAvailable = RecepitBinary is not null || transactionFound.RecepitAvailable;
 
-                if (transactionFound.RecepitBinary is not null)
+                if (RecepitBinary is not null)
                     RecepitBinary.OpenReadStream().Read(transactionFound.RecepitBinary);
 
                 _base_context.Transaction.Update(transactionFound);
