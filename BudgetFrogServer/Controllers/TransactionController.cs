@@ -177,10 +177,11 @@ namespace BudgetFrogServer.Controllers
                     Notes = transaction.Notes,
                     TransactionCategory = (await transactionCategory) ?? throw new Exception("Transaction category not found."),
                     AppIdentityUser = _base_context.AppIdentityUser.FirstOrDefault(u => u.ID == userId),
-                    RecepitBinary = new byte[RecepitBinary.Length]
+                    RecepitBinary = (RecepitBinary is not null) ? new byte[RecepitBinary.Length] : null
                 };
 
-                RecepitBinary.OpenReadStream().Read(newTransaction.RecepitBinary);
+                if (RecepitBinary is not null)
+                    RecepitBinary.OpenReadStream().Read(newTransaction.RecepitBinary);
 
                 _base_context.Transaction.Add(newTransaction);
 
