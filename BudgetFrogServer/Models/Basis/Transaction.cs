@@ -31,6 +31,8 @@ namespace BudgetFrogServer.Models.Basis
         [JsonIgnore]
         public byte[] RecepitBinary { get; set; }
 
+        public bool RecepitAvailable { get; set; } = false;
+
         [Required]
         public int? TransactionCategoryID { get; set; }
 

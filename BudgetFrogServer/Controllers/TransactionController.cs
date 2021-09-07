@@ -177,7 +177,8 @@ namespace BudgetFrogServer.Controllers
                     Notes = transaction.Notes,
                     TransactionCategory = (await transactionCategory) ?? throw new Exception("Transaction category not found."),
                     AppIdentityUser = _base_context.AppIdentityUser.FirstOrDefault(u => u.ID == userId),
-                    RecepitBinary = (RecepitBinary is not null) ? new byte[RecepitBinary.Length] : null
+                    RecepitBinary = (RecepitBinary is not null) ? new byte[RecepitBinary.Length] : null,
+                    RecepitAvailable = RecepitBinary is not null
                 };
 
                 if (RecepitBinary is not null)
@@ -221,7 +222,7 @@ namespace BudgetFrogServer.Controllers
         [HttpPatch]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Patch([FromBody] Transaction transactionBODY)
+        public async Task<IActionResult> Patch([FromForm] IFormFile RecepitBinary, [FromBody] Transaction transactionBODY)
         {
             try
             {
@@ -247,7 +248,11 @@ namespace BudgetFrogServer.Controllers
                 transactionFound.Currency = transactionBODY.Currency;
                 transactionFound.Notes = transactionBODY.Notes;
                 transactionFound.TransactionCategory = (await transactionCategory) ?? throw new Exception("Transaction category not found.");
-                transactionFound.RecepitBinary = transactionBODY?.RecepitBinary;
+                transactionFound.RecepitBinary = (RecepitBinary is not null) ? new byte[RecepitBinary.Length] : transactionFound?.RecepitBinary;
+                transactionFound.RecepitAvailable = RecepitBinary is not null || transactionFound.RecepitAvailable;
+
+                if (transactionFound.RecepitBinary is not null)
+                    RecepitBinary.OpenReadStream().Read(transactionFound.RecepitBinary);
 
                 _base_context.Transaction.Update(transactionFound);
 
@@ -357,7 +362,7 @@ namespace BudgetFrogServer.Controllers
         [HttpGet("transaction-file/{transaction_id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> GetFile(int transaction_id)
+        public IActionResult GetFile(int transaction_id)
         {
             try
             {
