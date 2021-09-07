@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Web;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,6 +12,8 @@ using BudgetFrogServer.Models;
 using BudgetFrogServer.Models.Basis;
 using BudgetFrogServer.Utils;
 using BudgetFrogServer.Utils.Charts.Transactions;
+using System.IO;
+using System.Text;
 
 namespace BudgetFrogServer.Controllers
 {
@@ -154,7 +157,7 @@ namespace BudgetFrogServer.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Post([FromForm] Transaction transaction)
+        public async Task<IActionResult> Post([FromForm] IFormFile RecepitBinary, [FromForm] Transaction transaction)
         {
             try
             {
@@ -173,9 +176,11 @@ namespace BudgetFrogServer.Controllers
                     Currency = transaction.Currency,
                     Notes = transaction.Notes,
                     TransactionCategory = (await transactionCategory) ?? throw new Exception("Transaction category not found."),
-                    RecepitBinary = transaction?.RecepitBinary,
                     AppIdentityUser = _base_context.AppIdentityUser.FirstOrDefault(u => u.ID == userId),
+                    RecepitBinary = new byte[RecepitBinary.Length]
                 };
+
+                RecepitBinary.OpenReadStream().Read(newTransaction.RecepitBinary);
 
                 _base_context.Transaction.Add(newTransaction);
 
@@ -338,6 +343,28 @@ namespace BudgetFrogServer.Controllers
                 {
                     StatusCode = StatusCodes.Status200OK
                 };
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(JsonSerialize.ErrorMessageText(ex.Message))
+                {
+                    StatusCode = StatusCodes.Status400BadRequest
+                };
+            }
+        }
+
+        [HttpGet("transaction-file/{transaction_id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> GetFile(int transaction_id)
+        {
+            try
+            {
+                int userId = GetUserId() ?? throw new Exception("Some error... Contact support or try again.");
+                var transaction = _base_context.Transaction.FirstOrDefault(t => t.ID == transaction_id);
+                _ = transaction ?? throw new Exception("Transaction not found.");
+                return File(transaction.RecepitBinary,
+                     "image/png");
             }
             catch (Exception ex)
             {
