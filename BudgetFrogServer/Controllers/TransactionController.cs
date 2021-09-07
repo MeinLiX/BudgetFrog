@@ -154,7 +154,7 @@ namespace BudgetFrogServer.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Post([FromBody] Transaction transaction)
+        public async Task<IActionResult> Post([FromForm] Transaction transaction)
         {
             try
             {
@@ -173,7 +173,7 @@ namespace BudgetFrogServer.Controllers
                     Currency = transaction.Currency,
                     Notes = transaction.Notes,
                     TransactionCategory = (await transactionCategory) ?? throw new Exception("Transaction category not found."),
-                    ReceiptBase64 = transaction?.ReceiptBase64,
+                    RecepitBinary = transaction?.RecepitBinary,
                     AppIdentityUser = _base_context.AppIdentityUser.FirstOrDefault(u => u.ID == userId),
                 };
 
@@ -241,7 +241,7 @@ namespace BudgetFrogServer.Controllers
                 transactionFound.Currency = transactionBODY.Currency;
                 transactionFound.Notes = transactionBODY.Notes;
                 transactionFound.TransactionCategory = (await transactionCategory) ?? throw new Exception("Transaction category not found.");
-                transactionFound.ReceiptBase64 = transactionBODY?.ReceiptBase64;
+                transactionFound.RecepitBinary = transactionBODY?.RecepitBinary;
 
                 _base_context.Transaction.Update(transactionFound);
 

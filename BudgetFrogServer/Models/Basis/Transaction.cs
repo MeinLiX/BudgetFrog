@@ -26,7 +26,7 @@ namespace BudgetFrogServer.Models.Basis
         public string Notes { get; set; }
 
         [MaxLength]
-        public string ReceiptBase64 { get; set; }
+        public string RecepitBinary { get; set; }
 
         [Required]
         public int? TransactionCategoryID { get; set; }
