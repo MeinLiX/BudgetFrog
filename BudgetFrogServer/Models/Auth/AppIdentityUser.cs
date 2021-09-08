@@ -1,5 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using BudgetFrogServer.Models.Common;
 
 namespace BudgetFrogServer.Models.Auth
@@ -33,5 +35,8 @@ namespace BudgetFrogServer.Models.Auth
         public string Password { get; set; } //like a simple passwords
 
         public bool IsConfirmed { get; set; } = false;
+
+        [JsonIgnore]
+        public Guid ExternalToken { get; set; } = Guid.NewGuid();
     }
 }

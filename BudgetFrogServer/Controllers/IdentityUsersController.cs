@@ -35,6 +35,109 @@ namespace BudgetFrogServer.Controllers
             _emailConfirmationService = emailConfirmationService;
         }
 
+        #region external-token
+        [HttpGet("external-token")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult GetToken()
+        {
+            try
+            {
+                int userId = GetUserId() ?? throw new Exception("Some error... Contact support or try again.");
+                var user = _base_context.AppIdentityUser
+                                         .FirstOrDefault(user => user.ID == userId);
+                _ = user ?? throw new Exception("Some error... Contact support or try again.");
+
+                return new JsonResult(JsonSerialize.Data(
+                        new
+                        {
+                            user.ExternalToken
+                        }))
+                {
+                    StatusCode = StatusCodes.Status200OK
+                };
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(JsonSerialize.ErrorMessageText(ex.Message))
+                {
+                    StatusCode = StatusCodes.Status400BadRequest
+                };
+            }
+        }
+
+        [HttpGet("external-token/{ExternalToken}")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult GetToken(string ExternalToken)
+        {
+            try
+            {
+                int userId = GetUserId() ?? throw new Exception("Some error... Contact support or try again.");
+                var user = _base_context.AppIdentityUser
+                                         .FirstOrDefault(user => user.ID == userId);
+
+                _ = user ?? throw new Exception("Some error... Contact support or try again.");
+
+                if (user.ExternalToken.ToString() != ExternalToken) throw new Exception("Token is not valid.");
+
+                return new JsonResult(JsonSerialize.MessageText(
+                       message: "Token is valid."
+                       ))
+                {
+                    StatusCode = StatusCodes.Status200OK
+                };
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(JsonSerialize.ErrorMessageText(ex.Message))
+                {
+                    StatusCode = StatusCodes.Status400BadRequest
+                };
+            }
+        }
+
+        [HttpPut("external-token")]
+        [Authorize]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult PutToken()
+        {
+            try
+            {
+                int userId = GetUserId() ?? throw new Exception("Some error... Contact support or try again.");
+                var user = _base_context.AppIdentityUser
+                                         .FirstOrDefault(user => user.ID == userId);
+                _ = user ?? throw new Exception("Some error... Contact support or try again.");
+
+                user.ExternalToken = Guid.NewGuid();
+
+                _base_context.SaveChanges();
+
+                return new JsonResult(JsonSerialize.Data(
+                        data: new
+                        {
+                            user.ExternalToken
+                        },
+                        message: "Token is updated."
+                        ))
+                {
+                    StatusCode = StatusCodes.Status200OK
+                };
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(JsonSerialize.ErrorMessageText(ex.Message))
+                {
+                    StatusCode = StatusCodes.Status400BadRequest
+                };
+            }
+        }
+        #endregion
+
+        #region Addition requests
         [HttpGet("me")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -134,7 +237,9 @@ namespace BudgetFrogServer.Controllers
                 };
             }
         }
+        #endregion
 
+        #region auth
         /// <summary>
         /// User authorization.
         /// </summary>
@@ -295,7 +400,9 @@ namespace BudgetFrogServer.Controllers
                 };
             }
         }
+        #endregion
 
+        #region email
         [HttpGet("confirm")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -310,7 +417,9 @@ namespace BudgetFrogServer.Controllers
                 return new BadRequestResult();
             }
         }
+        #endregion
 
+        #region private FN
         /// <summary>
         /// TOTAL SECRET, SORRY!
         /// </summary>
@@ -355,5 +464,6 @@ namespace BudgetFrogServer.Controllers
 
             return null;
         }
+        #endregion
     }
 }
