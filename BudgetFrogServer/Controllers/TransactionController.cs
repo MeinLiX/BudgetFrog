@@ -168,7 +168,7 @@ namespace BudgetFrogServer.Controllers
                     throw new Exception("Invalid date!");
 
                 var transactionCategory = _base_context.TransactionCategory.FirstOrDefaultAsync(tc => tc.ID == transaction.TransactionCategoryID && tc.AppIdentityUser.ID == userId);
-
+                if (RecepitBinary is not null && !RecepitBinary.ContentType.StartsWith("image")) throw new Exception("Invalid file type");
                 var newTransaction = new Transaction
                 {
                     Balance = transaction.Balance,
@@ -230,7 +230,7 @@ namespace BudgetFrogServer.Controllers
                 #region Trying to add a new Transaction to the database
                 if (!transactionBODY.IsValidDate())
                     throw new Exception("Invalid date!");
-
+                if (RecepitBinary is not null && !RecepitBinary.ContentType.StartsWith("image")) throw new Exception("Invalid file type");
                 var transactionFound = await _base_context.Transaction
                                                    .Include(t => t.AppIdentityUser)
                                                    .FirstOrDefaultAsync(transactionQ => transactionQ.ID == transactionBODY.ID && transactionQ.AppIdentityUser.ID == userId);
