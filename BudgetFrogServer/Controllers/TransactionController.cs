@@ -167,8 +167,10 @@ namespace BudgetFrogServer.Controllers
                 if (!transaction.IsValidDate())
                     throw new Exception("Invalid date!");
 
-                var transactionCategory = _base_context.TransactionCategory.FirstOrDefaultAsync(tc => tc.ID == transaction.TransactionCategoryID && tc.AppIdentityUser.ID == userId);
                 if (RecepitBinary is not null && !RecepitBinary.ContentType.StartsWith("image")) throw new Exception("Invalid file type");
+
+                var transactionCategory = _base_context.TransactionCategory.FirstOrDefaultAsync(tc => tc.ID == transaction.TransactionCategoryID && tc.AppIdentityUser.ID == userId);
+
                 var newTransaction = new Transaction
                 {
                     Balance = transaction.Balance,
@@ -222,7 +224,7 @@ namespace BudgetFrogServer.Controllers
         [HttpPatch]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Patch([FromForm] IFormFile RecepitBinary, [FromBody] Transaction transactionBODY)
+        public async Task<IActionResult> Patch([FromForm] IFormFile RecepitBinary, [FromForm] Transaction transactionBODY)
         {
             try
             {
@@ -230,7 +232,9 @@ namespace BudgetFrogServer.Controllers
                 #region Trying to add a new Transaction to the database
                 if (!transactionBODY.IsValidDate())
                     throw new Exception("Invalid date!");
+
                 if (RecepitBinary is not null && !RecepitBinary.ContentType.StartsWith("image")) throw new Exception("Invalid file type");
+
                 var transactionFound = await _base_context.Transaction
                                                    .Include(t => t.AppIdentityUser)
                                                    .FirstOrDefaultAsync(transactionQ => transactionQ.ID == transactionBODY.ID && transactionQ.AppIdentityUser.ID == userId);
