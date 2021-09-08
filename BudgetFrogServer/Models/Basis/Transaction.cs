@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Web;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using BudgetFrogServer.Models.Common;
+using System.IO;
 
 namespace BudgetFrogServer.Models.Basis
 {
@@ -26,7 +28,10 @@ namespace BudgetFrogServer.Models.Basis
         public string Notes { get; set; }
 
         [MaxLength]
-        public string ReceiptBase64 { get; set; }
+        [JsonIgnore]
+        public byte[] RecepitBinary { get; set; }
+
+        public bool RecepitAvailable { get; set; } = false;
 
         [Required]
         public int? TransactionCategoryID { get; set; }

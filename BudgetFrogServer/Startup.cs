@@ -69,8 +69,8 @@ namespace BudgetFrogServer
                     sb.Append($"Time: {DateTime.Now:G}{Environment.NewLine}" +
                               $"URI: {context.Request.Host}{context.Request.Path}{Environment.NewLine}" +
                               $"Body: {Environment.NewLine}");
-
-                    var bodyContext = "";
+                    const int MAX_SIZE = 256;
+                    char[] bodyContext = new char[MAX_SIZE];
                     context.Request.EnableBuffering();
                     using (StreamReader reader = new(context.Request.Body,
                                                      encoding: Encoding.UTF8,
@@ -78,8 +78,8 @@ namespace BudgetFrogServer
                                                      bufferSize: 1024,
                                                      leaveOpen: true))
                     {
-                        bodyContext = await reader.ReadToEndAsync();
-                        sb.Append(bodyContext + Environment.NewLine);
+                        await reader.ReadBlockAsync(bodyContext, 0, MAX_SIZE - 1);
+                        sb.Append(new string(bodyContext) + Environment.NewLine);
                     }
                     context.Request.Body.Position = 0;
                     logger.LogInformation(sb.ToString());
