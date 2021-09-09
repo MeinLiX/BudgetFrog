@@ -1,8 +1,10 @@
 ﻿using BudgetFrogTelegramBot.Models.BudgetFrogTGdb;
+using BudgetFrogTelegramBot.Models.Response;
 using BudgetFrogTelegramBot.Utils.DB.BudgetFrogTG;
 using BudgetFrogTelegramBot.Utils.RequestClient;
 using System;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Telegram.Bot;
@@ -67,7 +69,7 @@ namespace BudgetFrogTelegramBot.Handlers
             {
                 await (message.Text.Split(' ').First() switch
                 {
-                    "/transaction" => ShowTransactions(botClient, message, user),
+                    "/transactions" => ShowTransactions(botClient, message, user),
                     "/categories" => ShowCategories(botClient, message, user),
                     "/token" => SetToken(botClient, message, user),
                     _ => Usage(botClient, message)
@@ -78,13 +80,20 @@ namespace BudgetFrogTelegramBot.Handlers
             static async Task<Message> ShowTransactions(ITelegramBotClient botClient, Message message, Models.BudgetFrogTGdb.User user)
             {
                 await UserCheck(botClient, message, user);
+                R_Transaction.Data transactionsData = await Client.GetTransactions(user.ExternalToken);
+                StringBuilder transactionsListMessage = new();
+                foreach (R_Transaction.Transaction t in transactionsData.transactions)
+                    transactionsListMessage.Append($"{t.transactionCategory.name}\t|{(t.transactionCategory.income ? "+" : "-")}{t.balance}({t.currency})|\t{t.date}\n");
+
                 return await botClient.SendTextMessageAsync(chatId: message.Chat.Id,
-                                                            text: "Transactions...");
+                                                            text: "Transactions:\n" + transactionsListMessage.ToString());
             }
 
             static async Task<Message> ShowCategories(ITelegramBotClient botClient, Message message, Models.BudgetFrogTGdb.User user)
             {
                 await UserCheck(botClient, message, user);
+
+
                 return await botClient.SendTextMessageAsync(chatId: message.Chat.Id,
                                                             text: "Categories...");
             }
@@ -137,7 +146,7 @@ namespace BudgetFrogTelegramBot.Handlers
                                                             text: "Token expired.\rRefresh your token.\nUse /token");
                         throw new Exception($"[{message.From.Username}] Token expired.");
                     }
-                } 
+                }
                 catch { throw; }
             }
 

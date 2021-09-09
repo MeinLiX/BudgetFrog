@@ -22,7 +22,7 @@
             public string notes { get; set; }
             public bool recepitAvailable { get; set; }
             public int transactionCategoryID { get; set; }
-            public object transactionCategory { get; set; }
+            public R_Transactioncategory.Transactioncategory transactionCategory { get; set; }
             public int id { get; set; }
         }
     }
