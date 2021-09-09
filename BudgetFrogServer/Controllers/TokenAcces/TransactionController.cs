@@ -6,6 +6,7 @@ using System.Linq;
 using BudgetFrogServer.Models;
 using BudgetFrogServer.Models.Basis;
 using BudgetFrogServer.Utils;
+using Microsoft.EntityFrameworkCore;
 
 namespace BudgetFrogServer.Controllers.TokenAcces
 {
@@ -30,6 +31,7 @@ namespace BudgetFrogServer.Controllers.TokenAcces
             try
             {
                 List<Transaction> foundTransactions = _base_context.Transaction
+                                         .Include(t=>t.TransactionCategory)
                                          .Where(fc => fc.AppIdentityUser.ExternalToken.ToString() == external_token)
                                          .ToList();
 
