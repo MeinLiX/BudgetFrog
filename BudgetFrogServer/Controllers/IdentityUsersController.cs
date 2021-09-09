@@ -74,13 +74,10 @@ namespace BudgetFrogServer.Controllers
         {
             try
             {
-                int userId = GetUserId() ?? throw new Exception("Some error... Contact support or try again.");
                 var user = _base_context.AppIdentityUser
-                                         .FirstOrDefault(user => user.ID == userId);
+                                         .FirstOrDefault(user => user.ExternalToken.ToString() == external_token);
 
-                _ = user ?? throw new Exception("Some error... Contact support or try again.");
-
-                if (user.ExternalToken.ToString() != external_token) throw new Exception("Token is not valid.");
+                _ = user ?? throw new Exception("Token is not valid.");
 
                 return new JsonResult(JsonSerialize.MessageText(
                        message: "Token is valid."
