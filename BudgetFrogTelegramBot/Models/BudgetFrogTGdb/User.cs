@@ -8,7 +8,7 @@ namespace BudgetFrogTelegramBot.Models.BudgetFrogTGdb
     {
         [Key]
         [Required]
-        public int ID { get; set; }
+        public long ID { get; set; }
 
         [Required]
         public Guid ExternalToken { get; set; } = new Guid(); //like "0000.0000.0000.0000"
