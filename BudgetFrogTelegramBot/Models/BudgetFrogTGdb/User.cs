@@ -18,15 +18,15 @@ namespace BudgetFrogTelegramBot.Models.BudgetFrogTGdb
 
         public User() { }
 
-        public User(int iD)
+        public User(long iD)
             : this(iD, (int)UserState.Default)
         { }
 
-        public User(int iD, int state) 
+        public User(long iD, int state) 
             : this(iD, new Guid(), state) 
         { }
 
-        public User(int iD, Guid externalToken, int state)
+        public User(long iD, Guid externalToken, int state)
         {
             ID = iD;
             ExternalToken = externalToken;

@@ -1,4 +1,7 @@
-﻿using System;
+﻿using BudgetFrogTelegramBot.Models.BudgetFrogTGdb;
+using BudgetFrogTelegramBot.Utils.DB.BudgetFrogTG;
+using BudgetFrogTelegramBot.Utils.RequestClient;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -58,26 +61,92 @@ namespace BudgetFrogTelegramBot.Handlers
             if (message.Type != MessageType.Text)
                 return;
 
-            await (message.Text.Split(' ').First() switch
-            {
-                "/remove" => RemoveKeyboard(botClient, message),
-                _ => Usage(botClient, message)
-            });
+            Models.BudgetFrogTGdb.User user = await MainController.userController.GetUserOrDefaultAsync(message.From.Id);
 
-            static async Task<Message> RemoveKeyboard(ITelegramBotClient botClient, Message message)
+            try
             {
+                await (message.Text.Split(' ').First() switch
+                {
+                    "/transaction" => ShowTransactions(botClient, message, user),
+                    "/categories" => ShowCategories(botClient, message, user),
+                    "/token" => SetToken(botClient, message, user),
+                    _ => Usage(botClient, message)
+                });
+            }
+            catch (Exception e) { Console.WriteLine(e.Message); }
+
+            static async Task<Message> ShowTransactions(ITelegramBotClient botClient, Message message, Models.BudgetFrogTGdb.User user)
+            {
+                await UserCheck(botClient, message, user);
                 return await botClient.SendTextMessageAsync(chatId: message.Chat.Id,
-                                                            text: "Removing keyboard",
-                                                            replyMarkup: new ReplyKeyboardRemove());
+                                                            text: "Transactions...");
+            }
+
+            static async Task<Message> ShowCategories(ITelegramBotClient botClient, Message message, Models.BudgetFrogTGdb.User user)
+            {
+                await UserCheck(botClient, message, user);
+                return await botClient.SendTextMessageAsync(chatId: message.Chat.Id,
+                                                            text: "Categories...");
+            }
+
+            static async Task<Message> SetToken(ITelegramBotClient botClient, Message message, Models.BudgetFrogTGdb.User user)
+            {
+                string[] msg = message.Text.Split(' ');
+                if (msg.Length == 1)
+                    return await botClient.SendTextMessageAsync(chatId: message.Chat.Id,
+                                                            text: $"Use like:\n/token {new Guid()}");
+                try
+                {
+                    Guid token = new(msg[1]);
+                    user.ExternalToken = token;
+                    bool TokenIsValid = await Client.ValidationToken(user.ExternalToken);
+                    if (TokenIsValid)
+                    {
+                        await MainController.userController.UpdateUserAsync(user);
+                        return await botClient.SendTextMessageAsync(chatId: message.Chat.Id,
+                                                         text: $"Token updated.");
+                    }
+                    else
+                    {
+                        return await botClient.SendTextMessageAsync(chatId: message.Chat.Id,
+                                                         text: $"Incorrect Token.\nTry again.");
+                    }
+                }
+                catch
+                {
+                    return await botClient.SendTextMessageAsync(chatId: message.Chat.Id,
+                                                           text: $"Incorrect Token\nToken require like {new Guid()}");
+                }
+            }
+
+            static async Task UserCheck(ITelegramBotClient botClient, Message message, Models.BudgetFrogTGdb.User user)
+            {
+                if (user == null)
+                {
+                    await botClient.SendTextMessageAsync(chatId: message.Chat.Id,
+                                                                                 text: "Hi! You need set your token.\nUse /token");
+                    await MainController.userController.AddUserAsync(new Models.BudgetFrogTGdb.User(message.From.Id));
+                    throw new Exception($"[{message.From.Username}] New user.");
+                }
+                try
+                {
+                    bool TokenIsValid = await Client.ValidationToken(user.ExternalToken);
+                    if (!TokenIsValid)
+                    {
+                        await botClient.SendTextMessageAsync(chatId: message.Chat.Id,
+                                                            text: "Token expired.\rRefresh your token.\nUse /token");
+                        throw new Exception($"[{message.From.Username}] Token expired.");
+                    }
+                } 
+                catch { throw; }
             }
 
             static async Task<Message> Usage(ITelegramBotClient botClient, Message message)
             {
-                const string ANSmessage = "work.";
+                string ANSmessage = "Hi there! Use any command.";
 
                 return await botClient.SendTextMessageAsync(chatId: message.Chat.Id,
-                                                            text: ANSmessage,
-                                                            replyMarkup: new ReplyKeyboardRemove());
+                                                            text: ANSmessage);
             }
         }
 

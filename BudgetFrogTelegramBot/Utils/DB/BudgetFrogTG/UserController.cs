@@ -13,9 +13,9 @@ namespace BudgetFrogTelegramBot.Utils.DB.BudgetFrogTG
             this._BFTGcontext = _BFTGcontext;
         }
 
-        internal async Task<User> GetUser(int ID) => await _BFTGcontext.User.FirstOrDefaultAsync(u => u.ID == ID);
+        internal async Task<User> GetUserOrDefaultAsync(long ID) => await _BFTGcontext.User.FirstOrDefaultAsync(u => u.ID == ID);
 
-        internal async Task AddUser(User user)
+        internal async Task AddUserAsync(User user)
         {
             try
             {
@@ -25,7 +25,7 @@ namespace BudgetFrogTelegramBot.Utils.DB.BudgetFrogTG
             catch { throw; }
         }
 
-        internal async Task UpdateUser(User user)
+        internal async Task UpdateUserAsync(User user)
         {
             try
             {
