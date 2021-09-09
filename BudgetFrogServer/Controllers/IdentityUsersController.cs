@@ -68,10 +68,9 @@ namespace BudgetFrogServer.Controllers
         }
 
         [HttpGet("external/token/{external_token}")]
-        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetToken(string external_token)
+        public IActionResult GetTokenValidation(string external_token)
         {
             try
             {
