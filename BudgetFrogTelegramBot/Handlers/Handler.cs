@@ -92,10 +92,13 @@ namespace BudgetFrogTelegramBot.Handlers
             static async Task<Message> ShowCategories(ITelegramBotClient botClient, Message message, Models.BudgetFrogTGdb.User user)
             {
                 await UserCheck(botClient, message, user);
-
+                R_Transactioncategory.Data transactionsData = await Client.GetTransactionCategories(user.ExternalToken);
+                StringBuilder transactionscategoryListMessage = new();
+                foreach (R_Transactioncategory.Transactioncategory t in transactionsData.transactionCategories)
+                    transactionscategoryListMessage.Append($"{t.name} ({t.income})|hex: {t.color}\n");
 
                 return await botClient.SendTextMessageAsync(chatId: message.Chat.Id,
-                                                            text: "Categories...");
+                                                        text: "Categories...\n" + transactionscategoryListMessage.ToString());
             }
 
             static async Task<Message> SetToken(ITelegramBotClient botClient, Message message, Models.BudgetFrogTGdb.User user)

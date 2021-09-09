@@ -5,7 +5,7 @@ namespace BudgetFrogTelegramBot.Models.BudgetFrogTGdb
 {
     class BFTGcontext : DbContext
     {
-        public DbSet<User>  User { get; set; }
+        public DbSet<User> User { get; set; }
 
         public BFTGcontext()
         {

@@ -52,5 +52,26 @@ namespace BudgetFrogTelegramBot.Utils.RequestClient
 
             return null;
         }
+        
+        public static async Task<R_Transactioncategory.Data> GetTransactionCategories(Guid token)
+        {
+            try
+            {
+                HttpResponseMessage res = await client.GetAsync($"{baseUri}token/transaction/category/{token}");
+                if (res.StatusCode == System.Net.HttpStatusCode.OK)
+                {
+                    R_Transactioncategory.Response result = await res.Content.ReadFromJsonAsync<R_Transactioncategory.Response>();
+                    if (result.success == true)
+                        return result.data;
+                }
+                else if (res.StatusCode == System.Net.HttpStatusCode.BadRequest)
+                {
+                    return null;
+                }
+            }
+            catch { } //when response json model like Messages.Incorrect ( success == false ) 
+
+            return null;
+        }
     }
 }
