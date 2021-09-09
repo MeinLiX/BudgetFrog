@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace BudgetFrogServer.Controllers
 {
-    [Route("[controller]")]
+    [Route("exchanger")]
     [ApiController]
     public class ExchangerController : BaseController
     {

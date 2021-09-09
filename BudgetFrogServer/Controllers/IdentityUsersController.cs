@@ -67,11 +67,11 @@ namespace BudgetFrogServer.Controllers
             }
         }
 
-        [HttpGet("external-token/{ExternalToken}")]
+        [HttpGet("external-token/{external_token}")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult GetToken(string ExternalToken)
+        public IActionResult GetToken(string external_token)
         {
             try
             {
@@ -81,7 +81,7 @@ namespace BudgetFrogServer.Controllers
 
                 _ = user ?? throw new Exception("Some error... Contact support or try again.");
 
-                if (user.ExternalToken.ToString() != ExternalToken) throw new Exception("Token is not valid.");
+                if (user.ExternalToken.ToString() != external_token) throw new Exception("Token is not valid.");
 
                 return new JsonResult(JsonSerialize.MessageText(
                        message: "Token is valid."
@@ -178,7 +178,7 @@ namespace BudgetFrogServer.Controllers
         }
 
         //TODO: currency validation, (and take out validation for currrency (user))
-        [HttpGet("changeCurrency")]
+        [HttpGet("change-currency")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

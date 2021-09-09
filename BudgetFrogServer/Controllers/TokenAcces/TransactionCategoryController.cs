@@ -9,7 +9,7 @@ using BudgetFrogServer.Utils;
 
 namespace BudgetFrogServer.Controllers.TokenAcces
 {
-    [Route("token/[controller]")]
+    [Route("token/transaction-category")]
     [ApiController]
     public class TransactionCategoryController : ControllerBase
     {
@@ -20,16 +20,16 @@ namespace BudgetFrogServer.Controllers.TokenAcces
             _base_context = base_context;
         }
 
-        [HttpGet("{ExternalToken}")]
+        [HttpGet("{external_token}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult Get(string ExternalToken)
+        public IActionResult Get(string external_token)
         {
             try
             {
 
                 List<TransactionCategory> foundCategories = _base_context.TransactionCategory
-                                          .Where(category => category.AppIdentityUser.ExternalToken.ToString() == ExternalToken)
+                                          .Where(category => category.AppIdentityUser.ExternalToken.ToString() == external_token)
                                           .ToList();
 
                 return new JsonResult(JsonSerialize.Data(

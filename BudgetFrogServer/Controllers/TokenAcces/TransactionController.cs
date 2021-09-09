@@ -9,7 +9,7 @@ using BudgetFrogServer.Utils;
 
 namespace BudgetFrogServer.Controllers.TokenAcces
 {
-    [Route("token/[controller]")]
+    [Route("token/transaction")]
     [ApiController]
     public class TransactionController : ControllerBase
     {
@@ -22,15 +22,15 @@ namespace BudgetFrogServer.Controllers.TokenAcces
             _ER_context = ER_context;
         }
 
-        [HttpGet("{ExternalToken}")]
+        [HttpGet("{external_token}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public IActionResult Get(string ExternalToken)
+        public IActionResult Get(string external_token)
         {
             try
             {
                 List<Transaction> foundTransactions = _base_context.Transaction
-                                         .Where(fc => fc.AppIdentityUser.ExternalToken.ToString() == ExternalToken)
+                                         .Where(fc => fc.AppIdentityUser.ExternalToken.ToString() == external_token)
                                          .ToList();
 
 

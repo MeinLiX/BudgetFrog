@@ -5,7 +5,7 @@ using BudgetFrogServer.Utils;
 
 namespace BudgetFrogServer.Controllers
 {
-    [Route("[controller]")]
+    [Route("status")]
     [ApiController]
     public class StatusController : ControllerBase
     {
@@ -22,7 +22,7 @@ namespace BudgetFrogServer.Controllers
         /// <summary>
         /// Check user authenticated.
         /// </summary>      
-        [HttpGet("IsAuth")]
+        [HttpGet("is-auth")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public IActionResult IsAuth() => User.Identity.IsAuthenticated switch

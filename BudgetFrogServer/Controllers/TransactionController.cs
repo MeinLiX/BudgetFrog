@@ -17,7 +17,7 @@ using System.Text;
 
 namespace BudgetFrogServer.Controllers
 {
-    [Route("[controller]")]
+    [Route("transaction")]
     [Authorize]
     [ApiController]
     public class TransactionController : BaseController
