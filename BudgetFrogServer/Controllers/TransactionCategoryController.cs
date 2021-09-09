@@ -181,12 +181,24 @@ namespace BudgetFrogServer.Controllers
                     };
                 }
 
-                _ = _base_context.Transaction.FirstOrDefault(t => t.TransactionCategoryID == foundCategory.ID) ?? throw new Exception("Transaction category is used in some transaction.");
+                Transaction transactionUse = _base_context.Transaction.FirstOrDefault(t => t.TransactionCategoryID == foundCategory.ID && t.AppIdentityUser.ID == userId);
+
+                if (transactionUse is not null)
+                    throw new Exception("Transaction category is used in some transaction.");
 
                 _base_context.TransactionCategory.Remove(foundCategory);
                 await _base_context.SaveChangesAsync();
 
-                return new JsonResult(JsonSerialize.Data(foundCategory), "Transaction category was deleted.")
+                return new JsonResult(JsonSerialize.Data(new
+                {
+                    transactionCategory = new TransactionCategory()
+                    {
+                        ID = foundCategory.ID,
+                        Color = foundCategory.Color,
+                        Income = foundCategory.Income,
+                        Name = foundCategory.Name
+                    }
+                }, "Transaction category was deleted."))
                 {
                     StatusCode = StatusCodes.Status200OK
                 };
