@@ -11,7 +11,7 @@ namespace BudgetFrogServer.Utils
         public const string ISSUER = "BudgetFrogauthService";
         public const string AUDIENCE = "BudgetFrog";
         const string KEY = "N└E♪ED °TO HI⌠DE IN F╜UTURE≥"; //TODO
-        public const double LIFETIME = 30;
+        public const double LIFETIME = 120;
 
         public static SymmetricSecurityKey SymmetricSecurityKey => new(Encoding.ASCII.GetBytes(KEY));
 
