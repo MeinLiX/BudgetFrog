@@ -381,7 +381,7 @@ namespace BudgetFrogServer.Controllers
             }
         }
 
-        [HttpGet("transaction-file/{transaction_id}")]
+        [HttpGet("file/{transaction_id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetFile(int transaction_id)

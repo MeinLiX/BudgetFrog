@@ -22,7 +22,7 @@ namespace BudgetFrogServer.Controllers
         /// <summary>
         /// Check user authenticated.
         /// </summary>      
-        [HttpGet("is-auth")]
+        [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         public IActionResult IsAuth() => User.Identity.IsAuthenticated switch

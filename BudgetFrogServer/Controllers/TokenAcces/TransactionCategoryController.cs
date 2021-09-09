@@ -9,7 +9,7 @@ using BudgetFrogServer.Utils;
 
 namespace BudgetFrogServer.Controllers.TokenAcces
 {
-    [Route("token/transaction-category")]
+    [Route("token/transaction/category")]
     [ApiController]
     public class TransactionCategoryController : ControllerBase
     {

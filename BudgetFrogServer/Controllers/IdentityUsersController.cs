@@ -36,7 +36,7 @@ namespace BudgetFrogServer.Controllers
         }
 
         #region external-token
-        [HttpGet("external-token")]
+        [HttpGet("external/token")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -67,7 +67,7 @@ namespace BudgetFrogServer.Controllers
             }
         }
 
-        [HttpGet("external-token/{external_token}")]
+        [HttpGet("external/token/{external_token}")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -99,7 +99,7 @@ namespace BudgetFrogServer.Controllers
             }
         }
 
-        [HttpPut("external-token")]
+        [HttpPut("external/token")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -178,7 +178,7 @@ namespace BudgetFrogServer.Controllers
         }
 
         //TODO: currency validation, (and take out validation for currrency (user))
-        [HttpGet("change-currency")]
+        [HttpGet("change/currency")]
         [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]

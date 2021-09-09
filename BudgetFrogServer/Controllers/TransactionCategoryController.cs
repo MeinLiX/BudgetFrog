@@ -12,7 +12,7 @@ using BudgetFrogServer.Utils.Charts.TransactionCategories;
 
 namespace BudgetFrogServer.Controllers
 {
-    [Route("transaction-category")]
+    [Route("transaction/category")]
     [Authorize]
     [ApiController]
     public class TransactionCategoryController : BaseController
