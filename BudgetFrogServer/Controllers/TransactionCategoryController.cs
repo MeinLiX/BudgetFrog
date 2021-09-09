@@ -181,6 +181,8 @@ namespace BudgetFrogServer.Controllers
                     };
                 }
 
+                _ = _base_context.Transaction.FirstOrDefault(t => t.TransactionCategoryID == foundCategory.ID) ?? throw new Exception("Transaction category is used in some transaction.");
+
                 _base_context.TransactionCategory.Remove(foundCategory);
                 await _base_context.SaveChangesAsync();
 
