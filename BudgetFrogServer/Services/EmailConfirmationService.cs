@@ -49,14 +49,7 @@ namespace BudgetFrogServer.Services
                 });
             }
             _base_context.SaveChanges();
-            try
-            {
-                SendEmail(randomKey, user);
-            }
-            catch(Exception e)
-            {
-                _logger.LogError(e.Message);
-            }
+            Task.Run(() => SendEmail(randomKey, user));
             return randomKey;
         }
 
@@ -71,7 +64,6 @@ namespace BudgetFrogServer.Services
 
                 return true;
             }
-
             else
             {
                 return false;
@@ -94,9 +86,16 @@ namespace BudgetFrogServer.Services
 
         private void SendEmail(string key, AppIdentityUser user)
         {
-            string body = $"Dear {user.FirstName} {user.LastName}, please confirm your registrationa by visiting" +
-                $" localhost:5000/confirm?key={key}";
-            _emailSender.SendEmail(user.Email, "BudgetFrogRegistration", body);
+            try
+            {
+                string body = $"Dear {user.FirstName} {user.LastName}, please confirm your registrationa by visiting" +
+                    $" localhost:5000/confirm?key={key}";
+                _emailSender.SendEmail(user.Email, "BudgetFrogRegistration", body);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e.Message);
+            }
         }
     }
 }

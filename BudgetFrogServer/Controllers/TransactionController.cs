@@ -17,7 +17,7 @@ using System.Text;
 
 namespace BudgetFrogServer.Controllers
 {
-    [Route("[controller]")]
+    [Route("transaction")]
     [Authorize]
     [ApiController]
     public class TransactionController : BaseController
@@ -167,6 +167,8 @@ namespace BudgetFrogServer.Controllers
                 if (!transaction.IsValidDate())
                     throw new Exception("Invalid date!");
 
+                if (RecepitBinary is not null && !RecepitBinary.ContentType.StartsWith("image")) throw new Exception("Invalid file type");
+
                 var transactionCategory = _base_context.TransactionCategory.FirstOrDefaultAsync(tc => tc.ID == transaction.TransactionCategoryID && tc.AppIdentityUser.ID == userId);
 
                 var newTransaction = new Transaction
@@ -222,7 +224,7 @@ namespace BudgetFrogServer.Controllers
         [HttpPatch]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Patch([FromForm] IFormFile RecepitBinary, [FromBody] Transaction transactionBODY)
+        public async Task<IActionResult> Patch([FromForm] IFormFile RecepitBinary, [FromForm] Transaction transactionBODY)
         {
             try
             {
@@ -231,10 +233,20 @@ namespace BudgetFrogServer.Controllers
                 if (!transactionBODY.IsValidDate())
                     throw new Exception("Invalid date!");
 
-                var transactionFound = await _base_context.Transaction
-                                                   .Include(t => t.AppIdentityUser)
-                                                   .FirstOrDefaultAsync(transactionQ => transactionQ.ID == transactionBODY.ID && transactionQ.AppIdentityUser.ID == userId);
+                if (RecepitBinary is not null && !RecepitBinary.ContentType.StartsWith("image")) throw new Exception("Invalid file type");
 
+                Transaction transactionFound = await _base_context.Transaction
+                                                   .Include(t => t.AppIdentityUser)
+                                                   .Include(t => t.TransactionCategory)
+                                                   .FirstOrDefaultAsync(transactionQ => transactionQ.ID == transactionBODY.ID && transactionQ.AppIdentityUser.ID == userId);
+                Transaction oldTransaction = new()
+                {
+                    Balance = transactionFound.Balance,
+                    Currency = transactionFound.Currency,
+                    AppIdentityUser = transactionFound.AppIdentityUser,
+                    TransactionCategory = transactionFound.TransactionCategory,
+                    TransactionCategoryID = transactionFound.TransactionCategoryID,
+                };
                 _ = transactionFound ?? throw new Exception("Transaction not found.");
 
                 if (transactionFound == transactionBODY)
@@ -248,8 +260,8 @@ namespace BudgetFrogServer.Controllers
                 transactionFound.Currency = transactionBODY.Currency;
                 transactionFound.Notes = transactionBODY.Notes;
                 transactionFound.TransactionCategory = (await transactionCategory) ?? throw new Exception("Transaction category not found.");
-                transactionFound.RecepitBinary = (RecepitBinary is not null) ? new byte[RecepitBinary.Length] : transactionFound?.RecepitBinary;
-                transactionFound.RecepitAvailable = RecepitBinary is not null || transactionFound.RecepitAvailable;
+                transactionFound.RecepitBinary = (RecepitBinary is not null) ? new byte[RecepitBinary.Length] : null;
+                transactionFound.RecepitAvailable = RecepitBinary is not null;
 
                 if (RecepitBinary is not null)
                     RecepitBinary.OpenReadStream().Read(transactionFound.RecepitBinary);
@@ -262,8 +274,18 @@ namespace BudgetFrogServer.Controllers
                                               .OrderByDescending(er => er.ID)
                                               .FirstOrDefaultAsync();
 
+                #region remove old transaction balance
+                if (oldTransaction.Balance != transactionFound.Balance || oldTransaction.TransactionCategoryID != transactionFound.Balance)
+                {
+                    decimal transactionBalanceOld = (decimal)exchangeRates.Convert(oldTransaction.Currency, oldTransaction.AppIdentityUser.Currency, (float)oldTransaction.Balance);
+                    transactionFound.AppIdentityUser.Balance -= (oldTransaction.TransactionCategory.Income ?? true) ? transactionBalanceOld : -transactionBalanceOld;
+                }
+                #endregion
+
                 decimal transactionBalance = (decimal)exchangeRates.Convert(transactionFound.Currency, transactionFound.AppIdentityUser.Currency, (float)transactionFound.Balance);
                 transactionFound.AppIdentityUser.Balance += (transactionFound.TransactionCategory.Income ?? true) ? transactionBalance : -transactionBalance;
+
+
                 #endregion
                 await _base_context.SaveChangesAsync();
                 #endregion
@@ -359,7 +381,7 @@ namespace BudgetFrogServer.Controllers
             }
         }
 
-        [HttpGet("transaction-file/{transaction_id}")]
+        [HttpGet("file/{transaction_id}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public IActionResult GetFile(int transaction_id)

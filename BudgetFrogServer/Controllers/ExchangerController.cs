@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace BudgetFrogServer.Controllers
 {
-    [Route("[controller]")]
+    [Route("exchanger")]
     [ApiController]
     public class ExchangerController : BaseController
     {
@@ -38,6 +38,32 @@ namespace BudgetFrogServer.Controllers
                         new
                         {
                             exchangeRates
+                        }))
+                {
+                    StatusCode = StatusCodes.Status200OK
+                };
+
+            }
+            catch (Exception ex)
+            {
+                return new JsonResult(JsonSerialize.ErrorMessageText(ex.Message))
+                {
+                    StatusCode = StatusCodes.Status400BadRequest
+                };
+            }
+        }
+
+        [HttpGet("available")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public IActionResult AvailableCurrencies()
+        {
+            try
+            {
+                return new JsonResult(JsonSerialize.Data(
+                        new
+                        {
+                            currencies = Constants.Currencies.Split("|")
                         }))
                 {
                     StatusCode = StatusCodes.Status200OK

@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using BudgetFrogServer.Models.Common;
 using System.IO;
+using BudgetFrogServer.Utils;
 
 namespace BudgetFrogServer.Models.Basis
 {
@@ -21,7 +22,7 @@ namespace BudgetFrogServer.Models.Basis
         public decimal? Balance { get; set; } = .00m;
 
         [Required]
-        [RegularExpression("(USD)|(EUR)|(UAH)|(RUB)", ErrorMessage = "Invalid currency!")]
+        [RegularExpression(Constants.Currencies, ErrorMessage = "Invalid currency!")]
         public string Currency { get; set; }
 
         [MaxLength(256, ErrorMessage = "The maximum length of the Notes is 256")]
