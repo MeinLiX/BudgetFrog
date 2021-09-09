@@ -252,10 +252,10 @@ namespace BudgetFrogServer.Controllers
                 transactionFound.Currency = transactionBODY.Currency;
                 transactionFound.Notes = transactionBODY.Notes;
                 transactionFound.TransactionCategory = (await transactionCategory) ?? throw new Exception("Transaction category not found.");
-                transactionFound.RecepitBinary = (RecepitBinary is not null) ? new byte[RecepitBinary.Length] : transactionFound?.RecepitBinary;
-                transactionFound.RecepitAvailable = RecepitBinary is not null || transactionFound.RecepitAvailable;
+                transactionFound.RecepitBinary = (RecepitBinary is not null) ? new byte[RecepitBinary.Length] : null;
+                transactionFound.RecepitAvailable = RecepitBinary is not null;
 
-                if (RecepitBinary is not null)
+                if (RecepitBinary is not null)  
                     RecepitBinary.OpenReadStream().Read(transactionFound.RecepitBinary);
 
                 _base_context.Transaction.Update(transactionFound);
