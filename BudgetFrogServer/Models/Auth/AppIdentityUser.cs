@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 using BudgetFrogServer.Models.Common;
+using BudgetFrogServer.Utils;
 
 namespace BudgetFrogServer.Models.Auth
 {
@@ -13,7 +14,7 @@ namespace BudgetFrogServer.Models.Auth
         public decimal? Balance { get; set; } = .00m;
 
         [Required]
-        [RegularExpression("USD|EUR|UAH|RUB", ErrorMessage = "Invalid currency!")]
+        [RegularExpression(Constants.Currencies, ErrorMessage = "Invalid currency!")]
         public string Currency { get; set; } = "USD";
 
         [Required]

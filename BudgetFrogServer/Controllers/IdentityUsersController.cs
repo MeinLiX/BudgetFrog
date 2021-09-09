@@ -186,7 +186,7 @@ namespace BudgetFrogServer.Controllers
         {
             try
             {
-                if (!Regex.IsMatch(currency, "USD|EUR|UAH|RUB"))
+                if (!Regex.IsMatch(currency, Constants.Currencies))
                 {
                     throw new Exception("Invalid currency!");
                 }
