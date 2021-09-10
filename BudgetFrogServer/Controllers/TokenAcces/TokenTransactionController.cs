@@ -1,23 +1,26 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using BudgetFrogServer.Models;
 using BudgetFrogServer.Models.Basis;
 using BudgetFrogServer.Utils;
+using Microsoft.EntityFrameworkCore;
 
 namespace BudgetFrogServer.Controllers.TokenAcces
 {
-    [Route("token/transaction/category")]
+    [Route("token/transaction")]
     [ApiController]
-    public class TransactionCategoryController : ControllerBase
+    public class TokenTransactionController : ControllerBase
     {
         private readonly DB_Context _base_context;
+        private readonly DB_ExchangeRatesContext _ER_context;
 
-        public TransactionCategoryController(DB_Context base_context)
+        public TokenTransactionController(DB_Context base_context, DB_ExchangeRatesContext ER_context)
         {
             _base_context = base_context;
+            _ER_context = ER_context;
         }
 
         [HttpGet("{external_token}")]
@@ -27,15 +30,16 @@ namespace BudgetFrogServer.Controllers.TokenAcces
         {
             try
             {
+                List<Transaction> foundTransactions = _base_context.Transaction
+                                         .Include(t=>t.TransactionCategory)
+                                         .Where(fc => fc.AppIdentityUser.ExternalToken.ToString() == external_token)
+                                         .ToList();
 
-                List<TransactionCategory> foundCategories = _base_context.TransactionCategory
-                                          .Where(category => category.AppIdentityUser.ExternalToken.ToString() == external_token)
-                                          .ToList();
 
                 return new JsonResult(JsonSerialize.Data(
                         new
                         {
-                            TransactionCategories = foundCategories
+                            transactions = foundTransactions
                         }))
                 {
                     StatusCode = StatusCodes.Status200OK
