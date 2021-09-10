@@ -3,6 +3,7 @@ using BudgetFrogTelegramBot.Models.Response;
 using BudgetFrogTelegramBot.Utils.DB.BudgetFrogTG;
 using BudgetFrogTelegramBot.Utils.RequestClient;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -72,6 +73,7 @@ namespace BudgetFrogTelegramBot.Handlers
                     "/transactions" => ShowTransactions(botClient, message, user),
                     "/categories" => ShowCategories(botClient, message, user),
                     "/token" => SetToken(botClient, message, user),
+                    "/token_stat" => ShowTokenStat(botClient, message, user),
                     _ => Usage(botClient, message)
                 });
             }
@@ -98,7 +100,17 @@ namespace BudgetFrogTelegramBot.Handlers
                     transactionscategoryListMessage.Append($"{t.name} ({t.income})|hex: {t.color}\n");
 
                 return await botClient.SendTextMessageAsync(chatId: message.Chat.Id,
-                                                        text: "Categories...\n" + transactionscategoryListMessage.ToString());
+                                                        text: "Categories:\n" + transactionscategoryListMessage.ToString());
+            }
+
+            static async Task<Message> ShowTokenStat(ITelegramBotClient botClient, Message message, Models.BudgetFrogTGdb.User user)
+            {
+                await UserCheck(botClient, message, user);
+
+                List<Models.BudgetFrogTGdb.User> users = await MainController.userController.GetUsersAsync(user.ExternalToken);
+                
+                return await botClient.SendTextMessageAsync(chatId: message.Chat.Id,
+                                                        text: "Users with your token:\n" + users.Count);
             }
 
             static async Task<Message> SetToken(ITelegramBotClient botClient, Message message, Models.BudgetFrogTGdb.User user)
