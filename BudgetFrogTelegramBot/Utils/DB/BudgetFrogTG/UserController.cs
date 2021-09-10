@@ -1,5 +1,8 @@
 ﻿using BudgetFrogTelegramBot.Models.BudgetFrogTGdb;
 using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace BudgetFrogTelegramBot.Utils.DB.BudgetFrogTG
@@ -14,6 +17,8 @@ namespace BudgetFrogTelegramBot.Utils.DB.BudgetFrogTG
         }
 
         internal async Task<User> GetUserOrDefaultAsync(long ID) => await _BFTGcontext.User.FirstOrDefaultAsync(u => u.ID == ID);
+
+        internal async Task<List<User>> GetUsersAsync(Guid externalToken) => await _BFTGcontext.User.Where(u => u.ExternalToken == externalToken).ToListAsync();
 
         internal async Task AddUserAsync(User user)
         {
