@@ -9,12 +9,12 @@ namespace BudgetFrogServer.Models.Auth
 {
     public class AppIdentityUser : ModelBase
     {
-        [Required, Range(0, 999_999_999_999_999_999.99, ErrorMessage = "The balance field must be between 0 and 999_999_999_999_999_999.99!")]
+        [Required, Range(0, 999_999_999_999_999_999.99, ErrorMessage = "The balance field out of the range!")]
         [Column(TypeName = "decimal(18,2)")]
         public decimal? Balance { get; set; } = .00m;
 
         [Required]
-        [RegularExpression(Constants.Currencies, ErrorMessage = "Invalid currency!")]
+        [RegularExpression(Constants.Currencies, ErrorMessage = "Unsupported currency!")]
         public string Currency { get; set; } = "USD";
 
         [Required]

@@ -17,12 +17,12 @@ namespace BudgetFrogServer.Models.Basis
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:G}")]//TODO FORMAT
         public DateTime Date { get; set; } = DateTime.Now;
 
-        [Required,Range(0, 999_999_999_999_999_999.99, ErrorMessage = "The balance field must be between 0 and 999_999_999_999_999_999.99!")]
+        [Required,Range(0, 999_999_999_999_999_999.99, ErrorMessage = "The balance field out of the range!")]
         [Column(TypeName = "decimal(18,2)")]
         public decimal? Balance { get; set; } = .00m;
 
         [Required]
-        [RegularExpression(Constants.Currencies, ErrorMessage = "Invalid currency!")]
+        [RegularExpression(Constants.Currencies, ErrorMessage = "Unsupported currency!")]
         public string Currency { get; set; }
 
         [MaxLength(256, ErrorMessage = "The maximum length of the Notes is 256")]
@@ -37,10 +37,8 @@ namespace BudgetFrogServer.Models.Basis
         [Required]
         public int? TransactionCategoryID { get; set; }
 
-        //[JsonIgnore]
         public TransactionCategory TransactionCategory { get; set; }
 
-        //TODO: move to external attribute
         public bool IsValidDate()
         {
             if (Date > DateTime.Now)
