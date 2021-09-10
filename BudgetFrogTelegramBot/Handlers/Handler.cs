@@ -153,12 +153,12 @@ namespace BudgetFrogTelegramBot.Handlers
                 catch { throw; }
             }
 
-            static async Task<Message> Usage(ITelegramBotClient botClient, Message message)
+            static async Task/*<Message>*/ Usage(ITelegramBotClient botClient, Message message)
             {
-                string ANSmessage = "Hi there! Use any command.";
+                /*string ANSmessage = "Hi there! Use any command.";
 
                 return await botClient.SendTextMessageAsync(chatId: message.Chat.Id,
-                                                            text: ANSmessage);
+                                                            text: ANSmessage);*/
             }
         }
 
