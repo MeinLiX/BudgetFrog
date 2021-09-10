@@ -68,6 +68,11 @@ namespace BudgetFrogTelegramBot.Handlers
 
             try
             {
+                if (user is null)
+                {
+                    await MainController.userController.AddUserAsync(new Models.BudgetFrogTGdb.User(message.From.Id));
+                    user = await MainController.userController.GetUserOrDefaultAsync(message.From.Id);
+                }
                 await (message.Text.Split(' ').First() switch
                 {
                     "/transactions" => ShowTransactions(botClient, message, user),

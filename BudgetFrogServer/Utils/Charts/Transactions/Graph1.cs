@@ -113,12 +113,13 @@ namespace BudgetFrogServer.Utils.Charts.Transactions
                               balance += (t.TransactionCategory.Income ?? true) ? toBalance : -toBalance;
                           });
                           return balance;
-                      }).ToList();
+                      }).Reverse().ToList();
 
         private List<float> GetDataSetLineData()
         {
             List<float> data = new();
             //(float)_user.Balance
+            LocalChart.labels.Reverse();
             LocalChart.labels
                       //.Skip(1).ToList()
                       .ForEach(labelDate =>
