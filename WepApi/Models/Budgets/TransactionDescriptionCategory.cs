@@ -9,4 +9,6 @@ public class TransactionDescriptionCategory : ModelBase
     public bool Income { get; set; }
 
     public string Color { get; set; }
+
+    public Budget Budget { get; set; }
 }

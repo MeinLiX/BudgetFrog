@@ -14,4 +14,6 @@ public class TransactionDescription : ModelBase
     public Balance Balance { get; set; }
 
     public TransactionDescriptionCategory TransactionDescriptionCategory { get; set; }
+
+    public Budget Budget { get; set; }
 }
