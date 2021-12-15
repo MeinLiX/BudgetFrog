@@ -7,5 +7,5 @@ public class Budget : ModelBase
 {
     public Balance Balance { get; set; }
 
-    public List<AppIdentityUser> Users { get; set; }
+    public List<AppIdentityUser> Users { get; set; } = new();
 }

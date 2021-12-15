@@ -1,0 +1,27 @@
+﻿using Microsoft.EntityFrameworkCore;
+using WepApi.Models.Common;
+
+namespace WepApi.Models.Budgets;
+
+public static class TransactionDescriptionCategoryBuilder
+{
+    public static void BuildTransactionDescriptionCategory(this ModelBuilder MB)
+    {
+        MB.BuildModelBase<TransactionDescriptionCategory>();
+
+        MB.Entity<TransactionDescriptionCategory>()
+          .Property(td => td.Name)
+          .HasColumnType("VARCHAR(32)")
+          .IsRequired();
+
+        MB.Entity<TransactionDescriptionCategory>()
+          .Property(td => td.Income)
+          .HasColumnType("BOOLEAN")
+          .IsRequired();
+
+        MB.Entity<TransactionDescriptionCategory>()
+          .Property(td => td.Color)
+          .HasColumnType("VARCHAR(13)") //(000,000,000)
+          .IsRequired();
+    }
+}

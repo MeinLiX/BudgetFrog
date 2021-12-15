@@ -1,4 +1,5 @@
-﻿using WepApi.Models.Common;
+﻿using Microsoft.EntityFrameworkCore;
+using WepApi.Models.Common;
 
 namespace WepApi.Models.Budgets;
 

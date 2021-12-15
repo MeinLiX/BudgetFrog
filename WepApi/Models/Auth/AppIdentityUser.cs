@@ -15,5 +15,5 @@ public class AppIdentityUser : ModelBase
 
     public string PhotoUrl { get; set; }
 
-    public List<Budget> Budgets { get; set; }
+    public List<Budget> Budgets { get; set; } = new();
 }
