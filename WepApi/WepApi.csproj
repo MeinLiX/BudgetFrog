@@ -10,9 +10,13 @@
     <Folder Include="Context\" />
     <Folder Include="Controllers\" />
     <Folder Include="Features\" />
-    <Folder Include="Models\" />
+    <Folder Include="Models\ExchangeRates\" />
     <Folder Include="PipelineBehaviours\" />
     <Folder Include="Validators\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
   </ItemGroup>
 
 </Project>
