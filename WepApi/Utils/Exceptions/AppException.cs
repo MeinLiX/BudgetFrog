@@ -6,12 +6,14 @@ namespace WepApi.Utils.Exceptions
     {
         public List<string> ErrorMessages { get; }
 
+        public List<object> ErrorData { get; }
         public HttpStatusCode StatusCode { get; }
 
-        public AppException(string message, List<string>? errors = default, HttpStatusCode statusCode = HttpStatusCode.InternalServerError)
+        public AppException(string message, List<string>? messages = default, List<object>? errorData = default, HttpStatusCode statusCode = HttpStatusCode.InternalServerError)
         : base(message)
         {
-            ErrorMessages = errors ?? new List<string>();
+            ErrorMessages = messages ?? new List<string>();
+            ErrorData = errorData ?? new List<object>();
             StatusCode = statusCode;
         }
     }

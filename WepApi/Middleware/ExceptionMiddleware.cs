@@ -23,7 +23,7 @@ namespace WepApi.Middleware
             {
                 string errorId = Guid.NewGuid().ToString();
                 _logger.LogError($"ErrorId {errorId}. StackTrace:\n {exception.StackTrace}"); //TODO stdout;
-                var responseModel = await ErrorResult<string>.ReturnErrorAsync(exception.Message);
+                var responseModel = await ErrorResult<object>.ReturnErrorAsync(exception.Message);
                 responseModel.Source = exception.TargetSite?.DeclaringType?.FullName;
                 responseModel.Exception = exception.Message.Trim();
                 responseModel.ErrorId = errorId;
@@ -42,6 +42,7 @@ namespace WepApi.Middleware
                     case AppException e:
                         response.StatusCode = responseModel.StatusCode = (int)e.StatusCode;
                         responseModel.Messages = e.ErrorMessages;
+                        responseModel.Data = e.ErrorData;
                         break;
 
                     case KeyNotFoundException:

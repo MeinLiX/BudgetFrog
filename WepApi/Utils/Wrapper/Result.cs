@@ -68,14 +68,14 @@ public class Result : IResult
     }
 }
 
-public class ErrorResult<T> : Result<T>
+public class ErrorResult<T> : Result<T>, IErrorResult<T>
 {
     public string? Source { get; set; }
 
     public string? Exception { get; set; }
 
     public string? ErrorId { get; set; }
-    public string? SupportMessage { get; set; }
+
     public int StatusCode { get; set; }
 }
 
@@ -91,6 +91,11 @@ public class Result<T> : Result, IResult<T>
     public static new Result<T> Fail(string message)
     {
         return new() { Succeeded = false, Messages = new List<string> { message } };
+    }
+
+    public static ErrorResult<T> ReturnError()
+    {
+        return new() { Succeeded = false, Messages = new List<string>(), StatusCode = 500 };
     }
 
     public static ErrorResult<T> ReturnError(string message)

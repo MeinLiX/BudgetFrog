@@ -1,13 +1,18 @@
+using Microsoft.AspNetCore.Mvc;
 using System.Reflection;
 using WepApi.Context;
 using WepApi.Context.Interfaces;
 using WepApi.Middleware;
 using WepApi.PipelineBehaviours;
-
+using WepApi.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .ConfigureApiBehaviorOptions(options =>
+    {
+        options.InvalidModelStateResponseFactory = actionContext => new BadRequestObjectResult(new ApiBehavior().ErrorFormatResponseValidation(actionContext.ModelState));
+    });//temp
 
 builder.Services.AddDbContext<BudgetAppContext>(options =>
                 options.UseNpgsql(builder.Configuration.GetConnectionString("BudgetAppIdentityDB")));
