@@ -15,7 +15,7 @@ builder.Services.AddScoped<IBudgetAppContext>(provider => provider.GetService<Bu
 builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
 builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
-
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehaviour<,>));
 
 
 var app = builder.Build();
