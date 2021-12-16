@@ -2,6 +2,8 @@
 using WepApi.Context;
 using WepApi.Features.UserFutures.Queries;
 using WepApi.Models.Auth;
+using WepApi.Utils.Exceptions;
+using WepApi.Utils.Wrapper;
 
 namespace WepApi.Controllers;
 
@@ -15,13 +17,14 @@ public class StatusController : BaseController
         _budgetAppContext = budgetAppContext;
     }
 
+    #region Temp, for testing
     [HttpGet("ping")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Ping()
     {
-       
 
-        _budgetAppContext.AppIdentityUsers.Add(new AppIdentityUser { FirstName = "yurii", LastName = "hrohul", Password = "HASH", Email = "a@a.a"});
+        throw new AppException("Test");
+        /*_budgetAppContext.AppIdentityUsers.Add(new AppIdentityUser { FirstName = "yurii", LastName = "hrohul", Password = "HASH", Email = "a@a.a" });
         await _budgetAppContext.SaveChangesAsync();
         AppIdentityUser? user = _budgetAppContext.AppIdentityUsers.FirstOrDefault(); //db trigger for test
 
@@ -29,11 +32,15 @@ public class StatusController : BaseController
         {
             StatusCode = StatusCodes.Status200OK
         };
+        */
     }
 
     [HttpGet("ping/{id}")]
     public async Task<IActionResult> GetById(Guid id)
     {
-        return Ok(await Mediator.Send(new GetAppIdentityUserByIdQuery { ID = id }));
+        return Ok(
+            Result<AppIdentityUser>.Success(
+                await Mediator.Send(new GetAppIdentityUserByIdQuery { ID = id })));
     }
+    #endregion Temp, for testing
 }
