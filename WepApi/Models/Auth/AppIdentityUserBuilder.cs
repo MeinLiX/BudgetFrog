@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using WepApi.Models.Common;
+﻿using WepApi.Models.Common;
 
 namespace WepApi.Models.Auth;
 

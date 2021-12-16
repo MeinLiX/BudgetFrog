@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-
-namespace WepApi.Models.Common;
+﻿namespace WepApi.Models.Common;
 
 public static class ModelBaseBuilder
 {

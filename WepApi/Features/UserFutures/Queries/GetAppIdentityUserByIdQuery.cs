@@ -1,5 +1,4 @@
-﻿using MediatR;
-using WepApi.Context.Interfaces;
+﻿using WepApi.Context.Interfaces;
 using WepApi.Models.Auth;
 
 namespace WepApi.Features.UserFutures.Queries;

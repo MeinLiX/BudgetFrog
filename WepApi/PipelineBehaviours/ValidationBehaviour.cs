@@ -1,7 +1,4 @@
-﻿using FluentValidation;
-using MediatR;
-
-namespace WepApi.PipelineBehaviours;
+﻿namespace WepApi.PipelineBehaviours;
 
 public class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     where TRequest : IRequest<TResponse>

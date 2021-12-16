@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using WepApi.Context.Interfaces;
+﻿using WepApi.Context.Interfaces;
 using WepApi.Models.Auth;
 using WepApi.Models.Budgets;
 
@@ -10,7 +9,7 @@ public class BudgetAppContext : DbContext, IBudgetAppContext
     public BudgetAppContext(DbContextOptions<BudgetAppContext> options)
         : base(options)
     {
-        Database.EnsureDeleted();
+        //Database.EnsureDeleted();
         Database.EnsureCreated();
     }
     public DbSet<AppIdentityUser> AppIdentityUsers { get; set; }
