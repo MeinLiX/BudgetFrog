@@ -25,8 +25,7 @@ public class P24Client
             Merchant = new P24Merchant()
             {
                 Id = id,
-                Signature = HashEngine.SHA1MD5(P24XmlParser.ParseToString(p24BalanceDataRequest, false),
-                                               password)
+                Signature = HashEngine.SHA1MD5(P24XmlParser.ParseToString(p24BalanceDataRequest, false), password)
             },
             Data = p24BalanceDataRequest
         };
@@ -35,11 +34,37 @@ public class P24Client
         HttpRequestMessage httpRequest = new()
         {
             Method = HttpMethod.Post,
-            RequestUri = GetUrl("balance")
+            RequestUri = GetUrl("balance"),
+            Content = new StringContent(xmlRequestContent, System.Text.Encoding.UTF8, XmlMediaType)
         };
-        httpRequest.Content = new StringContent(xmlRequestContent, System.Text.Encoding.UTF8, XmlMediaType);
+
         HttpResponseMessage response = await Client.SendAsync(httpRequest);
         string responseContext = await response.Content.ReadAsStringAsync();
-        return P24XmlParser.ParseToObject<P24BalanceRes>(responseContext[(responseContext.IndexOf('>') + 1)..]); //remove ?xml...
+        var xmlObject = P24XmlParser.ParseToObject<P24BalanceRes>(responseContext[(responseContext.IndexOf('>') + 1)..]);
+
+        if (SignatureValid(xmlObject, password) is false)
+        {
+            throw new Exception("Response signature incorrect, try again.");
+        }
+
+        return xmlObject;
+    }
+
+    private static bool SignatureValid<T>(T xmlResponse, string password) where T : class
+    {
+        bool result = false;
+
+        //EXOTIC SWITCH(xmlResponse.GetType()) :)
+        new Dictionary<Type, Action>{
+           {typeof(P24BalanceRes), () => {
+               P24BalanceRes xmlResponseObject = (xmlResponse as P24BalanceRes) ?? throw new NullReferenceException();
+               string RealSignature = HashEngine.SHA1MD5(P24XmlParser.ParseToString(xmlResponseObject.Data, false), password);
+               result = RealSignature == xmlResponseObject.Merchant.Signature;
+               }
+            }
+            // and another response types...
+        }[xmlResponse.GetType()]();
+
+        return result;
     }
 }
