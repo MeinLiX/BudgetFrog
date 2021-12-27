@@ -15,8 +15,7 @@ public class ApiBehavior
         }
 
         var responseModel = Result<Dictionary<string, List<string>>>.ReturnError();
-        responseModel.Source = "FluentValidator";
-        responseModel.Exception = "FluentException";
+        responseModel.Exception = "Validation failed";
         responseModel.StatusCode = (int)HttpStatusCode.BadRequest;
         responseModel.ErrorId = Guid.NewGuid().ToString();
         responseModel.Data = errors;

@@ -22,9 +22,9 @@ namespace WepApi.Middleware
             catch (Exception exception)
             {
                 string errorId = Guid.NewGuid().ToString();
-                _logger.LogError($"ErrorId {errorId}. StackTrace:\n {exception.StackTrace}"); //TODO stdout;
+                _logger.LogWarning($"ErrorId {errorId}. StackTrace:\n {exception.StackTrace[..200]}"); //TODO stdout; temp limit 200 symb
                 var responseModel = await ErrorResult<object>.ReturnErrorAsync(exception.Message);
-                responseModel.Source = exception.TargetSite?.DeclaringType?.FullName;
+                //responseModel.Source = exception.TargetSite?.DeclaringType?.FullName;
                 responseModel.Exception = exception.Message.Trim();
                 responseModel.ErrorId = errorId;
                 var response = context.Response;
@@ -47,6 +47,25 @@ namespace WepApi.Middleware
 
                     case KeyNotFoundException:
                         response.StatusCode = responseModel.StatusCode = (int)HttpStatusCode.NotFound;
+                        break;
+
+                    case ValidationException e:
+                        response.StatusCode = responseModel.StatusCode = (int)HttpStatusCode.BadRequest;
+                        responseModel.Exception = "Validation failed";
+                        Dictionary<string, List<string>> errors = new();
+                        foreach (var modelState in e.Errors)
+                        {
+                            if (errors.ContainsKey(modelState.PropertyName))
+                            {
+                                errors[modelState.PropertyName].Add(modelState.ErrorMessage);
+                            }
+                            else
+                            {
+                                errors.Add(modelState.PropertyName, new List<string>() { modelState.ErrorMessage });
+                            }
+                        }
+                        responseModel.Data = errors;
+                        responseModel.Messages = new List<string>();
                         break;
 
                     default:

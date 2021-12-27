@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <Folder Include="Models\ExchangeRates\" />
-    <Folder Include="Validators\" />
   </ItemGroup>
 
   <ItemGroup>

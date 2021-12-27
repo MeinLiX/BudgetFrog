@@ -11,9 +11,7 @@ public interface IResult
 
 
 public interface IErrorResult<T> : IResult<T>
-{
-    public string? Source { get; set; }
-
+{ 
     public string? Exception { get; set; }
 
     public string? ErrorId { get; set; }

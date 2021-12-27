@@ -70,8 +70,6 @@ public class Result : IResult
 
 public class ErrorResult<T> : Result<T>, IErrorResult<T>
 {
-    public string? Source { get; set; }
-
     public string? Exception { get; set; }
 
     public string? ErrorId { get; set; }
