@@ -2,22 +2,10 @@
 
 namespace WepApi.Features.UserFutures.Validators;
 
-public class RegisterCommandValidator : AbstractValidator<RegisterCommand>
+public class LoginCommandValidator : AbstractValidator<LoginCommand>
 {
-    public RegisterCommandValidator()
+    public LoginCommandValidator()
     {
-        RuleFor(r => r.Firstname)
-            .NotEmpty()
-            .WithMessage("Firstname is required.")
-            .MaximumLength(32)
-            .WithMessage("Firstname max lenght is 32.");
-
-        RuleFor(r => r.Lastname)
-            .NotEmpty()
-            .WithMessage("Lastname is required.")
-            .MaximumLength(32)
-            .WithMessage("Lastname max lenght is 32.");
-
         RuleFor(r => r.Email)
             .NotEmpty()
             .WithMessage("Email address is required.")
