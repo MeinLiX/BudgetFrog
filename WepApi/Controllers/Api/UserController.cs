@@ -5,16 +5,19 @@ namespace WepApi.Controllers.Api;
 
 public class UserController : BaseController
 {
-    private IMediator _mediator;
+    private readonly IMediator _mediator;
 
-    protected IMediator Mediator => _mediator ??= HttpContext.RequestServices.GetService<IMediator>();
+    public UserController(IMediator Mediator)
+    {
+        _mediator = Mediator;
+    }
 
     [HttpPost("login")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> LogInUser([FromBody] LoginCommand command)
     {
-        return Ok(await Mediator.Send(command));
+        return Ok(await _mediator.Send(command));
     }
 
     [HttpPost("register")]
@@ -22,7 +25,7 @@ public class UserController : BaseController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> LogUpUser([FromBody] RegisterCommand command)
     {
-        return Ok(await Mediator.Send(command));
+        return Ok(await _mediator.Send(command));
     }
 
 }
