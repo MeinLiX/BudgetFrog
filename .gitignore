@@ -10,3 +10,11 @@
 
 # Temp files
 *.Development.json
+
+
+# Node.js Svelte
+ClientSvelte/public/build/
+node_modules/
+
+
+.DS_Store
