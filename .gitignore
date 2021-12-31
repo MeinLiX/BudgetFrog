@@ -13,7 +13,7 @@
 
 
 # Node.js Svelte
-ClientSvelte/public/build/
+# ClientSvelte/public/build/
 node_modules/
 
 
