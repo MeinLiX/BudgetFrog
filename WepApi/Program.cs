@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Reflection;
 using WepApi.Context;
 using WepApi.Context.Interfaces;
+using WepApi.Features.Services;
 using WepApi.Middleware;
 using WepApi.PipelineBehaviours;
 using WepApi.Utils;
@@ -28,12 +29,16 @@ builder.Services.AddDbContext<BudgetAppContext>(options =>
 builder.Services.AddScoped<IBudgetAppContext>(provider =>
                 provider.GetService<BudgetAppContext>() ?? throw new NullReferenceException());
 
+builder.Services.AddScoped<SignInManagerService>();
+
 builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
 builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehaviour<,>));
 
 builder.Services.AddTransient<ExceptionMiddleware>();
+
+
 
 var app = builder.Build();
 

@@ -1,5 +1,5 @@
-﻿using System.Security.Claims;
-using WepApi.Context.Interfaces;
+﻿using WepApi.Context.Interfaces;
+using WepApi.Features.Services;
 using WepApi.Models.Response;
 using WepApi.Utils;
 using WepApi.Utils.Exceptions;
@@ -16,33 +16,36 @@ public class LoginCommand : IRequest<Result<TokenResponse>>
     public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<TokenResponse>>
     {
         private readonly IBudgetAppContext _context;
-        private readonly ClaimsPrincipal _user;
-        public LoginCommandHandler(IBudgetAppContext context, IHttpContextAccessor httpContextAccessor)
+        private readonly SignInManagerService _signInManager;
+        public LoginCommandHandler(IBudgetAppContext context, SignInManagerService signInManager)
         {
             _context = context;
-            _user = httpContextAccessor.HttpContext.User;
+            _signInManager = signInManager;
         }
         public async Task<Result<TokenResponse>> Handle(LoginCommand command, CancellationToken cancellationToken)
         {
-            if (_user.Identity.IsAuthenticated)
+            try
             {
-                throw new AppException("Already log in.", statusCode: System.Net.HttpStatusCode.BadRequest);
+                if (_signInManager.IsAuthenticated)
+                {
+                    throw new AppException("Already log in.", statusCode: System.Net.HttpStatusCode.BadRequest);
+                }
+
+                var user = await _context.AppIdentityUsers.FirstOrDefaultAsync(u => u.Email == command.Email, cancellationToken);
+
+                if (user is null || !CryptoEngine.EqualHashValue(command.Password, user.Password))
+                {
+                    throw new AppException("Email or password incorrect.", statusCode: System.Net.HttpStatusCode.BadRequest);
+                }
+
+                await _context.SaveChangesAsync();
+
+                var identity = await AppIdentity.GetIdentity((command.Email, command.Password), _context);
+                _signInManager.AddIdentity(identity);
+
+                return Result<TokenResponse>.Success(new TokenResponse { token = AuthEngine.GenerateTokenJWT(identity.Claims) });
             }
-
-            var user = await _context.AppIdentityUsers.FirstOrDefaultAsync(u => u.Email == command.Email, cancellationToken);
-
-
-            if (user is null || !CryptoEngine.EqualHashValue(command.Password, user.Password))
-            {
-                throw new AppException("Email or password incorrect.", statusCode: System.Net.HttpStatusCode.BadRequest);
-            }
-
-            await _context.SaveChangesAsync();
-
-            var identity = await AppIdentity.GetIdentity((command.Email, command.Password), _context);
-            _user.AddIdentity(identity);
-
-            return Result<TokenResponse>.Success(new TokenResponse { token = AuthEngine.GenerateTokenJWT(identity.Claims) });
+            catch { throw; }
         }
     }
 }

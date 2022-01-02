@@ -1,5 +1,5 @@
-﻿using System.Security.Claims;
-using WepApi.Context.Interfaces;
+﻿using WepApi.Context.Interfaces;
+using WepApi.Features.Services;
 using WepApi.Models.Auth;
 using WepApi.Models.Response;
 using WepApi.Utils;
@@ -18,15 +18,15 @@ public class RegisterCommand : IRequest<Result<TokenResponse>>
     public class RegisterCommandHandler : IRequestHandler<RegisterCommand, Result<TokenResponse>>
     {
         private readonly IBudgetAppContext _context;
-        private readonly ClaimsPrincipal _user;
-        public RegisterCommandHandler(IBudgetAppContext context, IHttpContextAccessor httpContextAccessor)
+        private readonly SignInManagerService _signInManager;
+        public RegisterCommandHandler(IBudgetAppContext context, SignInManagerService signInManager)
         {
             _context = context;
-            _user = httpContextAccessor.HttpContext.User;
+            _signInManager = signInManager;
         }
         public async Task<Result<TokenResponse>> Handle(RegisterCommand command, CancellationToken cancellationToken)
         {
-            if (_user.Identity.IsAuthenticated)
+            if (_signInManager.IsAuthenticated)
             {
                 throw new AppException("Already log in.", statusCode: System.Net.HttpStatusCode.BadRequest);
             }
@@ -47,7 +47,7 @@ public class RegisterCommand : IRequest<Result<TokenResponse>>
             await _context.SaveChangesAsync();
 
             var identity = await AppIdentity.GetIdentity((command.Email, command.Password), _context);
-            _user.AddIdentity(identity);
+            _signInManager.AddIdentity(identity);
 
             return Result<TokenResponse>.Success(new TokenResponse { token = AuthEngine.GenerateTokenJWT(identity.Claims) });
         }
