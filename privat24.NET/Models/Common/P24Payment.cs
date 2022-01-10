@@ -8,5 +8,5 @@ public class P24Payment
     public string Id { get; set; } = "";
 
     [XmlElement("prop")]
-    public List<p24PaymentProp> p24PaymentProps { get; set; } = new();
+    public List<P24PaymentProp> PaymentProps { get; set; } = new();
 }

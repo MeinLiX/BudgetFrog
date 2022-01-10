@@ -2,7 +2,7 @@
 
 namespace privat24.NET.Models.Common;
 
-public class p24PaymentProp
+public class P24PaymentProp
 {
     [XmlAttribute("name")]
     public string Name { get; set; }

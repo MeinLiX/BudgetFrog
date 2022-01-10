@@ -13,14 +13,14 @@ public class P24Client
 
     public static async Task<P24BalanceRes> Balance(string id, string password, string card)
     {
-        P24BalanceDataReq p24BalanceDataRequest = new();
-        p24BalanceDataRequest.Payment.p24PaymentProps.AddRange(
-            new List<p24PaymentProp>(){
-                    new p24PaymentProp(){ Name = "cardnum", Value = card},
-                    new p24PaymentProp(){ Name = "country", Value = "UA"}
+        P24InformationDataReq p24BalanceDataRequest = new();
+        p24BalanceDataRequest.Payment.PaymentProps.AddRange(
+            new List<P24PaymentProp>(){
+                    new P24PaymentProp(){ Name = "cardnum", Value = card},
+                    new P24PaymentProp(){ Name = "country", Value = "UA"}
             });
 
-        P24BalanceReq p24BalanceRequest = new()
+        P24InformationReq p24BalanceRequest = new()
         {
             Merchant = new P24Merchant()
             {
@@ -50,7 +50,49 @@ public class P24Client
         return xmlObject;
     }
 
-    private static bool SignatureValid<T>(T xmlResponse, string password) where T : class
+    public static async Task<P24StatementsRes> Statement(DateTime startDate, DateTime endDate, string id, string password, string card)
+    {
+        P24InformationDataReq p24InformationDataRequest = new();
+        p24InformationDataRequest.Payment.PaymentProps.AddRange(
+            new List<P24PaymentProp>(){
+                    new P24PaymentProp(){ Name = "sd", Value = $"{startDate.ToShortDateString().Replace("/",".")}"},
+                    new P24PaymentProp(){ Name = "ed", Value = $"{endDate.ToShortDateString().Replace("/",".")}"},
+                    new P24PaymentProp(){ Name = "card", Value = card},
+
+            });
+
+        P24InformationReq p24BalanceRequest = new()
+        {
+            Merchant = new P24Merchant()
+            {
+                Id = id,
+                Signature = HashEngine.SHA1MD5(P24XmlParser.ParseToString(p24InformationDataRequest, false), password)
+            },
+            Data = p24InformationDataRequest
+        };
+        string xmlRequestContent = P24XmlParser.ParseToString(p24BalanceRequest);
+
+        HttpRequestMessage httpRequest = new()
+        {
+            Method = HttpMethod.Post,
+            RequestUri = GetUrl("rest_fiz"),
+            Content = new StringContent(xmlRequestContent, System.Text.Encoding.UTF8, XmlMediaType)
+        };
+
+        HttpResponseMessage response = await Client.SendAsync(httpRequest);
+        string responseContext = await response.Content.ReadAsStringAsync();
+        var xmlObject = P24XmlParser.ParseToObject<P24StatementsRes>(responseContext[(responseContext.IndexOf('>') + 1)..]);
+
+        //TODO: signature response validation
+        //if (SignatureValid(xmlObject, password) is false)
+        //{
+        //    throw new Exception("Response signature incorrect, try again.");
+        //}
+
+        return xmlObject;
+    }
+
+    private static bool SignatureValid<T>(T xmlResponse, string password) where T : P24BasicResponse
     {
         bool result = false;
 
@@ -61,8 +103,13 @@ public class P24Client
                string RealSignature = HashEngine.SHA1MD5(P24XmlParser.ParseToString(xmlResponseObject.Data, false), password);
                result = RealSignature == xmlResponseObject.Merchant.Signature;
                }
+            },
+            {typeof(P24StatementsRes), () => {
+               P24StatementsRes xmlResponseObject = (xmlResponse as P24StatementsRes) ?? throw new NullReferenceException();
+               string RealSignature = HashEngine.SHA1MD5(P24XmlParser.ParseToString(xmlResponseObject.Data, false, true), password);
+               result = RealSignature == xmlResponseObject.Merchant.Signature;
+               }
             }
-            // and another response types...
         }[xmlResponse.GetType()]();
 
         return result;

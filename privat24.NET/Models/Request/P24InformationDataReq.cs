@@ -3,7 +3,7 @@ using System.Xml.Serialization;
 
 namespace privat24.NET.Models.Request;
 
-public class P24BalanceDataReq : P24Data
+public class P24InformationDataReq : P24Data
 {
     [XmlElement("wait")]
     public string Wait { get; set; } = "0";

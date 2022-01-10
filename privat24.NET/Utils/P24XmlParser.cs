@@ -8,7 +8,7 @@ namespace privat24.NET.Utils;
 public class P24XmlParser
 {
 
-    public static string ParseToString(object toParse, bool rootElement = true)
+    public static string ParseToString(object toParse, bool rootElement = true, bool selfTag = false)
     {
         if (toParse is null)
         {
@@ -19,7 +19,7 @@ public class P24XmlParser
         XmlSerializer serializer = new(toParse.GetType());
         using (StringWriter sww = new())
         {
-            using XmlWriterEE writer = new(XmlWriter.Create(sww, new XmlWriterSettings { Indent = false, OmitXmlDeclaration = !rootElement }));
+            using XmlWriterEE writer = new(XmlWriter.Create(sww, new XmlWriterSettings { Indent = false, OmitXmlDeclaration = !rootElement }), selfTag);
             serializer.Serialize(writer, toParse);
 
             xmlString = sww.ToString();
@@ -44,8 +44,24 @@ public class P24XmlParser
     {
 #pragma warning disable CS8765 // Nullability of type of parameter doesn't match overridden member (possibly because of nullability attributes).
         private XmlWriter baseWriter;
-        public XmlWriterEE(XmlWriter w) => baseWriter = w;
-        public override void WriteEndElement() { baseWriter.WriteFullEndElement(); }
+        private bool _selfTag = false;
+        public XmlWriterEE(XmlWriter w, bool selfTag = false)
+        {
+            baseWriter = w;
+            _selfTag = selfTag;
+        }
+        public override void WriteEndElement()
+        {
+            if (_selfTag)
+            {
+                baseWriter.WriteEndElement();
+            }
+            else
+            {
+                baseWriter.WriteFullEndElement();
+            };
+        }
+
         public override void WriteFullEndElement() => baseWriter.WriteFullEndElement();
         public override void Close() => baseWriter.Close();
         public override void Flush() => baseWriter.Flush();
