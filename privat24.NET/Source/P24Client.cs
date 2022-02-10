@@ -55,8 +55,8 @@ public class P24Client
         P24InformationDataReq p24InformationDataRequest = new();
         p24InformationDataRequest.Payment.PaymentProps.AddRange(
             new List<P24PaymentProp>(){
-                    new P24PaymentProp(){ Name = "sd", Value = $"{startDate.ToShortDateString().Replace("/",".")}"},
-                    new P24PaymentProp(){ Name = "ed", Value = $"{endDate.ToShortDateString().Replace("/",".")}"},
+                    new P24PaymentProp(){ Name = "sd", Value = $"{startDate:dd.MM.yyyy}"},
+                    new P24PaymentProp(){ Name = "ed", Value = $"{endDate:dd.MM.yyyy}"},
                     new P24PaymentProp(){ Name = "card", Value = card},
 
             });
