@@ -11,7 +11,7 @@ public class BudgetAppContext : DbContext, IBudgetAppContext
     public BudgetAppContext(DbContextOptions<BudgetAppContext> options)
         : base(options)
     {
-        Database.EnsureDeleted();
+        //Database.EnsureDeleted();
         Database.EnsureCreated();
     }
 
