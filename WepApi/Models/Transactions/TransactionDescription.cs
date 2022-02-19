@@ -1,6 +1,7 @@
-﻿using WepApi.Models.Common;
+﻿using WepApi.Models.Budgets;
+using WepApi.Models.Common;
 
-namespace WepApi.Models.Budgets;
+namespace WepApi.Models.Transactions;
 
 public class TransactionDescription : ModelBase
 {
@@ -9,7 +10,6 @@ public class TransactionDescription : ModelBase
     public string Notes { get; set; }
 
     public string RecepitUrl { get; set; }
-
 
     public Balance Balance { get; set; }
 

@@ -1,6 +1,6 @@
 ﻿using WepApi.Models.Common;
 
-namespace WepApi.Models.Budgets;
+namespace WepApi.Models.Transactions;
 
 public static class TransactionDescriptionCategoryBuilder
 {
