@@ -23,7 +23,10 @@ namespace WepApi.PipelineBehaviours
                 object propValue = prop.GetValue(request, null);
                 logMessages.Add($"{prop.Name} : {propValue}");
             }
-            _logger.LogInformation(logMessages.Aggregate((f, s) => $"{f}\n{s}"));
+            if (logMessages.Any())
+            {
+                _logger.LogInformation(logMessages.Aggregate((f, s) => $"{f}\n{s}"));
+            }
 
             var response = await next();
 
