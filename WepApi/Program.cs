@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using System.Reflection;
 using WepApi.Context;
 using WepApi.Context.Interfaces;
+using WepApi.Features.HostedService;
 using WepApi.Features.Services;
 using WepApi.Middleware;
 using WepApi.PipelineBehaviours;
@@ -24,12 +25,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                                  jwtBearerOptions.TokenValidationParameters = AuthEngine.TokenValidationParameters);
 
 builder.Services.AddDbContext<BudgetAppContext>(options =>
-                options.UseNpgsql(builder.Configuration.GetConnectionString("BudgetAppIdentityDB")));
-
+                options.UseNpgsql(builder.Configuration["ConnectionStrings:BudgetAppIdentityDB"]));
 builder.Services.AddScoped<IBudgetAppContext>(provider =>
                 provider.GetService<BudgetAppContext>() ?? throw new NullReferenceException());
 
+builder.Services.AddDbContext<ExchangeRateContext>(options =>
+                options.UseNpgsql(builder.Configuration["ConnectionStrings:FastForexDB"]));
+builder.Services.AddScoped<IExchangeRateContext>(provider =>
+                provider.GetService<ExchangeRateContext>() ?? throw new NullReferenceException());
+
 builder.Services.AddScoped<SignInManagerService>();
+
+builder.Services.AddHostedService<ExchangeRatesFFUpdaterHostedService>();
+
 
 builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
 builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
@@ -37,7 +45,6 @@ builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBeh
 builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehaviour<,>));
 
 builder.Services.AddTransient<ExceptionMiddleware>();
-
 
 
 var app = builder.Build();
