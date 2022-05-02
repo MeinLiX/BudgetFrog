@@ -14,6 +14,8 @@ public class CreateBudgetCommandValidator : AbstractValidator<CreateBudgetComman
 
         RuleFor(r => r.Currency)
             .NotEmpty()
-            .WithMessage("Currency is required.");
+            .WithMessage("Currency is required.")
+            .Matches(Utils.Constants.Currencies)
+            .WithMessage("Not supported currency.");
     }
 }

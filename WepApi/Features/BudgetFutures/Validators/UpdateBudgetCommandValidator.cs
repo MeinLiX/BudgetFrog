@@ -16,6 +16,8 @@ public class UpdateBudgetCommandValidator : AbstractValidator<UpdateBudgetComman
             .MaximumLength(32)
             .WithMessage("Budget name must be less than 32 characters.");
 
-        RuleFor(r => r.Currency);
+        RuleFor(r => r.Currency)
+            .Matches(Utils.Constants.Currencies)
+            .WithMessage("Not supported currency.");
     }
 }
