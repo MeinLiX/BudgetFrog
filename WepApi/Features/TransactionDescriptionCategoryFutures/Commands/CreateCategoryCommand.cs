@@ -1,6 +1,7 @@
 ﻿using WepApi.Context.Interfaces;
 using WepApi.Features.Services;
 using WepApi.Models.Transactions;
+using WepApi.Utils.Exceptions;
 using WepApi.Utils.Wrapper;
 
 namespace WepApi.Features.TransactionDescriptionCategoryFutures.Commands;
@@ -41,7 +42,8 @@ public class CreateCategoryCommand : IRequest<Utils.Wrapper.IResult>
                     Name = request.Name,
                     Income = request.Income,
                     Color = request.Color,
-                    Budget = _context.Budgets.First(b => b.ID == request.GetBudgetID)
+                    Budget = _context.Budgets.FirstOrDefault(b => b.ID == request.GetBudgetID && b.Users.Contains(user))
+                                      ?? throw new AppException("Budget not found")
                 });
 
                 await _context.SaveChangesAsync();
