@@ -35,6 +35,7 @@ builder.Services.AddScoped<IExchangeRateContext>(provider =>
                 provider.GetService<ExchangeRateContext>() ?? throw new NullReferenceException());
 
 builder.Services.AddScoped<SignInManagerService>();
+builder.Services.AddScoped<ExchangeRateService>();
 
 builder.Services.AddHostedService<ExchangeRatesFFUpdaterHostedService>();
 
