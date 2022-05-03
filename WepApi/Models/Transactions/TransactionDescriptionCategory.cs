@@ -1,4 +1,5 @@
-﻿using WepApi.Models.Budgets;
+﻿using System.Text.Json.Serialization;
+using WepApi.Models.Budgets;
 using WepApi.Models.Common;
 
 namespace WepApi.Models.Transactions;
@@ -11,5 +12,6 @@ public class TransactionDescriptionCategory : ModelBase
 
     public string Color { get; set; }
 
+    [JsonIgnore]
     public Budget Budget { get; set; }
 }
