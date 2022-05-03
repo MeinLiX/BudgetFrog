@@ -19,18 +19,8 @@ public class ExchangeRateService
     /// Change balance currency without db save.
     /// </summary>
     /// <returns>Balance with new currency and amount</returns>
-    public async Task<Balance> ChangeCurrency(Balance bal,string to) 
-        => await ChangeCurrency(bal.ID, to);
-
-    /// <summary>
-    /// Change balance currency without db save.
-    /// </summary>
-    /// <returns>Balance with new currency and amount</returns>
-    public async Task<Balance> ChangeCurrency(Guid id, string to)
+    public async Task<Balance> ChangeCurrency(Balance balance, string to)
     {
-        var balance = _context.Balances.FirstOrDefault(b => b.ID == id);
-        if(balance is null) throw new AppException("[Currency service] Balance not found.");
-
         var exchangeRates = await _ER_context.FFbase
                                                .Include(er => er.results)
                                                .OrderByDescending(er => er.ID)
@@ -41,5 +31,17 @@ public class ExchangeRateService
         balance.Currency = to;
 
         return balance;
+    }
+
+    /// <summary>
+    /// Change balance currency without db save.
+    /// </summary>
+    /// <returns>Balance with new currency and amount</returns>
+    public async Task<Balance> ChangeCurrency(Guid id, string to)
+    {
+        var balance = _context.Balances.FirstOrDefault(b => b.ID == id);
+        if (balance is null) throw new AppException("[Currency service] Balance not found.");
+
+        return await ChangeCurrency(balance.ID, to);
     }
 }
