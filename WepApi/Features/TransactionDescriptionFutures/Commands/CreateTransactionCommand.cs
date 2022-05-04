@@ -32,7 +32,7 @@ public class CreateTransactionCommand : IRequest<Utils.Wrapper.IResult>
         public async Task<Utils.Wrapper.IResult> Handle(CreateTransactionCommand request, CancellationToken cancellationToken)
         {
             var user = await _signInManager.GetUser();
-            var budget = await _context.Budgets.Where(b => b.ID == request.GetBudgetID && b.Users.Contains(user))
+            var userBudget = await _context.Budgets.Where(b => b.ID == request.GetBudgetID && b.Users.Contains(user))
                                          .Include(b => b.Balance)
                                          .FirstOrDefaultAsync(cancellationToken: cancellationToken) 
                                          ?? throw new AppException("Budget not found");
@@ -42,10 +42,10 @@ public class CreateTransactionCommand : IRequest<Utils.Wrapper.IResult>
                 Date = request.Date,
                 Notes = request.Notes ?? "",
                 RecepitUrl = request.RecepitUrl ?? "",
-                Balance = new Models.Budgets.Balance() { Amount = request.Amount, Currency = request.Currency ?? budget.Balance.Currency },
-                TransactionDescriptionCategory = _context.TransactionDescriptionCategories.First(b => b.ID == request.GetCategoryID && b.Budget.Users.Contains(user))
+                Balance = new Models.Budgets.Balance() { Amount = request.Amount, Currency = request.Currency ?? userBudget.Balance.Currency },
+                TransactionDescriptionCategory = _context.TransactionDescriptionCategories.First(b => b.ID == request.GetCategoryID && b.Budget.ID == userBudget.ID)
                                                           ?? throw new AppException("Category not found"),
-                Budget = budget
+                Budget = userBudget
             };
 
             _context.TransactionsDescription.Add(transaction);
