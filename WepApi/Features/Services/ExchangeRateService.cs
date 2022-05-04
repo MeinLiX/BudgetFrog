@@ -19,8 +19,9 @@ public class ExchangeRateService
     /// Change balance currency without db save.
     /// </summary>
     /// <returns>Balance with new currency and amount</returns>
-    public async Task<Balance> ChangeCurrency(Balance balance, string to)
+    public async Task<Balance> ChangeCurrency(Balance bal, string to)
     {
+        Balance balance =new() { Amount=bal.Amount, Currency=bal.Currency, ID = bal.ID};
         var exchangeRates = await _ER_context.FFbase
                                                .Include(er => er.results)
                                                .OrderByDescending(er => er.ID)
