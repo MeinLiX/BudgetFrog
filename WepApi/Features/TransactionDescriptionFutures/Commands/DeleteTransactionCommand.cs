@@ -46,7 +46,7 @@ public class DeleteTransactionCommand : IRequest<Utils.Wrapper.IResult>
             }
             else
             {
-                var ChangeBalance = await _ER_service.ChangeCurrency(transaction.Balance, transaction.Budget.Balance.Currency);
+                var ChangeBalance = await _ER_service.ChangeCurrency(transaction.Balance, transaction.Budget.Balance.Currency, transaction.Date);
                 transaction.Budget.Balance.Amount -= (transaction.TransactionDescriptionCategory.Income? ChangeBalance.Amount: -ChangeBalance.Amount);
 
                 _context.TransactionsDescription.Remove(transaction);

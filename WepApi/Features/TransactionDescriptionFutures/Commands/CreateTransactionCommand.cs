@@ -50,7 +50,7 @@ public class CreateTransactionCommand : IRequest<Utils.Wrapper.IResult>
 
             _context.TransactionsDescription.Add(transaction);
 
-            var ChangeBalance = await _ER_service.ChangeCurrency(transaction.Balance, transaction.Budget.Balance.Currency);
+            var ChangeBalance = await _ER_service.ChangeCurrency(transaction.Balance, transaction.Budget.Balance.Currency, transaction.Date);
             transaction.Budget.Balance.Amount += (transaction.TransactionDescriptionCategory.Income ? ChangeBalance.Amount : -ChangeBalance.Amount);
 
             await _context.SaveChangesAsync();

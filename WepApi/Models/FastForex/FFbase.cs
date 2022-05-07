@@ -7,6 +7,7 @@ public class FFbase : ModelBase
     public string @base { get; set; }
     public FFresult results { get; set; }
     public string updated { get; set; }
+    public DateTime date { get => DateTime.Parse(updated); }
     public int ms { get; set; }
 
     public decimal GetRate(string from, string to)
