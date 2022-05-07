@@ -12,11 +12,13 @@ public class PlannedBudget : ModelBase
 
     public string Title { get; set; }
 
-    public string Desctiption { get; set; }
+    public string? Desctiption { get; set; }
 
     public Balance PlannedBalance { get; set; }
 
-    public TransactionDescriptionCategory TransactionDescriptionCategory { get; set; }
+    public Balance RealizeBalance { get; set; }
+
+    public TransactionDescriptionCategory? TransactionDescriptionCategory { get; set; }
     
     [JsonIgnore]
     public Budget Budget { get; set; }
