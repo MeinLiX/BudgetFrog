@@ -1,5 +1,6 @@
 ﻿using WepApi.Context.Interfaces;
 using WepApi.Features.Services;
+using WepApi.Models.Budgets;
 using WepApi.Models.Transactions;
 using WepApi.Utils.Exceptions;
 using WepApi.Utils.Wrapper;
@@ -47,7 +48,22 @@ public class DeleteTransactionCommand : IRequest<Utils.Wrapper.IResult>
             else
             {
                 var ChangeBalance = await _ER_service.ChangeCurrency(transaction.Balance, transaction.Budget.Balance.Currency, transaction.Date);
-                transaction.Budget.Balance.Amount -= (transaction.TransactionDescriptionCategory.Income? ChangeBalance.Amount: -ChangeBalance.Amount);
+                transaction.Budget.Balance.Amount -= (transaction.TransactionDescriptionCategory.Income ? ChangeBalance.Amount : -ChangeBalance.Amount);
+
+                PlannedBudget? plannedBudget =
+                await _context.PlannedBudgets
+                                .Where(pb => pb.Budget.ID == request.GetBudgetID &&
+                                             pb.TransactionDescriptionCategory != null &&
+                                             pb.TransactionDescriptionCategory.ID == transaction.TransactionDescriptionCategory.ID &&
+                                             pb.DateStart <= transaction.Date &&
+                                             pb.DateEnd >= transaction.Date)
+                                .Include(pb => pb.PlannedBalance)
+                                .Include(pb => pb.RealizeBalance)
+                                .FirstOrDefaultAsync(cancellationToken: cancellationToken);
+                if (plannedBudget is not null)
+                {
+                    plannedBudget.RealizeBalance.Amount -= (await _ER_service.ChangeCurrency(transaction.Balance, plannedBudget.RealizeBalance.Currency, transaction.Date)).Amount;
+                }
 
                 _context.TransactionsDescription.Remove(transaction);
 

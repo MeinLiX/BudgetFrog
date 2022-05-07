@@ -40,7 +40,7 @@ public class DeleteCategoryCommand : IRequest<Utils.Wrapper.IResult>
                     return Result.Success($"Category '{category.Name}' is used in some transaction.");
                 }
 
-                if (_context.PlannedBudgets.Any(t => t.TransactionDescriptionCategory.ID == category.ID))
+                if (_context.PlannedBudgets.Any(t => t.TransactionDescriptionCategory != null && t.TransactionDescriptionCategory.ID == category.ID))
                 {
                     return Result.Success($"Category '{category.Name}' is used in some planned budget.");
                 }

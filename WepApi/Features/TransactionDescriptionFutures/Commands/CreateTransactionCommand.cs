@@ -1,5 +1,6 @@
 ﻿using WepApi.Context.Interfaces;
 using WepApi.Features.Services;
+using WepApi.Models.Budgets;
 using WepApi.Models.Transactions;
 using WepApi.Utils.Exceptions;
 using WepApi.Utils.Wrapper;
@@ -34,7 +35,7 @@ public class CreateTransactionCommand : IRequest<Utils.Wrapper.IResult>
             var user = await _signInManager.GetUser();
             var userBudget = await _context.Budgets.Where(b => b.ID == request.GetBudgetID && b.Users.Contains(user))
                                          .Include(b => b.Balance)
-                                         .FirstOrDefaultAsync(cancellationToken: cancellationToken) 
+                                         .FirstOrDefaultAsync(cancellationToken: cancellationToken)
                                          ?? throw new AppException("Budget not found");
 
             var transaction = new TransactionDescription()
@@ -52,6 +53,21 @@ public class CreateTransactionCommand : IRequest<Utils.Wrapper.IResult>
 
             var ChangeBalance = await _ER_service.ChangeCurrency(transaction.Balance, transaction.Budget.Balance.Currency, transaction.Date);
             transaction.Budget.Balance.Amount += (transaction.TransactionDescriptionCategory.Income ? ChangeBalance.Amount : -ChangeBalance.Amount);
+
+            PlannedBudget? plannedBudget =
+            await _context.PlannedBudgets
+                            .Where(pb => pb.Budget.ID == request.GetBudgetID &&
+                                         pb.TransactionDescriptionCategory != null &&
+                                         pb.TransactionDescriptionCategory.ID == transaction.TransactionDescriptionCategory.ID &&
+                                         pb.DateStart <= transaction.Date &&
+                                         pb.DateEnd >= transaction.Date)
+                            .Include(pb => pb.PlannedBalance)
+                            .Include(pb => pb.RealizeBalance)
+                            .FirstOrDefaultAsync(cancellationToken: cancellationToken);
+            if (plannedBudget is not null)
+            {
+                plannedBudget.RealizeBalance.Amount += (await _ER_service.ChangeCurrency(transaction.Balance, plannedBudget.RealizeBalance.Currency, transaction.Date)).Amount;
+            }
 
             await _context.SaveChangesAsync();
             return Result.Success($"Transaction has created.");

@@ -46,6 +46,7 @@ public class CreateCategoryCommand : IRequest<Utils.Wrapper.IResult>
                                       ?? throw new AppException("Budget not found")
                 });
 
+
                 await _context.SaveChangesAsync();
 
                 return Result.Success($"Category '{request.Name}' has created.");
