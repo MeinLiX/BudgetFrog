@@ -4,6 +4,10 @@ import resolve from '@rollup/plugin-node-resolve';
 import livereload from 'rollup-plugin-livereload';
 import { terser } from 'rollup-plugin-terser';
 import css from 'rollup-plugin-css-only';
+import dotenv from 'dotenv';
+import replace from "@rollup/plugin-replace";
+
+dotenv.config();
 
 const production = !process.env.ROLLUP_WATCH;
 
@@ -68,7 +72,13 @@ export default {
 
         // If we're building for production (npm run build
         // instead of npm run dev), minify
-        production && terser()
+        production && terser(),
+
+        // Initial __app with elements from dotenv
+        replace({
+            preventAssignment: true,
+            __app_API_URL: JSON.stringify(process.env.API_URL),
+        }),
     ],
 
     watch: {
