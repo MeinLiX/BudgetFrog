@@ -41,7 +41,7 @@ public class UpdatePlannedBudgetAmountCommand : IRequest<Utils.Wrapper.IResult>
 
             if (plannedBudget is null)
             {
-                return Result.Success($"Planned Budget not found.");
+                return Result.Fail($"Planned Budget not found.");
             }
             else
             {

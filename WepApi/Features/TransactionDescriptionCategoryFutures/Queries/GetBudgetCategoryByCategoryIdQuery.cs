@@ -33,7 +33,7 @@ public class GetBudgetCategoryByCategoryIdQuery : IRequest<Result<TransactionDes
 
             if (category is null)
             {
-                return Result<TransactionDescriptionCategory?>.Success(category, $"Category not found.");
+                return Result<TransactionDescriptionCategory?>.Fail($"Category not found.");
             }
 
             return Result<TransactionDescriptionCategory?>.Success(category);

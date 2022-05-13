@@ -24,21 +24,25 @@ public class ExchangeRatesFFUpdaterHostedService : IHostedService
 
     private async void DoWork(object state)
     {
-        var response = await _client.GetAsync(_uri.AbsoluteUri);
-        var stringContent = await response.Content.ReadAsStringAsync();
-
-        var responseModel = JsonSerializer.Deserialize<FFbase>(stringContent);
-
-        FFbase newER = new()
+        try
         {
-            @base = responseModel.@base,
-            results = responseModel.results,
-            updated = responseModel.updated,
-            ms = responseModel.ms
-        };
+            var response = await _client.GetAsync(_uri.AbsoluteUri);
+            var stringContent = await response.Content.ReadAsStringAsync();
 
-        _ER_context.FFbase.Add(newER);
-        await _ER_context.SaveChangesAsync();
+            var responseModel = JsonSerializer.Deserialize<FFbase>(stringContent);
+
+            FFbase newER = new()
+            {
+                @base = responseModel.@base,
+                results = responseModel.results,
+                updated = responseModel.updated,
+                ms = responseModel.ms
+            };
+
+            _ER_context.FFbase.Add(newER);
+            await _ER_context.SaveChangesAsync();
+        }
+        catch { }
     }
 
     public Task StartAsync(CancellationToken ct)

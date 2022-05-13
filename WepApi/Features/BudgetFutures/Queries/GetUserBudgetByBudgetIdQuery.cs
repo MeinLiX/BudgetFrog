@@ -30,7 +30,7 @@ public class GetUserBudgetByBudgetIdQuery : IRequest<Result<Budget?>>
 
             if (budget == null)
             {
-                return Result<Budget?>.Success(budget, $"Budget not found.");
+                return Result<Budget?>.Fail($"Budget not found.");
             }
 
             return Result<Budget?>.Success(budget);

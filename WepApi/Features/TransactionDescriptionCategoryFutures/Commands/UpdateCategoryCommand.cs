@@ -35,7 +35,7 @@ public class UpdateCategoryCommand : IRequest<Utils.Wrapper.IResult>
                                                                   c.ID != request.GetCategoryID &&
                                                                   c.Name == request.Name))
             {
-                return Result.Success($"Category name '{request.Name}' already taken.");
+                return Result.Fail($"Category name '{request.Name}' already taken.");
             }
 
             TransactionDescriptionCategory? category =
@@ -48,7 +48,7 @@ public class UpdateCategoryCommand : IRequest<Utils.Wrapper.IResult>
 
             if (category is null)
             {
-                return Result.Success($"Category not found.");
+                return Result.Fail($"Category not found.");
             }
             else
             {

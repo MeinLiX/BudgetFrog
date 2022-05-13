@@ -31,18 +31,18 @@ public class DeleteCategoryCommand : IRequest<Utils.Wrapper.IResult>
 
             if (category is null)
             {
-                return Result.Success($"Category not found.");
+                return Result.Fail($"Category not found.");
             }
             else
             {
                 if (_context.TransactionsDescription.Any(t => t.TransactionDescriptionCategory.ID == category.ID))
                 {
-                    return Result.Success($"Category '{category.Name}' is used in some transaction.");
+                    return Result.Fail($"Category '{category.Name}' is used in some transaction.");
                 }
 
                 if (_context.PlannedBudgets.Any(t => t.TransactionDescriptionCategory != null && t.TransactionDescriptionCategory.ID == category.ID))
                 {
-                    return Result.Success($"Category '{category.Name}' is used in some planned budget.");
+                    return Result.Fail($"Category '{category.Name}' is used in some planned budget.");
                 }
 
                 _context.TransactionDescriptionCategories.Remove(category);

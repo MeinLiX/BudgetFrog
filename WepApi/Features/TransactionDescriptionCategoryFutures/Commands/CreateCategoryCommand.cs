@@ -33,7 +33,7 @@ public class CreateCategoryCommand : IRequest<Utils.Wrapper.IResult>
                                                                   c.Budget.Users.Contains(user) &&
                                                                   c.Name == request.Name))
             {
-                return Result.Success($"Category name '{request.Name}' already taken.");
+                return Result.Fail($"Category name '{request.Name}' already taken.");
             }
             else
             {

@@ -46,7 +46,7 @@ public class UpdateTransactionCommand : IRequest<Utils.Wrapper.IResult>
 
             if (transaction is null)
             {
-                return Result.Success($"Transaction not found.");
+                return Result.Fail($"Transaction not found.");
             }
             else
             {

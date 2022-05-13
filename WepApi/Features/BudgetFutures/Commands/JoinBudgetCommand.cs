@@ -29,13 +29,13 @@ public class JoinBudgetCommand : IRequest<Utils.Wrapper.IResult>
 
             if (budget is null)
             {
-                return Result.Success($"InviteToken incorrect.");
+                return Result.Fail($"InviteToken incorrect.");
             }
             else
             {
                 if (budget.Users.Contains(user))
                 {
-                    return Result.Success($"Already joined to budget.");
+                    return Result.Fail($"Already joined to budget.");
                 }
 
                 budget.Users.Add(user);

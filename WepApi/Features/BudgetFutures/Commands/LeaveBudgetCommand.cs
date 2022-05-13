@@ -29,7 +29,7 @@ public class LeaveBudgetCommand : IRequest<Utils.Wrapper.IResult>
 
             if (budget is null)
             {
-                return Result.Success($"Budget not found.");
+                return Result.Fail($"Budget not found.");
             }
             else
             {

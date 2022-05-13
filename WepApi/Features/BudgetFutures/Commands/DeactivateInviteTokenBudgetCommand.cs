@@ -28,17 +28,17 @@ public class DeactivateInviteTokenBudgetCommand : IRequest<Utils.Wrapper.IResult
 
             if (budget is null)
             {
-                return Result.Success($"Budget not found.");
+                return Result.Fail($"Budget not found.");
             }
             else
             {
-                if(budget.InviteToken == "")
+                if (budget.InviteToken == "")
                 {
-                    return Result.Success($"Invite token is already deactivated.");
+                    return Result.Fail($"Invite token is already deactivated.");
                 }
 
                 budget.InviteToken = "";
-                
+
                 await _context.SaveChangesAsync();
 
                 return Result.Success($"Invite token is now deactivated.");

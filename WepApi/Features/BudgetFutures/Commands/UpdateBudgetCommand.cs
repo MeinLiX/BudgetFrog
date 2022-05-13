@@ -33,11 +33,11 @@ public class UpdateBudgetCommand : IRequest<Utils.Wrapper.IResult>
 
             if (budget is null)
             {
-                return Result.Success($"Budget not found.");
+                return Result.Fail($"Budget not found.");
             }
             else
             {
-                budget.Name = request.Name; 
+                budget.Name = request.Name;
                 //TODO: Currency;
 
                 await _context.SaveChangesAsync();

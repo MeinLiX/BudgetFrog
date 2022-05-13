@@ -28,7 +28,7 @@ public class GenerateInviteTokenBudgetCommand : IRequest<Utils.Wrapper.IResult>
 
             if (budget is null)
             {
-                return Result.Success($"Budget not found.");
+                return Result.Fail($"Budget not found.");
             }
             else
             {
@@ -38,7 +38,7 @@ public class GenerateInviteTokenBudgetCommand : IRequest<Utils.Wrapper.IResult>
                 //}
 
                 budget.InviteToken = Guid.NewGuid().ToString("N");
-                
+
                 await _context.SaveChangesAsync();
 
                 return Result.Success($"New invite token is now avaliable.");
