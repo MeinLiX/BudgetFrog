@@ -18,7 +18,7 @@ export const Request = async (path = `/`, method = `get`, data = null, params = 
         return Promise.resolve({ ...res.data, status: res.status });
     } catch (err) {
         if (err.response.status == 401) {
-            auth.set(false);
+            LS.Set("jwt", null)
         }
 
         return Promise.reject({ ...err.response.data, status: err.response.status });
@@ -33,11 +33,12 @@ export default {
         status: () => Request(`/status/`, `get`)
     },
     user: {
+        me: () => Request(`/user/me/`, `get`),
         login: ({ Email, Password }) => Request(`/user/login/`, `post`, { Email, Password }),
         register: ({ Email, Password, Firstname, Lastname }) => Request(`/user/register/`, `post`, { Email, Password, Firstname, Lastname }),
     },
     budget: {
-        join: ({ BudgetID }) => Request(`/budget/join/${BudgetID}`, `get`),
+        join: ({ InviteToken }) => Request(`/budget/join/${InviteToken}`, `patch`),
         getList: () => Request(`/budget/`, `get`),
         get: ({ BudgetID }) => Request(`/budget/${BudgetID}`, `get`),
         create: ({ Name, InviteToken = null, Currency }) => Request(`/budget/`, `post`, { Name, InviteToken, Currency }),

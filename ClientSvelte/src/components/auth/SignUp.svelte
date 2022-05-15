@@ -1,5 +1,5 @@
 <script>
-    import { LocalStorage as LS } from "../../stores";
+    import { LocalStorage as LS, userDetails } from "../../stores";
     import Request from "../../services/RequestController";
     import { Button, FormGroup, Input, Alert, Col, Row } from "sveltestrap";
 
@@ -19,8 +19,9 @@
             LS.Set("jwt", null);
             const res = await Request.user.register(user);
             LS.Set("jwt", res.data.token);
+            $userDetails = (await Request.user.me()).data;
         } catch (error) {
-            console.log(error)
+            console.log(error);
             errorMessage = error.Exception;
         }
     }

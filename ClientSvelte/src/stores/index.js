@@ -1,6 +1,10 @@
 import { writable } from "svelte/store";
 
-export const auth = writable(true);
+export const auth = writable(false);
+export const errorMSG = writable([]);
+export const selectedBudget=writable([]);
+export const avaliableCurrency = writable([]);
+export const userDetails = writable({});
 
 export const LocalStorage = {
     Get: (key) => {

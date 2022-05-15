@@ -1,6 +1,6 @@
 <script>
   import { push } from "svelte-spa-router";
-  import { LocalStorage as LS } from "../../stores";
+  import { LocalStorage as LS , userDetails} from "../../stores";
   import { navigate } from "../../routes";
   import {
     Collapse,
@@ -29,15 +29,24 @@
 </script>
 
 <Navbar color="light" light expand="md">
-  <NavbarBrand href="/#/">BudgetFrog</NavbarBrand>
+  <div class="nb">
+    <NavbarBrand href="/#/" style="font-size: 32px">BudgetFrog</NavbarBrand>
+  </div>
   <NavbarToggler on:click={() => (isOpen = !isOpen)} />
   <Collapse {isOpen} navbar expand="md" on:update={handleUpdate}>
     <Nav class="ms-auto" navbar>
       <NavItem>
-        <NavLink href="https://github.com/MeinLiX/BudgetFrog">GitHub</NavLink>
+        <NavLink
+          href="https://github.com/MeinLiX/BudgetFrog"
+          style="font-size: 28px"
+        >
+          GitHub
+        </NavLink>
       </NavItem>
       <Dropdown nav inNavbar>
-        <DropdownToggle nav caret>UserName</DropdownToggle>
+        <DropdownToggle nav caret style="font-size: 28px">
+          {`${$userDetails.firstName} ${$userDetails.lastName}`}
+        </DropdownToggle>
         <DropdownMenu end>
           <DropdownItem on:click={() => navigate("profile")}>
             Profile
