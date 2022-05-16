@@ -73,7 +73,9 @@ namespace WepApi.Middleware
                         break;
                 }
 
-                await response.WriteAsync(JsonSerializer.Serialize(responseModel));
+
+
+                await response.WriteAsync(JsonSerializer.Serialize(responseModel, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
             }
         }
     }
