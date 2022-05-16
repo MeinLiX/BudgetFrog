@@ -1,6 +1,5 @@
 <script>
-    import { onMount } from "svelte";
-    import { Button, Container } from "sveltestrap";
+    import {onMount} from "svelte";
     import ModalCreateBudget from "../components/budget/ModalCreateBudget.svelte";
     import ModalJoinBudget from "../components/budget/ModalJoinBudget.svelte";
     import BudgetList from "../components/budget/BudgetList.svelte";
@@ -27,49 +26,24 @@
         try {
             let reqBudgets = await Request.budget.getList();
             budgets = reqBudgets.data;
-        } catch {}
+        } catch {
+        }
     });
+
+
+    const JoinBudgetModalID="budget-join-modal"
+    const CreateBudgetModalID="budget-create-modal"
 </script>
 
-<div class="page">
-    <ModalCreateBudget
-        open={modals.CreateBudget.isOpen}
-        toggle={modals.CreateBudget.toggle}
-    />
-    <ModalJoinBudget
-        open={modals.JoinBudget.isOpen}
-        toggle={modals.JoinBudget.toggle}
-    />
+<ModalJoinBudget ID={JoinBudgetModalID} />
+<ModalCreateBudget ID={CreateBudgetModalID} />
 
-    <Container>
-        <Button
-            color="secondary"
-            on:click={modals.JoinBudget.toggle}
-            outline
-            size="lg"
-            block
-        >
-            Join Budget
-        </Button>
-        <br />
-        <Button
-            color="secondary"
-            on:click={modals.CreateBudget.toggle}
-            outline
-            size="lg"
-            block
-        >
-            Create Budget
-        </Button>
-        <br />
 
-        <BudgetList budgets={budgets}/>
-
-    </Container>
+<div class="center_content">
+    <div class="btn-group">
+        <label class="btn btn-wide" for={JoinBudgetModalID} >Join Budget</label>
+        <label class="btn btn-wide" for={CreateBudgetModalID} >Create Budget</label>
+    </div>
+    <br/>
+    <BudgetList budgets={budgets}/>
 </div>
-
-<style>
-    .page {
-        padding: 10px 20%;
-    }
-</style>

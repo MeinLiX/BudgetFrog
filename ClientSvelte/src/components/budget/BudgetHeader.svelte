@@ -1,21 +1,7 @@
 <script>
     import {onMount} from "svelte";
     import {push, location} from "svelte-spa-router";
-    import {
-        Collapse,
-        Navbar,
-        Button,
-        NavbarToggler,
-        NavbarBrand,
-        ButtonGroup,
-        Nav,
-        NavItem,
-        NavLink,
-        Dropdown,
-        DropdownToggle,
-        DropdownMenu,
-        DropdownItem,
-    } from "sveltestrap";
+
     import Request from "../../services/RequestController";
     import {selectedBudget} from "../../stores";
 
@@ -41,20 +27,23 @@
     }
 </script>
 
-<Navbar color="light" light expand="md">
-    <NavbarBrand href="/#/budget/{$selectedBudget.id}" style="font-size: 22px">
-        Budget: {$selectedBudget.name} <b>({$selectedBudget.balance?.amount} : {$selectedBudget.balance?.currency})</b>
-    </NavbarBrand>
-    <NavbarToggler on:click={() => (isOpen = !isOpen)}/>
-    <Collapse {isOpen} navbar expand="md" on:update={handleUpdate}>
-        <Nav class="ms-auto" navbar>
-            <NavItem>
-                <NavLink href="#/budget/{$selectedBudget.id}/planned" style="font-size: 18px">Planned</NavLink>
-            </NavItem>
-            <NavItem>
-                <NavLink href="#/budget/{$selectedBudget.id}/categories" style="font-size: 18px">Categories
-                </NavLink>
-            </NavItem>
-        </Nav>
-    </Collapse>
-</Navbar>
+<div class="navbar bg-base-300">
+    <div class="navbar-start">
+        <a class="btn btn-ghost normal-case" href="/#/budget/{$selectedBudget.id}">
+            Budget: <b>{$selectedBudget.name}</b>
+            <div class="badge badge-outline">
+                {$selectedBudget.balance?.amount} : {$selectedBudget.balance?.currency}
+            </div>
+
+        </a>
+    </div>
+    <div class="navbar-end">
+        <a class="btn btn-ghost normal-case" href="#/budget/{$selectedBudget.id}/planned">
+            Planned
+        </a>
+        <a class="btn btn-ghost normal-case" href="#/budget/{$selectedBudget.id}/categories">
+            Categories
+        </a>
+    </div>
+</div>
+

@@ -1,18 +1,7 @@
 <script>
-    import {
-        Button,
-        Modal,
-        ModalBody,
-        ModalFooter,
-        ModalHeader,
-        FormGroup,
-        Input,
-        Row,
-        Col,
-    } from "sveltestrap";
-
     import Request from "../../services/RequestController";
-    import { avaliableCurrency } from "../../stores";
+    import {avaliableCurrency} from "../../stores";
+    import {ErrorWrapper} from "../../services/RequestWrapper";
 
     let modelToRequest = {
         Name: "",
@@ -21,54 +10,49 @@
     };
 
     const create = async () => {
-        console.log("Budget create");
-        console.log(modelToRequest);
-
         try {
             let res = await Request.budget.create(modelToRequest);
-            console.log(res);
-            toggle();
+            document.getElementById(ID).click(); //to close.
         } catch (err) {
-            console.log(err);
+            ErrorWrapper(err);
         }
     };
-
-    export let open = false;
-    export let toggle = () => (open = !open);
+    export let ID = "budget-create-modal";
 </script>
 
-<Modal isOpen={open} {toggle}>
-    <ModalHeader {toggle}>Create Budget</ModalHeader>
-    <ModalBody>
-        <Row>
-            <Col>
-                <FormGroup floating label="Budget name">
-                    <Input type="text" bind:value={modelToRequest.Name} />
-                </FormGroup>
-            </Col>
-        </Row>
-        <Row>
-            <Col>
-                <FormGroup>
-                    <Input type="select" bind:value={modelToRequest.Currency}>
-                        {#each $avaliableCurrency as currency}
-                            <option>{currency}</option>
-                        {/each}
-                    </Input>
-                </FormGroup>
-            </Col>
-            <Col>
-                <FormGroup>
-                    <Input
-                        type="switch"
-                        label="Generate Invitetoken"
-                        bind:checked={modelToRequest.InviteToken}
-                    />
-                </FormGroup>
-            </Col>
-        </Row>
-    </ModalBody>
-    <ModalFooter>
-        <Button color="primary" on:click={create}>Create</Button>
-    </ModalFooter>
-</Modal>
+<input type="checkbox" id={ID} class="modal-toggle"/>
+<div class="modal">
+    <div class="modal-box relative">
+        <label for={ID} class="btn btn-sm btn-circle absolute right-2 top-2">✕</label>
+        <form on:submit|preventDefault={create}>
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">Budget name</span>
+                </label>
+                <input type="text" placeholder="Budget name" class="input input-bordered"
+                       bind:value={modelToRequest.Name}/>
+            </div>
+
+            <div class="form-control">
+                <label class="label">
+                    <span class="label-text">Select currency:</span>
+                </label>
+                <select class="select select-bordered" bind:value={modelToRequest.Currency}>
+                    {#each $avaliableCurrency as currency}
+                        <option>{currency}</option>
+                    {/each}
+                </select>
+            </div>
+            <div class="form-control">
+                <label class="label cursor-pointer">
+                    <span class="label-text">Generate `invite token`</span>
+                    <input type="checkbox" class="toggle" bind:checked={modelToRequest.InviteToken}/>
+                </label>
+            </div>
+            <br/>
+            <div class="form-control">
+                <button class="btn btn-primary">Create</button>
+            </div>
+        </form>
+    </div>
+</div>

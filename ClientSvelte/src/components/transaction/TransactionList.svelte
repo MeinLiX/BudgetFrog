@@ -1,5 +1,4 @@
 <script>
-    import {Card, Button, Icon} from "sveltestrap";
     //import Router, {push, location} from "svelte-spa-router";
 
     export let transactions = [];
@@ -8,7 +7,7 @@
 
 <div>
     {#each transactions as transaction}
-        <Card body>
+        <div class="card card-bordered w-96 bg-base-100 shadow">
             <h4 class="text-center" style="color:{transaction.transactionDescriptionCategory?.color}">
                 {transaction.transactionDescriptionCategory?.name}
             </h4>
@@ -17,7 +16,7 @@
                 ({transaction.balance?.currency})
             </h3>
             <h4 class="text-center">{transaction?.notes}</h4>
-        </Card>
+        </div>
         <br/>
     {:else}
         <h1 class="text-center">Not contains transactions.</h1>

@@ -1,6 +1,5 @@
 <script>
     import {onMount} from "svelte";
-    import {Button, Container} from "sveltestrap";
     import Request from "../services/RequestController";
     import TransactionList from "../components/transaction/TransactionList.svelte"
 
@@ -17,12 +16,6 @@
     });
 </script>
 
-<div class="page">
+<div class="center_content">
    <TransactionList transactions={transactions}/>
 </div>
-
-<style>
-    .page {
-        padding: 10px 20%;
-    }
-</style>

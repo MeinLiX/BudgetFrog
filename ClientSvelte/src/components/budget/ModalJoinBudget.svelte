@@ -1,45 +1,32 @@
 <script>
-    import {
-        Button,
-        Modal,
-        ModalBody,
-        ModalFooter,
-        ModalHeader,
-        FormGroup,
-        Input,
-    } from "sveltestrap";
-
     import Request from "../../services/RequestController";
+    import {ErrorWrapper} from "../../services/RequestWrapper";
 
     let modelToRequest = {
-        InviteToken:""
-
+        InviteToken: ""
     };
 
     const join = async () => {
-        console.log("Budget Join");
-
-        try {
-            let res = await Request.budget.join(modelToRequest);
-            console.log(res);
-            toggle();
-        } catch (err) {//todo
-            console.error(err);
+        if (modelToRequest.InviteToken === "") {
+            modelToRequest.InviteToken = "1";
         }
+        try {
+            await Request.budget.join(modelToRequest);
+        } catch (err) {
+            ErrorWrapper(err);
+        }
+        modelToRequest.InviteToken = "";
     };
 
-    export let open = false;
-    export let toggle = () => (open = !open);
+    export let ID = "budget-join-modal"
 </script>
 
-<Modal isOpen={open} {toggle}>
-    <ModalHeader {toggle}>Create Budget</ModalHeader>
-    <ModalBody>
-        <FormGroup label="Enter invite token">
-            <Input type="text" bind:value={modelToRequest.InviteToken} />
-        </FormGroup>
-    </ModalBody>
-    <ModalFooter>
-        <Button color="primary" on:click={join}>Join</Button>
-    </ModalFooter>
-</Modal>
+<input type="checkbox" id="{ID}" class="modal-toggle"/>
+<label for="{ID}" class="modal cursor-pointer">
+    <div class="modal-box relative form-control">
+        <input type="text" placeholder="invite token" class="input input-bordered input-lg"
+               bind:value={modelToRequest.InviteToken}/>
+        <br/>
+        <label for="{ID}" class="btn btn-outline btn-secondary" on:click={join}>Join</label>
+    </div>
+</label>

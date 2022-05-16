@@ -3,20 +3,6 @@
     import {userDetails} from "../stores";
     import Request from "../services/RequestController"
 
-    import {
-        Card,
-        CardBody,
-        CardFooter,
-        CardHeader,
-        CardSubtitle,
-        CardText,
-        CardTitle,
-        Col,
-        Input,
-        FormGroup,
-        Row,
-    } from "sveltestrap";
-
     onMount(async () => {
         try {
             let reqMe = await Request.user.me();
@@ -27,55 +13,13 @@
     });
 </script>
 
-<div class="profile">
-    <Card class="mb-3">
-        <CardHeader>
-            <CardTitle style="text-align: center;">Profile details</CardTitle>
-        </CardHeader>
-        <CardBody>
-            <CardText>
-                <Row>
-                    <Col>
-                        <FormGroup floating label="Firstname" size="lg">
-                            <Input
-                                    type="text"
-                                    placeholder="Firstname"
-                                    bind:value={$userDetails.firstName}
-                                    disabled
-                            />
-                        </FormGroup>
-                    </Col>
-                    <Col>
-                        <FormGroup floating label="Lastname" size="lg">
-                            <Input
-                                    type="text"
-                                    placeholder="Lastname"
-                                    bind:value={$userDetails.lastName}
-                                    disabled
-                            />
-                        </FormGroup>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col/>
-                    <Col>
-                        <FormGroup floating label="Email" size="lg">
-                            <Input
-                                    type="email"
-                                    placeholder="Email"
-                                    bind:value={$userDetails.email}
-                                    disabled
-                            />
-                        </FormGroup>
-                    </Col>
-                </Row>
-            </CardText>
-        </CardBody>
-    </Card>
+<div class="center_content">
+    <div class="card w-96 glass">
+        <figure><img src="https://random.imagecdn.app/250/250" alt="Avatar"></figure>
+        <div class="card-body">
+            <p class="card-title">{$userDetails.firstName}</p>
+            <p class="card-title">{$userDetails.lastName}</p>
+            <p class="card-title">{$userDetails.email}</p>
+        </div>
+    </div>
 </div>
-
-<style>
-    .profile {
-        padding: 10px 20%;
-    }
-</style>

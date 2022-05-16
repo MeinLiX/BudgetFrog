@@ -1,5 +1,6 @@
 <script>
     import {onMount} from "svelte";
+    import { fade } from 'svelte/transition';
     import Router, {push, location} from "svelte-spa-router";
     import routes from "./routes";
     import Header from "./components/layout/Header.svelte";
@@ -9,10 +10,10 @@
         auth,
         userDetails,
         avaliableCurrency,
+        errorMSG
     } from "./stores";
 
     onMount(async () => {
-
         try {
             $userDetails = (await Request.user.me()).data;
             $auth = true;
@@ -20,7 +21,7 @@
             $userDetails = {};
             $auth = false;
         }
-
+        console.log($auth);
         if (!$auth) {
             await push("#/");
         } else {
@@ -28,6 +29,7 @@
                 $avaliableCurrency = (await Request.exchange.avaliableCurrency()).data.currencies;
             } catch {
             }
+
         }
     });
 </script>
@@ -39,12 +41,20 @@
             <BudgetHeader/>
         {/if}
     {/if}
+
+    <div class="fixed w-96">
+        {#each $errorMSG as message}
+            <label class="label" transition:fade>
+                <div class="alert alert-error">
+                    <span>{message} </span>
+                </div>
+            </label>
+        {/each}
+    </div>
     <Router {routes}/>
 </div>
 
 <style>
-    @import "https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css";
-
     #app {
         min-height: 80vh;
     }

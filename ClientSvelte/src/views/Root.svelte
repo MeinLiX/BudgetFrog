@@ -13,17 +13,15 @@
     <div class="root">
         <div class="root__illustration"/>
         <div class="root__container">
-            {#if !registrationField}
-                <div>
+            <div>
+                {#if !registrationField}
                     <SignIn/>
-                    <span on:click={switchRegField}> Sign up for a new account </span>
-                </div>
-            {:else}
-                <div>
+                    <label on:click={switchRegField} class="label-text text-center"> Sign up for a new account </label>
+                {:else}
                     <SignUp/>
-                    <span on:click={switchRegField}> Sign in already have account </span>
-                </div>
-            {/if}
+                    <label on:click={switchRegField} class="label-text text-center"> Sign in already have account </label>
+                {/if}
+            </div>
         </div>
     </div>
 {:else}
