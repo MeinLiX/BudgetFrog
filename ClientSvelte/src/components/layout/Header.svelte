@@ -1,7 +1,6 @@
 <script>
     import {push} from "svelte-spa-router";
     import {LocalStorage as LS, userDetails} from "../../stores";
-    import {navigate} from "../../routes";
 
     function logout() {
         LS.Set("jwt", null);
@@ -15,7 +14,7 @@
     }
 </script>
 
-<div class="navbar bg-base-200">
+<div class="navbar bg-indigo-100">
     <div class="navbar-start">
         <div class="dropdown">
             <label tabindex="0" class="btn btn-ghost btn-circle">

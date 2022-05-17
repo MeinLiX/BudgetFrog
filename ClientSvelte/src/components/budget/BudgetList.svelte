@@ -30,7 +30,7 @@
 <div>
     {#each budgets as budget}
         <Dialog ModalID="modal_leve_{budget.id}" ConfirmFunction={ActionToLeave} ConfirmFunctionParams={{id:budget.id}}>
-            <h1>You really want to leave from <b>{budget.name}</b> budget?</h1>
+            <h1>You really want to leave from <br/><b>{budget.name}</b> budget?</h1>
         </Dialog>
 
         <div class="card w-96 bg-base-100 shadow card-bordered">

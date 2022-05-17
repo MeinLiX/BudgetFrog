@@ -127,5 +127,11 @@ export default {
         avaliableCurrency: () => Request(`/OldExchanger/available/`, `get`),
         getCurrency: ({from, to}) => Request(`/OldExchanger/one`, `get`, null, {from, to}),
         convert: ({from, to, amount}) => Request(`/OldExchanger/convert`, `get`, null, {from, to, amount}),
+    },
+    photo: {
+        get: async (keyWord) => (await axios({
+            url: `https://api.pexels.com/v1/search?query=${keyWord}`,
+            headers: {'Authorization': `563492ad6f91700001000001fcfc7adab515422e997cdd57f04b5853`}
+        })).data.photos[Math.floor(Math.random() * 15)].src.original
     }
 }

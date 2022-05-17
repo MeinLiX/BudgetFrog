@@ -27,21 +27,20 @@
     }
 </script>
 
-<div class="navbar bg-base-300">
+<div class="navbar bg-yellow-100">
     <div class="navbar-start">
         <a class="btn btn-ghost normal-case" href="/#/budget/{$selectedBudget.id}">
             Budget: <b>{$selectedBudget.name}</b>
             <div class="badge badge-outline">
                 {$selectedBudget.balance?.amount} : {$selectedBudget.balance?.currency}
             </div>
-
         </a>
     </div>
     <div class="navbar-end">
         <a class="btn btn-ghost normal-case" href="#/budget/{$selectedBudget.id}/planned">
             Planned
         </a>
-        <a class="btn btn-ghost normal-case" href="#/budget/{$selectedBudget.id}/categories">
+        <a class="btn btn-ghost normal-case" href="#/budget/{$selectedBudget.id}/category">
             Categories
         </a>
     </div>

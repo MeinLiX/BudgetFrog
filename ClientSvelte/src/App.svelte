@@ -53,8 +53,11 @@
     <Router {routes}/>
 </div>
 
-<style>
+<style global>
     #app {
         min-height: 80vh;
+    }
+    a {
+        text-decoration: none !important;
     }
 </style>

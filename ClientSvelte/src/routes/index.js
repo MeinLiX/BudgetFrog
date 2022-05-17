@@ -3,8 +3,10 @@ import Root from "../views/Root.svelte";
 import NotFound from "../views/NotFound.svelte";
 import Profile from "../views/Profile.svelte";
 import BudgetDetails from "../views/BudgetDetails.svelte"
+import BudgetCategories from "../views/BudgetCategories.svelte"
 
 export default {
+    "/budget/:budgetID/category":BudgetCategories,
     "/budget/:budgetID":BudgetDetails,
     "/": Root,
     "/profile": Profile,
