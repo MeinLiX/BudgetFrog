@@ -35,13 +35,10 @@ public class LeaveBudgetCommand : IRequest<Utils.Wrapper.IResult>
             {
                 budget.Users.Remove(user);
 
-                //When last user left from the Budget => delete Budget and transaction description categories.
+                
                 if (budget.Users.Count == 0)
                 {
-                    _context.TransactionDescriptionCategories.RemoveRange(
-                        _context.TransactionDescriptionCategories.Where(tdc => tdc.Budget == budget));
-
-                    _context.Budgets.Remove(budget);
+                    _context.Budgets.Remove(budget);//cascade
                 }
 
                 await _context.SaveChangesAsync();
