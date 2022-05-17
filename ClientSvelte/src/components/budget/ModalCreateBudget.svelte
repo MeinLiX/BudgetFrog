@@ -12,12 +12,18 @@
     const create = async () => {
         try {
             let res = await Request.budget.create(modelToRequest);
-            document.getElementById(ID).click(); //to close.
+            await SuccessAction();
+            try {
+                document.getElementById(ID).click(); //to close.
+            } catch {
+            }
         } catch (err) {
             ErrorWrapper(err);
         }
     };
     export let ID = "budget-create-modal";
+    export let SuccessAction = () => {
+    };
 </script>
 
 <input type="checkbox" id={ID} class="modal-toggle"/>

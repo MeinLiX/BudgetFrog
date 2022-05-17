@@ -4,45 +4,33 @@
     import ModalJoinBudget from "../components/budget/ModalJoinBudget.svelte";
     import BudgetList from "../components/budget/BudgetList.svelte";
     import Request from "../services/RequestController";
-
-    let modals = {
-        CreateBudget: {
-            isOpen: false,
-            toggle: () => {
-                modals.CreateBudget.isOpen = !modals.CreateBudget.isOpen;
-            },
-        },
-        JoinBudget: {
-            isOpen: false,
-            toggle: () => {
-                modals.JoinBudget.isOpen = !modals.JoinBudget.isOpen;
-            },
-        },
-    };
+    import {ErrorWrapper} from "../services/RequestWrapper";
 
     let budgets = [];
 
     onMount(async () => {
-        try {
-            let reqBudgets = await Request.budget.getList();
-            budgets = reqBudgets.data;
-        } catch {
-        }
+        await UpdateBudgets();
     });
 
+    const UpdateBudgets = async () => {
+        try {
+            budgets = (await Request.budget.getList()).data;
+        } catch (err) {
+            ErrorWrapper(err);
+        }
+    }
 
-    const JoinBudgetModalID="budget-join-modal"
-    const CreateBudgetModalID="budget-create-modal"
+    const JoinBudgetModalID = "budget-join-modal"
+    const CreateBudgetModalID = "budget-create-modal"
 </script>
 
-<ModalJoinBudget ID={JoinBudgetModalID} />
-<ModalCreateBudget ID={CreateBudgetModalID} />
-
+<ModalJoinBudget ID={JoinBudgetModalID} SuccessAction={UpdateBudgets}/>
+<ModalCreateBudget ID={CreateBudgetModalID} SuccessAction={UpdateBudgets}/>
 
 <div class="center_content">
     <div class="btn-group">
-        <label class="btn btn-wide" for={JoinBudgetModalID} >Join Budget</label>
-        <label class="btn btn-wide" for={CreateBudgetModalID} >Create Budget</label>
+        <label class="btn btn-wide" for={JoinBudgetModalID}>Join Budget</label>
+        <label class="btn btn-wide" for={CreateBudgetModalID}>Create Budget</label>
     </div>
     <br/>
     <BudgetList budgets={budgets}/>

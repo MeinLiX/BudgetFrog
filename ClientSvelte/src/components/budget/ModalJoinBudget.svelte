@@ -12,6 +12,11 @@
         }
         try {
             await Request.budget.join(modelToRequest);
+            await SuccessAction();
+            try {
+                document.getElementById(ID).click(); //to close.
+            } catch {
+            }
         } catch (err) {
             ErrorWrapper(err);
         }
@@ -19,6 +24,8 @@
     };
 
     export let ID = "budget-join-modal"
+    export let SuccessAction = () => {
+    };
 </script>
 
 <input type="checkbox" id="{ID}" class="modal-toggle"/>

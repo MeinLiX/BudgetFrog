@@ -21,14 +21,13 @@
             $userDetails = {};
             $auth = false;
         }
-        console.log($auth);
+        try {
+            $avaliableCurrency = (await Request.exchange.avaliableCurrency()).data.currencies;
+        } catch {}
         if (!$auth) {
             await push("#/");
         } else {
-            try {
-                $avaliableCurrency = (await Request.exchange.avaliableCurrency()).data.currencies;
-            } catch {
-            }
+
 
         }
     });
