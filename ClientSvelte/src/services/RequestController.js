@@ -65,21 +65,28 @@ export default {
         getList: ({BudgetID}) => Request(`/plannedBudget/${BudgetID}`, `get`),
         create: ({
                      BudgetID,
-                     DateStart,
-                     DateEnd,
                      Title,
-                     Desctiption = null,
                      PlannedAmount,
-                     Currency = null
+                     DateStart=null,
+                     DateEnd=null,
+                     Desctiption = null,
+                     Currency = null,
+                     CategoryID=null
                  }) => Request(`/plannedBudget/${BudgetID}`, `post`, {
             DateStart,
             DateEnd,
             Title,
             Desctiption,
             PlannedAmount,
-            Currency
+            Currency,
+            CategoryID
         }),
-        delete: ({BudgetID, PlannedBudgetID}) => Request(`/plannedBudget/${BudgetID}`, `get`, {PlannedBudgetID}),
+        setAmount: ({
+                        BudgetID,
+                        PlannedBudgetID,
+                        PlannedAmount
+                    }) => Request(`/plannedBudget/${BudgetID}/amount`, `patch`, {PlannedBudgetID, PlannedAmount}),
+        delete: ({BudgetID, PlannedBudgetID}) => Request(`/plannedBudget/${BudgetID}`, `delete`, {PlannedBudgetID}),
     },
     transaction: {
         getList: ({BudgetID}) => Request(`/TransactionDescription/${BudgetID}`, `get`),

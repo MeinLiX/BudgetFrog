@@ -5,6 +5,7 @@
     import {ErrorWrapper} from "../services/RequestWrapper";
     import ModalCreateCategory from "../components/category/ModalCreateCategory.svelte";
 
+
     const UpdateCategories = async () => {
         try {
             categories = (await Request.category.getList({BudgetID: params.budgetID})).data;

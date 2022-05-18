@@ -23,7 +23,7 @@
         BudgetID: "",
         Name: "",
         Income: false,
-        Color: "#FFFFFF"
+        Color: "#000000"
     };
 </script>
 

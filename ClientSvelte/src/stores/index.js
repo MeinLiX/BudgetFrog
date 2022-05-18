@@ -2,7 +2,9 @@ import { writable } from "svelte/store";
 
 export const auth = writable(false);
 export const errorMSG = writable([]);
+export const infoMSG = writable([]);
 export const selectedBudget=writable([]);
+export const avaliableCategories = writable([]);
 export const avaliableCurrency = writable([]);
 export const userDetails = writable({});
 

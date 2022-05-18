@@ -10,7 +10,8 @@
         auth,
         userDetails,
         avaliableCurrency,
-        errorMSG
+        errorMSG,
+        infoMSG
     } from "./stores";
 
     onMount(async () => {
@@ -41,15 +42,23 @@
         {/if}
     {/if}
 
-    <div class="fixed w-96">
+    <div class="fixed w-96" style="z-index: 999">
         {#each $errorMSG as message}
             <label class="label" transition:fade>
                 <div class="alert alert-error">
-                    <span>{message} </span>
+                    <span>{message}</span>
+                </div>
+            </label>
+        {/each}
+        {#each $infoMSG as message}
+            <label class="label" transition:fade>
+                <div class="alert shadow-lg">
+                    <span>{message}</span>
                 </div>
             </label>
         {/each}
     </div>
+
     <Router {routes}/>
 </div>
 

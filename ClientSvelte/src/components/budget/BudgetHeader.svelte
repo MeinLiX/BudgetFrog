@@ -20,10 +20,13 @@
     });
 </script>
 
-<div class="navbar bg-yellow-100">
+<div class="navbar bg-yellow-100 ">
     <div class="navbar-start">
         <a class="btn btn-ghost normal-case text-xl" href="/#/budget/{$selectedBudget.id}">
             <b>{$selectedBudget.name}</b>
+        </a>
+        <a class="btn btn-ghost normal-case" href="/#/budget/{$selectedBudget.id}/statistic/">
+            Statistic
         </a>
     </div>
     <div class="navbar-center">
@@ -35,10 +38,10 @@
         </div>
     </div>
     <div class="navbar-end">
-        <a class="btn btn-ghost normal-case" href="#/budget/{$selectedBudget.id}/planned">
+        <a class="btn btn-ghost normal-case" href="/#/budget/{$selectedBudget.id}/planned/">
             Planned
         </a>
-        <a class="btn btn-ghost normal-case" href="#/budget/{$selectedBudget.id}/category">
+        <a class="btn btn-ghost normal-case" href="/#/budget/{$selectedBudget.id}/category/">
             Categories
         </a>
     </div>
