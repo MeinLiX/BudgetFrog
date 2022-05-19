@@ -1,8 +1,23 @@
 <script>
-    //import Router, {push, location} from "svelte-spa-router";
+    import Request from "../../services/RequestController";
+    import {ErrorWrapper} from "../../services/RequestWrapper";
 
+
+    export let UpdateTransactions = async () => {
+        try {
+            transactions = (await Request.transaction.getList({BudgetID: budgetID})).data;
+        } catch (err) {
+            ErrorWrapper(err);
+        }
+    }
+
+    const toGroup= (transactionsArray)=>{
+        return transactionsArray;
+    }
+
+    export let budgetID;
     export let transactions = [];
-    //style="color:{transaction.transactionDescriptionCategory?.color}"
+    $: groupedTransactions=toGroup(transactions);
 </script>
 
 <div>
