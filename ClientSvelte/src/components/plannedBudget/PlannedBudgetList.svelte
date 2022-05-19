@@ -37,8 +37,7 @@
             if (Date.now() > Date.parse(plannedBudget.dateEnd) &&
                 plannedBudget.realizeBalance.amount < plannedBudget.plannedBalance.amount)
                 return 'bg-red-100';
-            else if (Date.now() > Date.parse(plannedBudget.dateEnd) &&
-                plannedBudget.realizeBalance.amount >= plannedBudget.plannedBalance.amount) {
+            else if (plannedBudget.realizeBalance.amount >= plannedBudget.plannedBalance.amount) {
                 return 'bg-green-100';
             }
             return '';
@@ -119,7 +118,8 @@
                     </td>
                 {:else}
                     <td class="text-center {style.bgColor(plannedBudget)}">
-                        <input class="input input-sm" bind:value={plannedBudget.realizeBalance.amount}/>
+                        <input class="input input-sm text-center {style.bgColor(plannedBudget)}"
+                               bind:value={plannedBudget.realizeBalance.amount}/>
                     </td>
                     <td class="text-center {style.bgColor(plannedBudget)}">
                         <div class="ml-2 mr-2">
@@ -131,7 +131,7 @@
                     <td class="text-center {style.bgColor(plannedBudget)}">
                         {plannedBudget.plannedBalance.amount}
                     </td>
-                    <td class="text-center {style.bgColor(plannedBudget)}">Not bound.</td>
+                    <td class="text-center {style.bgColor(plannedBudget)}">Not bound</td>
                     <td class="{style.bgColor(plannedBudget)}">
                         <label for="modal_remove_PB_{plannedBudget.id}" class="btn btn-ghost btn-xs">
                             Delete
@@ -142,8 +142,6 @@
                     </td>
                 {/if}
             </tr>
-        {:else}
-            <h1 class="text-center">Not contains categories.</h1>
         {/each}
         </tbody>
     </table>
