@@ -6,33 +6,31 @@ public class CreateTransactionCommandValidator : AbstractValidator<CreateTransac
 {
     public CreateTransactionCommandValidator()
     {
-        RuleFor(c => c.BudgetID)
+        RuleFor(ctc => ctc.BudgetID)
             .NotEmpty()
             .WithMessage("Budget id is required.")
             .Must(bID => Guid.TryParse(bID, out _))
             .WithMessage("Incorrect Budget id.");
 
-        RuleFor(c => c.CategoryID)
+        RuleFor(ctc => ctc.CategoryID)
             .NotEmpty()
             .WithMessage("Category id is required.")
             .Must(bID => Guid.TryParse(bID, out _))
             .WithMessage("Incorrect category id.");
 
-        RuleFor(c => c.Date);
+        RuleFor(ctc => ctc.Date);
 
-        RuleFor(c => c.Notes)
+        RuleFor(ctc => ctc.Notes)
             .MaximumLength(64)
             .WithMessage("The maximum length of the notes is 64");
 
-        RuleFor(c => c.RecepitUrl);
-
-        RuleFor(r => r.Amount)
+        RuleFor(ctc => ctc.Amount)
             .NotEmpty()
             .WithMessage("Amount id is required.")
             .GreaterThanOrEqualTo(0)
             .WithMessage("Amount cannot be negative.");
 
-        RuleFor(r => r.Currency)
+        RuleFor(ctc => ctc.Currency)
             .Matches(Utils.Constants.Currencies)
             .WithMessage("Not supported currency.");
     }

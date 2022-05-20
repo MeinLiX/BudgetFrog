@@ -11,7 +11,6 @@ public class CreateTransactionCommand : IRequest<Utils.Wrapper.IResult>
 {
     public DateTime Date { get; set; } = DateTime.Now;
     public string? Notes { get; set; }
-    public string? RecepitUrl { get; set; }
     public decimal Amount { get; set; }
     public string? Currency { get; set; }
     public string CategoryID { get; set; }
@@ -42,7 +41,7 @@ public class CreateTransactionCommand : IRequest<Utils.Wrapper.IResult>
             {
                 Date = request.Date,
                 Notes = request.Notes ?? "",
-                RecepitUrl = request.RecepitUrl ?? "",
+                AutoGen = false,
                 Balance = new Models.Budgets.Balance() { Amount = request.Amount, Currency = request.Currency ?? userBudget.Balance.Currency },
                 TransactionDescriptionCategory = _context.TransactionDescriptionCategories.First(b => b.ID == request.GetCategoryID && b.Budget.ID == userBudget.ID)
                                                           ?? throw new AppException("Category not found"),

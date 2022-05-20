@@ -10,7 +10,7 @@ public class TransactionDescription : ModelBase
 
     public string Notes { get; set; }
 
-    public string RecepitUrl { get; set; }
+    public bool AutoGen { get; set; }
 
     public Balance Balance { get; set; }
 

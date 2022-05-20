@@ -10,7 +10,7 @@ public static class TransactionDescriptionBuilder
 
         MB.Entity<TransactionDescription>()
           .Property(td => td.Date)
-          .HasColumnType("DATE")
+          .HasColumnType("timestamp")
           .IsRequired();
 
         MB.Entity<TransactionDescription>()
@@ -18,7 +18,8 @@ public static class TransactionDescriptionBuilder
           .HasColumnType("TEXT");
 
         MB.Entity<TransactionDescription>()
-          .Property(td => td.RecepitUrl)
-          .HasColumnType("TEXT");
+          .Property(td => td.AutoGen)
+          .HasColumnType("BOOLEAN")
+          .IsRequired();
     }
 }
