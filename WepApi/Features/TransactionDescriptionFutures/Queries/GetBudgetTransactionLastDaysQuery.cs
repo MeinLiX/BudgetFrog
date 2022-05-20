@@ -35,11 +35,13 @@ public class GetBudgetTransactionLastDaysQuery : IRequest<Result<List<Transactio
                             .Where(t => t.Budget.ID == query.GetBudgetID && t.Budget.Users.Contains(user))
                             .Include(t => t.Balance)
                             .Include(t => t.TransactionDescriptionCategory)
+                            .OrderByDescending(t => t.Date)
                             .ToList(),
                     _ => _context.TransactionsDescription
                             .Where(t => t.Budget.ID == query.GetBudgetID && t.Budget.Users.Contains(user) && t.Date.AddDays(query.Days) >= DateTime.Now)
                             .Include(t => t.Balance)
                             .Include(t => t.TransactionDescriptionCategory)
+                            .OrderByDescending(t => t.Date)
                             .ToList()
                 });
         }

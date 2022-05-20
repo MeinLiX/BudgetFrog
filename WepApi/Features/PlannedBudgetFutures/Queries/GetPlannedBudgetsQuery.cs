@@ -32,6 +32,7 @@ public class GetPlannedBudgetsQuery : IRequest<Result<List<PlannedBudget>>>
                                        .Include(pb => pb.PlannedBalance)
                                        .Include(pb => pb.RealizeBalance)
                                        .Include(pb => pb.TransactionDescriptionCategory)
+                                       .OrderByDescending(t => t.DateStart)
                                        .ToList()
                 );
         }

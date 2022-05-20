@@ -25,6 +25,7 @@ public class GetBudgetCategoriesQuery : IRequest<Result<List<TransactionDescript
             List<TransactionDescriptionCategory> categories =
                 _context.TransactionDescriptionCategories
                         .Where(c => c.Budget.ID == query.GetBudgetID && c.Budget.Users.Contains(user))
+                        .OrderBy(t => t.Name)
                         .ToList();
 
             return Result<List<TransactionDescriptionCategory>>.Success(categories);

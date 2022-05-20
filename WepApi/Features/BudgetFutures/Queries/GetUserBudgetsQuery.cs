@@ -24,6 +24,7 @@ public class GetUserBudgetsQuery : IRequest<Result<List<Budget>>>
                                     .Where(b => b.Users.Contains(user))
                                     .Include(b => b.Users)
                                     .Include(b => b.Balance)
+                                    .OrderBy(t => t.Name)
                                     .ToList();
 
             return Result<List<Budget>>.Success(budgetsList);
