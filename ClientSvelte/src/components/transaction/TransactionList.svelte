@@ -14,14 +14,6 @@
         }
     }
 
-    export let UpdateTransactions = async () => {
-        try {
-            transactions = (await Request.transaction.getList({BudgetID: budgetID})).data;
-        } catch (err) {
-            ErrorWrapper(err);
-        }
-    }
-
     const toGroup = (transactionsArray) => {
         let groups = []; // {date:transactions}[]
 
@@ -40,6 +32,8 @@
         });
     }
 
+    export let UpdateTransactions = async () => {
+    }
     export let budgetID;
     export let transactions = [];
     $: groupedTransactions = toGroup(transactions);
@@ -107,7 +101,7 @@
                                 {/if}
                             </div>
                             <div class="flex-0">
-                                
+
                             </div>
                             <div class="inline-flex text-xl items-center text-base font-semibold"
                                  style="color:{transaction.transactionDescriptionCategory?.income?'green':'red'}">

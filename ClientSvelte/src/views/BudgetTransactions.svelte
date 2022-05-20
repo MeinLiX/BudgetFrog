@@ -35,5 +35,5 @@
 
 <div class="center_content">
     <label class="btn btn-wide btn-outline mb-5 rounded-full" for={CreateTransactionModalID}>Add transaction</label>
-    <TransactionList transactions={transactions} budgetID={params.budgetID}/>
+    <TransactionList transactions={transactions} budgetID={params.budgetID} UpdateTransactions={UpdateTransactions}/>
 </div>
