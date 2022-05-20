@@ -4,7 +4,6 @@
     import {avaliableCategories, avaliableCurrency, selectedBudget} from "../../stores";
 
     const create = async () => {
-        console.log(modelToRequest)
         try {
             modelToRequest.BudgetID = budgetID;
             await Request.plannedBudget.create(modelToRequest);
@@ -13,18 +12,8 @@
                 document.getElementById(ID).click(); //to close.
             } catch {
             }
-            modelToRequest = {
-                BudgetID: "",
-                DateStart: new Date(),
-                DateEnd: new Date(),
-                Title: "",
-                Desctiption: "",
-                PlannedAmount: 100,
-                Currency: $selectedBudget?.balance?.currency || "UAH",
-                CategoryID: null
-            };
+            modelToRequest = initialRequestModel;
         } catch (err) {
-            console.log(err)
             ErrorWrapper(err);
         }
     };
@@ -33,16 +22,17 @@
     export let budgetID;
     export let SuccessAction = () => {
     };
-    let modelToRequest = {
+    const initialRequestModel = {
         BudgetID: "",
-        DateStart: new Date(),
-        DateEnd: new Date(),
+        DateStart: new Date().toISOString().split('T')[0],
+        DateEnd: new Date(new Date().getTime() + 86400000 * 7).toISOString().split('T')[0],
         Title: "",
         Desctiption: "",
         PlannedAmount: 100,
         Currency: $selectedBudget?.balance?.currency || "UAH",
         CategoryID: null
     };
+    let modelToRequest = initialRequestModel;
     let CategoryNull = true;
 </script>
 
