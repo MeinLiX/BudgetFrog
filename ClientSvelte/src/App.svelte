@@ -18,13 +18,11 @@
         try {
             $userDetails = (await Request.user.me()).data;
             $auth = true;
+            $avaliableCurrency = (await Request.exchange.avaliableCurrency()).data.currencies;
         } catch {
             $userDetails = {};
             $auth = false;
         }
-        try {
-            $avaliableCurrency = (await Request.exchange.avaliableCurrency()).data.currencies;
-        } catch {}
         if (!$auth) {
             await push("#/");
         } else {

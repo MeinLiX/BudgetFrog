@@ -1,5 +1,5 @@
 <script>
-    import {LocalStorage as LS, userDetails} from "../../stores";
+    import {avaliableCurrency, LocalStorage as LS, userDetails} from "../../stores";
     import Request from "../../services/RequestController";
     import {ErrorWrapper} from "../../services/RequestWrapper";
 
@@ -16,6 +16,7 @@
             const res = await Request.user.login(user);
             LS.Set("jwt", res.data.token);
             $userDetails = (await Request.user.me()).data;
+            $avaliableCurrency = (await Request.exchange.avaliableCurrency()).data.currencies;
         } catch (err) {
             console.log(err)
             ErrorWrapper(err);
