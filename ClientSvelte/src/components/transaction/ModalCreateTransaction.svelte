@@ -24,7 +24,8 @@
     };
     const initialRequestModel = {
         BudgetID: "",
-        Date: new Date().toISOString().split('T')[0],
+        Notes:"",
+        Date: new Date().toISOString().slice(0, 16),
         Amount: 100,
         Currency: $selectedBudget?.balance?.currency || "UAH",
         CategoryID: "Select category"
@@ -49,13 +50,18 @@
                 </select>
             </div>
 
+            <div class="form-control my-4">
+                <textarea class="textarea textarea-bordered" placeholder="Type notes..."
+                          bind:value={modelToRequest.Notes}></textarea>
+            </div>
+
             <div class="form-control">
                 <label class="label">
                     <span class="label-text">Enter transaction balance</span>
                 </label>
                 <div class="flex w-full">
                     <div class="pr-1">
-                        <input type="number" placeholder="amount" class="input input-bordered"
+                        <input type="number" placeholder="amount" class="input input-bordered w-32"
                                bind:value={modelToRequest.Amount}/>
                     </div>
                     <div class="flex-grow">
@@ -66,7 +72,7 @@
                         </select>
                     </div>
                     <div>
-                        <input type="date" class="input select-bordered" bind:value={modelToRequest.Date}/>
+                        <input type="datetime-local" class="input select-bordered" bind:value={modelToRequest.Date}/>
                     </div>
                 </div>
             </div>
