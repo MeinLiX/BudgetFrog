@@ -4,8 +4,8 @@
     import {ErrorWrapper} from "../../services/RequestWrapper";
 
     let user = {
-        Email: "testtest2@test.test",
-        Password: "testtest",
+        Email: "",
+        Password: "",
         Firstname: "",
         Lastname: "",
     };

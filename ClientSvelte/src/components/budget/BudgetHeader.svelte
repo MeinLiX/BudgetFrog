@@ -23,7 +23,7 @@
 <div class="navbar bg-yellow-100 ">
     <div class="navbar-start">
         <a class="btn btn-ghost normal-case text-xl" href="/#/budget/{$selectedBudget.id}">
-            <b>{$selectedBudget.name}</b>
+            <b>{$selectedBudget.name ||"Budget"}</b>
         </a>
         <a class="btn btn-ghost normal-case" href="/#/budget/{$selectedBudget.id}/statistic/">
             Statistic
@@ -32,9 +32,9 @@
     <div class="navbar-center">
         <div class="text-xl indicator p-1 mt-3">
             <span class="indicator-item badge badge-outline">
-                 {$selectedBudget.balance?.currency}
+                 {$selectedBudget.balance?.currency || ""}
             </span>
-            <b>{$selectedBudget.balance?.amount}</b>
+            <b>{$selectedBudget.balance?.amount || 0}</b>
         </div>
     </div>
     <div class="navbar-end">

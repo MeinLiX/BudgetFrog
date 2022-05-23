@@ -16,10 +16,10 @@
             <div>
                 {#if !registrationField}
                     <SignIn/>
-                    <label on:click={switchRegField} class="label-text text-center"> Sign up for a new account </label>
+                    <label on:click={switchRegField} class="label-text text-center mt-5" style="cursor: pointer"> Sign up for a new account </label>
                 {:else}
                     <SignUp/>
-                    <label on:click={switchRegField} class="label-text text-center"> Sign in already have account </label>
+                    <label on:click={switchRegField} class="label-text text-center mt-5" style="cursor: pointer"> Sign in already have account </label>
                 {/if}
             </div>
         </div>

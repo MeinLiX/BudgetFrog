@@ -106,12 +106,17 @@
                             <div class="inline-flex text-xl items-center text-base font-semibold"
                                  style="color:{transaction.transactionDescriptionCategory?.income?'green':'red'}">
                                 {transaction.transactionDescriptionCategory?.income ? "+" : "-"}{transaction.balance.amount}
-                                <div class="badge badge-outline ml-1">{transaction.balance.currency}</div>
+                                <div class="badge badge-outline ml-1">{transaction.balance.currency} </div>
                             </div>
                             <div>
-                                <label for="modal_remove_t_{transaction.id}" class="label">
-                                    <span class="btn btn-sm btn-outline">remove</span>
-                                </label>
+                                {#if transaction.autoGen}
+                                    <span class="btn btn-sm btn-outline" disabled>remove</span>
+                                    {:else}
+                                    <label for="modal_remove_t_{transaction.id}" class="label">
+                                        <span class="btn btn-sm btn-outline">remove</span>
+                                    </label>
+                                    {/if}
+
                             </div>
                         </div>
                     </li>
@@ -120,5 +125,5 @@
         </div>
     </div>
 {:else}
-    <h1 class="text-center">Not contains transactions.</h1>
+    <h1 class="text-center">No transactions</h1>
 {/each}

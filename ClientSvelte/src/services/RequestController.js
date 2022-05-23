@@ -30,7 +30,6 @@ export const Request = async (path = `/`, method = `get`, data = null, params = 
 };
 
 
-//TODO: check 
 export default {
     status: {
         ping: () => Request(`/status/ping/`, `get`),
@@ -60,6 +59,25 @@ export default {
         leave: ({BudgetID}) => Request(`/budget/leave/`, `delete`, {BudgetID}),
         generateInviteToken: ({BudgetID}) => Request(`/budget/token/`, `patch`, {BudgetID}),
         deactivateInviteToken: ({BudgetID}) => Request(`/budget/token/`, `delete`, {BudgetID}),
+        privat24: {
+            add: ({
+                      BudgetID,
+                      MerchantID,
+                      MerchantPassword,
+                      CardNumber,
+                      StartDate = null
+                  }) => Request(`/budget/${BudgetID}/privat24`, `patch`, {
+                MerchantID,
+                MerchantPassword,
+                CardNumber,
+                StartDate
+            }),
+            delete: ({
+                         BudgetID,
+                         Privat24CredentialID
+                     }) => Request(`/budget/${BudgetID}/privat24`, `delete`, {Privat24CredentialID})
+
+        }
     },
     plannedBudget: {
         getList: ({BudgetID}) => Request(`/plannedBudget/${BudgetID}`, `get`),
@@ -67,11 +85,11 @@ export default {
                      BudgetID,
                      Title,
                      PlannedAmount,
-                     DateStart=null,
-                     DateEnd=null,
+                     DateStart = null,
+                     DateEnd = null,
                      Desctiption = null,
                      Currency = null,
-                     CategoryID=null
+                     CategoryID = null
                  }) => Request(`/plannedBudget/${BudgetID}`, `post`, {
             DateStart,
             DateEnd,

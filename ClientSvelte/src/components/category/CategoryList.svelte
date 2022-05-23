@@ -39,12 +39,12 @@
                 {category.name}
             </h4>
             <figure class="px-2 pt-2">
-                <!--{#await Request.photo.get(category.name)}
+                {#await Request.photo.get(category.name)}
                     <p>Loading...</p>
                 {:then photoURL}
                     <img src="{photoURL}" alt="{category.name}" class="rounded-xl"/>
                 {:catch err}
-                {/await}-->
+                {/await}
             </figure>
             <h3 class="text-center" style="color:{category.income ? 'green':'red'}">
                 {category.income ? "income" : "outcome"}
@@ -52,6 +52,6 @@
         </div>
         <br/>
     {:else}
-        <h1 class="text-center">Not contains categories.</h1>
+        <h1 class="text-center">No categories</h1>
     {/each}
 </div>
