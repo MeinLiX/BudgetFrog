@@ -22,6 +22,11 @@ public static class Privat24CredentialBuilder
           .Property(td => td.CardNumber)
           .HasColumnType("VARCHAR(16)")
           .IsRequired();
+
+        MB.Entity<Privat24Credential>()
+          .Property(pb => pb.StartDate)
+          .HasColumnType("DATE")
+          .IsRequired();
     }
 
 }
