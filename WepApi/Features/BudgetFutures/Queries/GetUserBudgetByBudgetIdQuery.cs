@@ -26,6 +26,7 @@ public class GetUserBudgetByBudgetIdQuery : IRequest<Result<Budget?>>
                                     .Where(b => b.Users.Contains(user))
                                     .Include(b => b.Users)
                                     .Include(b => b.Balance)
+                                    .Include(b=>b.Privat24Credentials)
                                     .FirstOrDefault(b => b.ID == query.GetBudgetID);
 
             if (budget == null)
