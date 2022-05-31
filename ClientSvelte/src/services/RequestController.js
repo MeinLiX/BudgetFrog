@@ -14,17 +14,14 @@ export const Request = async (path = `/`, method = `get`, data = null, params = 
                 'Authorization': `bearer ${LS.Get(`jwt`)}`
             }
         });
-
         if (res.data?.succeeded === false) {
             return Promise.reject({...res.data, status: res.status});
         }
-
         return Promise.resolve({...res.data});
     } catch (err) {
         if (err.response.status === 401) {
             LS.Set("jwt", null)
         }
-
         return Promise.reject({...err.response.data, status: err.response.status});
     }
 };
@@ -37,12 +34,10 @@ export default {
     },
     user: {
         me: () => Request(`/user/me/`, `get`),
-        login: ({Email, Password}) => Request(`/user/login/`, `post`, {Email, Password}),
-        register: ({Email, Password, Firstname, Lastname}) => Request(`/user/register/`, `post`, {
-            Email,
-            Password,
-            Firstname,
-            Lastname
+        login: ({Email, Password}) =>
+            Request(`/user/login/`, `post`, {Email, Password}),
+        register: ({Email, Password, Firstname, Lastname}) =>
+            Request(`/user/register/`, `post`, {Email,Password,Firstname,Lastname
         }),
     },
     budget: {

@@ -5,8 +5,10 @@ import Profile from "../views/Profile.svelte";
 import BudgetTransactions from "../views/BudgetTransactions.svelte"
 import BudgetCategories from "../views/BudgetCategories.svelte"
 import BudgetPlanned from "../views/PlannedBudget.svelte"
+import Statistic from "../views/Statistic.svelte"
 
 export default {
+    "/budget/:budgetID/statistic": Statistic,
     "/budget/:budgetID/planned": BudgetPlanned,
     "/budget/:budgetID/category": BudgetCategories,
     "/budget/:budgetID": BudgetTransactions,
