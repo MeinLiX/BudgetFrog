@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.center_content{
+    margin-top: 1%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
