@@ -1,0 +1,171 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>WepApi</name>
+    </assembly>
+    <members>
+        <member name="M:WepApi.Controllers.Api.BudgetController.Get">
+            <summary>
+             Get list of user's own Budgets with details.
+            </summary>
+        </member>
+        <member name="M:WepApi.Controllers.Api.BudgetController.Get(System.String)">
+            <summary>
+            Get user's own Budget with details.
+            </summary>
+        </member>
+        <member name="M:WepApi.Controllers.Api.BudgetController.Create(WepApi.Features.BudgetFutures.Commands.CreateBudgetCommand)">
+            <summary>
+            Create Budget.
+            </summary>
+        </member>
+        <member name="M:WepApi.Controllers.Api.BudgetController.Update(WepApi.Features.BudgetFutures.Commands.UpdateBudgetCommand)">
+            <summary>
+            Ubdate Budget;
+            </summary>
+        </member>
+        <member name="M:WepApi.Controllers.Api.BudgetController.GenerateInviteToken(WepApi.Features.BudgetFutures.Commands.GenerateInviteTokenBudgetCommand)">
+            <summary>
+            Generate new token for invite another users into own Budget.
+            </summary>
+        </member>
+        <member name="M:WepApi.Controllers.Api.BudgetController.DeactivateInviteToken(WepApi.Features.BudgetFutures.Commands.DeactivateInviteTokenBudgetCommand)">
+            <summary>
+            Remove token for disable invite other users into own Budget.
+            </summary>
+        </member>
+        <member name="M:WepApi.Controllers.Api.BudgetController.Join(System.String)">
+            <summary>
+            Join to Budget.
+            </summary>
+        </member>
+        <member name="M:WepApi.Controllers.Api.BudgetController.Leave(WepApi.Features.BudgetFutures.Commands.LeaveBudgetCommand)">
+            <summary>
+            Leave from Budget (If the user is last, Budget will be deleted)
+            </summary>
+        </member>
+        <member name="M:WepApi.Controllers.Api.BudgetController.AddP24(System.String,WepApi.Features.BudgetFutures.Commands.AddP24credentialCommand)">
+            <summary>
+            Add privat24 creds.
+            </summary>
+        </member>
+        <member name="M:WepApi.Controllers.Api.BudgetController.RemoveP24(System.String,WepApi.Features.BudgetFutures.Commands.RemoveP24credentialCommand)">
+            <summary>
+            Add privat24 creds.
+            </summary>
+        </member>
+        <member name="M:WepApi.Controllers.Api.PlannedBudgetController.Get(System.String)">
+            <summary>
+             Get list of Planned Budget.
+            </summary>
+        </member>
+        <member name="M:WepApi.Controllers.Api.PlannedBudgetController.Create(System.String,WepApi.Features.PlannedBudgetFutures.Commands.CreatePlannedBudgetCommand)">
+            <summary>
+            Create Planned Budget.
+            </summary>
+        </member>
+        <member name="M:WepApi.Controllers.Api.PlannedBudgetController.UpdateAmount(System.String,WepApi.Features.PlannedBudgetFutures.Commands.UpdatePlannedBudgetAmountCommand)">
+            <summary>
+            Update Planned Budget amount;
+            </summary>
+        </member>
+        <member name="M:WepApi.Controllers.Api.PlannedBudgetController.Leave(System.String,WepApi.Features.PlannedBudgetFutures.Commands.DeletePlannedBudgetCommand)">
+            <summary>
+            Delete Planned Budget.
+            </summary>
+        </member>
+        <member name="M:WepApi.Controllers.Api.TransactionDescriptionCategoryController.GetCategories(System.String)">
+            <summary>
+            Get list of categories.  
+            </summary>
+        </member>
+        <member name="M:WepApi.Controllers.Api.TransactionDescriptionCategoryController.GetCategory(System.String,System.String)">
+            <summary>
+            Get category.  
+            </summary>
+        </member>
+        <member name="M:WepApi.Controllers.Api.TransactionDescriptionCategoryController.CreateCategory(System.String,WepApi.Features.TransactionDescriptionCategoryFutures.Commands.CreateCategoryCommand)">
+            <summary>
+            Create category.
+            </summary>
+        </member>
+        <member name="M:WepApi.Controllers.Api.TransactionDescriptionCategoryController.UpdateCategory(System.String,WepApi.Features.TransactionDescriptionCategoryFutures.Commands.UpdateCategoryCommand)">
+            <summary>
+            Update category. 
+            </summary>
+        </member>
+        <member name="M:WepApi.Controllers.Api.TransactionDescriptionCategoryController.DeleteCategory(System.String,WepApi.Features.TransactionDescriptionCategoryFutures.Commands.DeleteCategoryCommand)">
+            <summary>
+            Delete category. 
+            </summary>
+        </member>
+        <member name="M:WepApi.Controllers.Api.TransactionDescriptionController.GetTransactions(System.String)">
+            <summary>
+            Get list of transactions.  
+            </summary>
+        </member>
+        <member name="M:WepApi.Controllers.Api.TransactionDescriptionController.GetTransaction(System.String,System.Int32)">
+            <summary>
+            Get transaction.  
+            </summary>
+        </member>
+        <member name="M:WepApi.Controllers.Api.TransactionDescriptionController.CreateTransaction(System.String,WepApi.Features.TransactionDescriptionFutures.Commands.CreateTransactionCommand)">
+            <summary>
+            Create transaction.
+            </summary>
+        </member>
+        <member name="M:WepApi.Controllers.Api.TransactionDescriptionController.UpdateTransaction(System.String)">
+            <summary>
+            Update transaction. 
+            </summary>
+        </member>
+        <member name="M:WepApi.Controllers.Api.TransactionDescriptionController.DeleteTransaction(System.String,WepApi.Features.TransactionDescriptionFutures.Commands.DeleteTransactionCommand)">
+            <summary>
+            Delete transaction. 
+            </summary>
+        </member>
+        <member name="M:WepApi.Controllers.StatusController.Ping">
+            <summary>
+            Check server activity.
+            </summary>
+        </member>
+        <member name="M:WepApi.Controllers.StatusController.IsAuth">
+            <summary>
+            Check user authenticated.
+            </summary>      
+        </member>
+        <member name="M:WepApi.Features.Services.ExchangeRateService.ChangeCurrency(WepApi.Models.Budgets.Balance,System.String,System.DateTime)">
+            <summary>
+            Change balance currency without db save.
+            </summary>
+            <returns>Balance with new currency and amount</returns>
+        </member>
+        <member name="M:WepApi.Features.Services.ExchangeRateService.ChangeCurrency(System.Guid,System.String,System.DateTime)">
+            <summary>
+            Change balance currency without db save.
+            </summary>
+            <returns>Balance with new currency and amount</returns>
+        </member>
+        <member name="M:WepApi.Features.Services.ExchangeRateService.GetExchange(System.DateTime)">
+            <summary>
+            Get exchange rate close to date.
+            </summary>
+            <param name="date">Date to clostest found exchange rate</param>
+            <returns>exchange rate</returns>
+            <exception cref="T:WepApi.Utils.Exceptions.AppException">When exchange rate not found</exception>
+        </member>
+        <member name="M:WepApi.Utils.CryptoEngine.GetHashValue(System.String)">
+            <summary>
+            Generation Hash from the password. 
+            </summary>
+        </member>
+        <member name="M:WepApi.Utils.CryptoEngine.EqualHashValue(System.String,System.String)">
+            <summary>
+            Compare the hash and password.
+            </summary>
+        </member>
+        <member name="M:WepApi.Utils.FAuth.AppIdentity.GetIdentity(System.ValueTuple{System.String,System.String},WepApi.Context.Interfaces.IBudgetAppContext)">
+            <param name="loggingUser">item1: email; item2: password;</param>
+        </member>
+    </members>
+</doc>

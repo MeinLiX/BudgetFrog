@@ -25,7 +25,7 @@ public class OldExchangerController : BaseController
                                             .OrderByDescending(er => er.ID)
                                             .FirstOrDefaultAsync();
 
-            return new JsonResult(Result<object>.Success(exchangeRates))
+            return new JsonResult(Result<object?>.Success(exchangeRates))
             {
                 StatusCode = StatusCodes.Status200OK
             };
@@ -84,7 +84,7 @@ public class OldExchangerController : BaseController
                     {
                         from,
                         to,
-                        rate = exchangeRates.GetRate(from, to)
+                        rate = exchangeRates?.GetRate(from, to)
                     }))
             {
                 StatusCode = StatusCodes.Status200OK
@@ -122,8 +122,8 @@ public class OldExchangerController : BaseController
                         from,
                         fromAmount = amount,
                         to,
-                        toAmount = exchangeRates.Convert(from, to, amount),
-                        rate = exchangeRates.GetRate(from, to)
+                        toAmount = exchangeRates?.Convert(from, to, amount),
+                        rate = exchangeRates?.GetRate(from, to)
                     }))
             {
                 StatusCode = StatusCodes.Status200OK

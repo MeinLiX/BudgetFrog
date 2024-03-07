@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using Microsoft.Extensions.Logging;
+using System.Text.Json;
 using WepApi.Context;
 using WepApi.Context.Interfaces;
 using WepApi.Models.FastForex;
@@ -13,13 +14,17 @@ public class ExchangeRatesFFUpdaterHostedService : IHostedService
     private readonly HttpClient _client = new();
     private readonly string _api_key;
     private readonly Uri _uri;
+    private readonly ILogger logger;
 
     public ExchangeRatesFFUpdaterHostedService(IServiceProvider serviceProvider, IConfiguration configuration)
     {
-        _ER_context = serviceProvider.CreateScope().ServiceProvider.GetRequiredService<ExchangeRateContext>();
+        var sp = serviceProvider.CreateScope().ServiceProvider;
+        
+        _ER_context = sp.GetRequiredService<ExchangeRateContext>();
         _periodTime = TimeSpan.FromMinutes(double.Parse(configuration["FastForex:UpdateIntervalMinutes"]));
         _api_key = configuration["FastForex:ApiKey"];
         _uri = new Uri($"https://api.fastforex.io/fetch-all?from=USD&api_key={_api_key}");
+        this.logger = sp.GetRequiredService<ILogger<ExchangeRatesFFUpdaterHostedService>>();
     }
 
     private async void DoWork(object state)
@@ -30,6 +35,12 @@ public class ExchangeRatesFFUpdaterHostedService : IHostedService
             var stringContent = await response.Content.ReadAsStringAsync();
 
             var responseModel = JsonSerializer.Deserialize<FFbase>(stringContent);
+
+            if (responseModel is null || responseModel.@base is null)
+            {
+                logger.LogError("FastForex token is expired. Exchange Rates not updated.");
+                return;
+            }
 
             FFbase newER = new()
             {
