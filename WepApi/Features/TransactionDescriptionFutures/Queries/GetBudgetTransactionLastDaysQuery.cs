@@ -31,7 +31,6 @@ public class GetBudgetTransactionLastDaysQuery : IRequest<Result<List<Transactio
                                                 .FirstOrDefaultAsync(cancellationToken: cancellationToken)
                                                 ?? throw new AppException("Budget not found");
 
-            List<Privat24Credential> p24creds = userBudget.Privat24Credentials;
 
             List<TransactionDescription> transactions = query.Days switch
             {
@@ -47,7 +46,9 @@ public class GetBudgetTransactionLastDaysQuery : IRequest<Result<List<Transactio
                         .ToList()
             };
 
-            foreach (var p24c in p24creds)
+            /* //p24 temp disabled (api closed)
+            List<Privat24Credential> p24creds = userBudget.Privat24Credentials;
+            foreach (var p24c in p24creds) 
             {
                 var res = await privat24.NET.Source.P24Client.Statement(p24c.StartDate, DateTime.Today, p24c.MerchantID, p24c.MerchantPassword, p24c.CardNumber);
                 res.Data.Info.Statements.StatementsProp.ForEach(sp =>
@@ -70,7 +71,7 @@ public class GetBudgetTransactionLastDaysQuery : IRequest<Result<List<Transactio
                         }
                     });
                 });
-            };
+            };*/
 
 
             return Result<List<TransactionDescription>>.Success(transactions.OrderByDescending(t => t.Date).ToList());

@@ -5,12 +5,14 @@ using privat24.NET.Utils;
 
 namespace privat24.NET.Source;
 
+[Obsolete]
 public class P24Client
 {
     private static Uri GetUrl(string endPoint) => new($"https://api.privatbank.ua/p24api/{endPoint}");
     public static string XmlMediaType { get; } = "application/xml";
     private static HttpClient Client { get; } = new();
 
+    //Method for check credentials
     public static async Task<P24BalanceRes> Balance(string id, string password, string card)
     {
         P24InformationDataReq p24BalanceDataRequest = new();

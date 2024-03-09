@@ -24,6 +24,9 @@ namespace WepApi.Features.BudgetFutures.Commands
             public async Task<Utils.Wrapper.IResult> Handle(RemoveP24credentialCommand request, CancellationToken cancellationToken)
             {
                 var user = await _signInManager.GetUser();
+
+                return Result.Fail($"privat24 temporarily disabled.");
+
                 var userBudget = await _context.Budgets.Where(b => b.ID == request.GetBudgetID && b.Users.Contains(user))
                                                .Include(b => b.Privat24Credentials)
                                                .FirstOrDefaultAsync(cancellationToken: cancellationToken)
