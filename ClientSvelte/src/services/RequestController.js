@@ -103,7 +103,7 @@ export default {
     },
     transaction: {
         getList: ({BudgetID}) => Request(`/TransactionDescription/${BudgetID}`, `get`),
-        getListUnderDays: ({BudgetID, Days}) => Request(`/TransactionDescription/${BudgetID}/${Days}`, `get`),
+        getListPeriod: ({BudgetID, Year, Month}) => Request(`/TransactionDescription/${BudgetID}/${Year}/${Month}`, `get`),
         create: ({
                      BudgetID,
                      Date = null,

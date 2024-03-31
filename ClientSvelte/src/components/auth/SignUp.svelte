@@ -29,18 +29,18 @@
                 <div class="flex w-full">
                     <div class="flex w-full pr-2">
                         <div class="">
-                            <label class="label">
+                            <control class="label">
                                 <span class="label-text">Firstname:</span>
-                            </label>
+                            </control>
                             <input type="text" placeholder="Firstname" class="input input-bordered input-sm w-32"
                                    bind:value={user.Firstname}/>
                         </div>
                     </div>
                     <div class="flex w-full pl-2">
                         <div class="">
-                            <label class="label">
+                            <control class="label">
                                 <span class="label-text">Lastname:</span>
-                            </label>
+                            </control>
                             <input type="text" placeholder="Lastname" class="input input-bordered input-sm w-32"
                                    bind:value={user.Lastname}/>
                         </div>
@@ -49,15 +49,15 @@
             </div>
 
             <div class="form-control mt-2">
-                <label class="label">
+                <control class="label">
                     <span class="label-text">Email</span>
-                </label>
+                </control>
                 <input type="email" placeholder="email" class="input input-bordered" bind:value={user.Email}/>
             </div>
             <div class="form-control mt-2">
-                <label class="label">
+                <control class="label">
                     <span class="label-text">Password</span>
-                </label>
+                </control>
                 <input type="password" placeholder="password" class="input input-bordered" bind:value={user.Password}/>
             </div>
             <div class="form-control mt-8">

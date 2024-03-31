@@ -18,7 +18,7 @@
             $userDetails = (await Request.user.me()).data;
             $avaliableCurrency = (await Request.exchange.avaliableCurrency()).data.currencies;
         } catch (err) {
-            console.log(err)
+            //console.log(err)
             ErrorWrapper(err);
         }
     }
@@ -29,19 +29,19 @@
     <div class="card-body">
         <form on:submit|preventDefault={login}>
             <div class="form-control">
-                <label class="label">
+                <control class="label">
                     <span class="label-text">Email</span>
-                </label>
+                </control>
                 <input type="email" placeholder="email" class="input input-bordered" bind:value={user.Email}/>
             </div>
             <div class="form-control">
-                <label class="label">
+                <control class="label">
                     <span class="label-text">Password</span>
-                </label>
+                </control>
                 <input type="password" placeholder="password" class="input input-bordered" bind:value={user.Password}/>
-                <label class="label">
+                <control class="label">
                     <a href="#todo" class="label-text-alt link link-hover">Forgot password?</a>
-                </label>
+                </control>
             </div>
             <div class="form-control mt-6">
                 <button class="btn btn-primary">Login</button>
