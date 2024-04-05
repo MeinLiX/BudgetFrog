@@ -10,17 +10,22 @@ namespace WepApi.Features.TransactionDescriptionFutures.Queries;
 public class GetBudgetTransactionLastDaysQuery : IRequest<Result<List<TransactionDescription>>>
 {
     public string BudgetID { get; set; }
-    public int Days { get; set; } = 0;
     private Guid GetBudgetID { get => Guid.Parse(BudgetID); }
+
+    public int Month { get; set; }
+    public int Year { get; set; }
 
     public class GetBudgetTransactionLastDaysQueryHandler : IRequestHandler<GetBudgetTransactionLastDaysQuery, Result<List<TransactionDescription>>>
     {
         private readonly IBudgetAppContext _context;
         private readonly SignInManagerService _signInManager;
-        public GetBudgetTransactionLastDaysQueryHandler(IBudgetAppContext context, SignInManagerService signInManager)
+        private readonly MonobankApiService _monobankApiService;
+
+        public GetBudgetTransactionLastDaysQueryHandler(IBudgetAppContext context, SignInManagerService signInManager, MonobankApiService monobankApiService)
         {
             _context = context;
             _signInManager = signInManager;
+            _monobankApiService = monobankApiService;
         }
         public async Task<Result<List<TransactionDescription>>> Handle(GetBudgetTransactionLastDaysQuery query, CancellationToken cancellationToken)
         {
@@ -32,20 +37,37 @@ public class GetBudgetTransactionLastDaysQuery : IRequest<Result<List<Transactio
                                                 ?? throw new AppException("Budget not found");
 
 
-            List<TransactionDescription> transactions = query.Days switch
-            {
-                <= 0 => _context.TransactionsDescription
-                        .Where(t => t.Budget.ID == query.GetBudgetID && t.Budget.Users.Contains(user))
+            List<TransactionDescription> transactions = _context.TransactionsDescription
+                        .Where(t => t.Budget.ID == query.GetBudgetID 
+                                    && t.Budget.Users.Contains(user) 
+                                    && t.Date.Year == query.Year 
+                                    && t.Date.Month == query.Month)
                         .Include(t => t.Balance)
                         .Include(t => t.TransactionDescriptionCategory)
-                        .ToList(),
-                _ => _context.TransactionsDescription
-                        .Where(t => t.Budget.ID == query.GetBudgetID && t.Budget.Users.Contains(user) && t.Date.AddDays(query.Days) >= DateTime.Now)
-                        .Include(t => t.Balance)
-                        .Include(t => t.TransactionDescriptionCategory)
-                        .ToList()
-            };
+                        .ToList();
 
+            //TODO DB
+            /*(await _monobankApiService.GetStatement(string.Empty)).ForEach(sp =>
+            {
+                transactions.Add(new TransactionDescription()
+                {
+                    Date = DateTimeOffset.FromUnixTimeSeconds(sp.time).UtcDateTime,
+                    Notes = sp.description + sp.comment,
+                    AutoGen = true,
+                    Balance = new Models.Budgets.Balance()
+                    {
+                        Amount = decimal.Parse((sp.operationAmount / 100).ToString().Replace("-","")),
+                        Currency = sp.currencyCode.ToString()
+                    },
+                    TransactionDescriptionCategory = new TransactionDescriptionCategory()
+                    {
+                        Name = "MonoBank",
+                        Income = sp.operationAmount > 0,
+                        Color = "#292929"
+                    }
+                });
+            });
+            */
             /* //p24 temp disabled (api closed)
             List<Privat24Credential> p24creds = userBudget.Privat24Credentials;
             foreach (var p24c in p24creds) 

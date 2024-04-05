@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WepApi.Features.TransactionDescriptionFutures.Commands;
 using WepApi.Features.TransactionDescriptionFutures.Queries;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace WepApi.Controllers.Api;
 
@@ -21,18 +22,19 @@ public class TransactionDescriptionController : BaseController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> GetTransactions([FromRoute] string budgetID)
     {
-        return Ok(await _mediator.Send(new GetBudgetTransactionLastDaysQuery() { BudgetID = budgetID, Days = 0 }));
+        var date = DateTime.Now;
+        return Ok(await _mediator.Send(new GetBudgetTransactionLastDaysQuery() { BudgetID = budgetID, Year = date.Year, Month = date.Month }));
     }
 
     /// <summary>
     /// Get transaction.  
     /// </summary>
-    [HttpGet("{budgetID}/{days}")]
+    [HttpGet("{budgetID}/{year}/{month}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> GetTransaction([FromRoute] string budgetID, [FromRoute] int days)
+    public async Task<IActionResult> GetTransaction([FromRoute] string budgetID, [FromRoute] int year, [FromRoute] int month)
     {
-        return Ok(await _mediator.Send(new GetBudgetTransactionLastDaysQuery() { BudgetID = budgetID, Days = days }));
+        return Ok(await _mediator.Send(new GetBudgetTransactionLastDaysQuery() { BudgetID = budgetID, Year = year, Month = month }));
     }
 
     /// <summary>

@@ -104,7 +104,7 @@
             Get list of transactions.  
             </summary>
         </member>
-        <member name="M:WepApi.Controllers.Api.TransactionDescriptionController.GetTransaction(System.String,System.Int32)">
+        <member name="M:WepApi.Controllers.Api.TransactionDescriptionController.GetTransaction(System.String,System.Int32,System.Int32)">
             <summary>
             Get transaction.  
             </summary>
@@ -153,6 +153,15 @@
             <param name="date">Date to clostest found exchange rate</param>
             <returns>exchange rate</returns>
             <exception cref="T:WepApi.Utils.Exceptions.AppException">When exchange rate not found</exception>
+        </member>
+        <member name="M:WepApi.Features.Services.MonobankApiService.GetClientInfo(System.String,System.Boolean)">
+            <summary>
+            
+            </summary>
+            <param name="token"></param>
+            <param name="forceupdate">Request to monobank api every 60sec when true</param>
+            <returns></returns>
+            <exception cref="T:WepApi.Utils.Exceptions.AppException"></exception>
         </member>
         <member name="M:WepApi.Utils.CryptoEngine.GetHashValue(System.String)">
             <summary>

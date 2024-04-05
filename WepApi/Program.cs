@@ -24,6 +24,8 @@ builder.Services.AddControllers()
             actionContext => new BadRequestObjectResult(new ApiBehavior().ErrorFormatResponseValidation(actionContext.ModelState));
     }); //temp
 
+builder.Services.AddMemoryCache();
+
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                    .AddJwtBearer(jwtBearerOptions =>
@@ -41,6 +43,7 @@ builder.Services.AddScoped<IExchangeRateContext>(provider =>
 
 builder.Services.AddScoped<SignInManagerService>();
 builder.Services.AddScoped<ExchangeRateService>();
+builder.Services.AddSingleton<MonobankApiService>();
 
 builder.Services.AddHostedService<ExchangeRatesFFUpdaterHostedService>();
 
