@@ -102,24 +102,24 @@ public class BudgetController : BaseController
     }
 
     /// <summary>
-    /// Add privat24 creds.
+    /// Add bank creds.
     /// </summary>
-    [HttpPatch("{budgetID}/privat24")]
+    [HttpPatch("{budgetID}/bank")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> AddP24([FromRoute] string budgetID, [FromBody] AddP24credentialCommand command)
+    public async Task<IActionResult> AddBank([FromRoute] string budgetID, [FromBody] AddBankCredentialCommand command)
     {
         command.BudgetID = budgetID;
         return Ok(await _mediator.Send(command));
     }
 
     /// <summary>
-    /// Add privat24 creds.
+    /// Add bank creds.
     /// </summary>
-    [HttpDelete("{budgetID}/privat24")]
+    [HttpDelete("{budgetID}/bank")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> RemoveP24([FromRoute] string budgetID, [FromBody] RemoveP24credentialCommand command)
+    public async Task<IActionResult> RemoveBank([FromRoute] string budgetID, [FromBody] RemoveBankCredentialCommand command)
     {
         command.BudgetID = budgetID;
         return Ok(await _mediator.Send(command));

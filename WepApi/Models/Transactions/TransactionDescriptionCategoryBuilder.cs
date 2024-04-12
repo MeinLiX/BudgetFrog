@@ -22,5 +22,10 @@ public static class TransactionDescriptionCategoryBuilder
           .Property(td => td.Color)
           .HasColumnType("VARCHAR(13)") //(000,000,000)
           .IsRequired();
+
+        
+        
+        MB.Entity<TransactionDescriptionCategory>()
+            .Ignore(p => p.ExternalName); //External category name for bank category mapping. Excluded DB
     }
 }

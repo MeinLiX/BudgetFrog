@@ -1,9 +1,11 @@
-﻿using WepApi.Context.Interfaces;
+﻿using System.Globalization;
+using WepApi.Context.Interfaces;
 using WepApi.Features.Services;
-using WepApi.Models.Privat24;
+using WepApi.Models.Bank;
 using WepApi.Models.Transactions;
 using WepApi.Utils.Exceptions;
 using WepApi.Utils.Wrapper;
+using static WepApi.Models.Externals.MonobankApi.ClientInfoResponse;
 
 namespace WepApi.Features.TransactionDescriptionFutures.Queries;
 
@@ -32,69 +34,75 @@ public class GetBudgetTransactionLastDaysQuery : IRequest<Result<List<Transactio
             var user = await _signInManager.GetUser();
 
             var userBudget = await _context.Budgets.Where(b => b.ID == query.GetBudgetID && b.Users.Contains(user))
-                                                .Include(b => b.Privat24Credentials)
+                                                .Include(b => b.BankCredentials)
                                                 .FirstOrDefaultAsync(cancellationToken: cancellationToken)
                                                 ?? throw new AppException("Budget not found");
 
 
             List<TransactionDescription> transactions = _context.TransactionsDescription
-                        .Where(t => t.Budget.ID == query.GetBudgetID 
-                                    && t.Budget.Users.Contains(user) 
-                                    && t.Date.Year == query.Year 
+                        .Where(t => t.Budget.ID == query.GetBudgetID
+                                    && t.Budget.Users.Contains(user)
+                                    && t.Date.Year == query.Year
                                     && t.Date.Month == query.Month)
                         .Include(t => t.Balance)
                         .Include(t => t.TransactionDescriptionCategory)
                         .ToList();
 
-            //TODO DB
-            /*(await _monobankApiService.GetStatement(string.Empty)).ForEach(sp =>
+            foreach (var bankCreds in userBudget.BankCredentials)
             {
-                transactions.Add(new TransactionDescription()
+                if (bankCreds.BankType == BankTypes.PribatBank)
                 {
-                    Date = DateTimeOffset.FromUnixTimeSeconds(sp.time).UtcDateTime,
-                    Notes = sp.description + sp.comment,
-                    AutoGen = true,
-                    Balance = new Models.Budgets.Balance()
+                    /* //Bank temp disabled (api closed)
+                    List<BankCredential> Bankcreds = userBudget.BankCredentials;
+                    foreach (var Bank in Bankcreds) 
                     {
-                        Amount = decimal.Parse((sp.operationAmount / 100).ToString().Replace("-","")),
-                        Currency = sp.currencyCode.ToString()
-                    },
-                    TransactionDescriptionCategory = new TransactionDescriptionCategory()
-                    {
-                        Name = "MonoBank",
-                        Income = sp.operationAmount > 0,
-                        Color = "#292929"
-                    }
-                });
-            });
-            */
-            /* //p24 temp disabled (api closed)
-            List<Privat24Credential> p24creds = userBudget.Privat24Credentials;
-            foreach (var p24c in p24creds) 
-            {
-                var res = await privat24.NET.Source.P24Client.Statement(p24c.StartDate, DateTime.Today, p24c.MerchantID, p24c.MerchantPassword, p24c.CardNumber);
-                res.Data.Info.Statements.StatementsProp.ForEach(sp =>
+                        var res = await privat24.NET.Source.BankClient.Statement(Bankc.StartDate, DateTime.Today, Bankc.MerchantID, Bankc.MerchantPassword, Bankc.CardNumber);
+                        res.Data.Info.Statements.StatementsProp.ForEach(sp =>
+                        {
+                            transactions.Add(new TransactionDescription()
+                            {
+                                Date = DateTime.Parse(sp.Trandate+"T"+ sp.Trantime),
+                                Notes = sp.Description,
+                                AutoGen = true,
+                                Balance = new Models.Budgets.Balance()
+                                {
+                                    Amount = decimal.Parse(sp.Amount.Split(" ")[0]),
+                                    Currency = sp.Amount.Split(" ")[1].ToUpper()
+                                },
+                                TransactionDescriptionCategory = new TransactionDescriptionCategory()
+                                {
+                                    Name = "Privat24",
+                                    Income = !sp.Cardamount.StartsWith("-"),
+                                    Color = "#228B22"
+                                }
+                            });
+                        });
+                    };*/
+                }
+                if (bankCreds.BankType == BankTypes.MonoBank)
                 {
-                    transactions.Add(new TransactionDescription()
+                    (await _monobankApiService.GetStatement(bankCreds.MerchantID, bankCreds.CardNumber, query.Month, query.Year)).ForEach(sp =>
                     {
-                        Date = DateTime.Parse(sp.Trandate+"T"+ sp.Trantime),
-                        Notes = sp.Description,
-                        AutoGen = true,
-                        Balance = new Models.Budgets.Balance()
+                        transactions.Add(new TransactionDescription()
                         {
-                            Amount = decimal.Parse(sp.Amount.Split(" ")[0]),
-                            Currency = sp.Amount.Split(" ")[1].ToUpper()
-                        },
-                        TransactionDescriptionCategory = new TransactionDescriptionCategory()
-                        {
-                            Name = "Privat24",
-                            Income = !sp.Cardamount.StartsWith("-"),
-                            Color = "#228B22"
-                        }
+                            Date = DateTimeOffset.FromUnixTimeSeconds(sp.time).UtcDateTime,
+                            Notes = sp.description + sp.comment,
+                            AutoGen = true,
+                            Balance = new Models.Budgets.Balance()
+                            {
+                                Amount = decimal.Parse((sp.operationAmount / 100).ToString().Replace("-", "")), //monobank default multiply X100 (decimal (0.01|25.50) -> int (1|2550))
+                                Currency = Utils.Iso4217.LookupByNumber(sp.currencyCode).Code //  Convert a currency numerical code to a 3-digit representation (980 => UAH)
+                            },
+                            TransactionDescriptionCategory = new TransactionDescriptionCategory()
+                            {
+                                Name = "MonoBank",
+                                Income = sp.operationAmount > 0,
+                                Color = "#292929"
+                            }
+                        });
                     });
-                });
-            };*/
-
+                }
+            }
 
             return Result<List<TransactionDescription>>.Success(transactions.OrderByDescending(t => t.Date).ToList());
         }

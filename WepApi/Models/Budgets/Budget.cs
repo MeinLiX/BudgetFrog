@@ -1,6 +1,6 @@
 ﻿using WepApi.Models.Auth;
 using WepApi.Models.Common;
-using WepApi.Models.Privat24;
+using WepApi.Models.Bank;
 
 namespace WepApi.Models.Budgets;
 
@@ -12,7 +12,7 @@ public class Budget : ModelBase
 
     public Balance Balance { get; set; }
 
-    public List<Privat24Credential> Privat24Credentials { get; set; } = new();
+    public List<BankCredential> BankCredentials { get; set; } = new();
 
     public List<AppIdentityUser> Users { get; set; } = new();
 }

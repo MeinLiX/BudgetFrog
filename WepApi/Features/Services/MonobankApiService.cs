@@ -6,39 +6,37 @@ using WepApi.Utils.Exceptions;
 
 namespace WepApi.Features.Services
 {
-    public class MonobankApiService
+    public class MonobankApiService(IMemoryCache memoryCache, ILogger<MonobankApiService> logger)
     {
-        private readonly IMemoryCache memoryCache;
+        private readonly IMemoryCache memoryCache = memoryCache;
         private Uri GetUrl(string endPoint) => new($"https://api.monobank.ua/{endPoint}");
 
-        private HttpClient client { get; } = new();
-        private readonly ILogger<MonobankApiService> logger;
-
-        public MonobankApiService(IMemoryCache memoryCache, ILogger<MonobankApiService> logger)
-        {
-            this.memoryCache = memoryCache;
-            this.logger = logger;
-        }
+        private HttpClient Client { get; } = new();
+        private readonly ILogger<MonobankApiService> logger = logger;
 
         private class MemClientInfo
         {
-            public DateTime LatestClientInfoDatetime { get; set; }
-            public ClientInfoResponse LatestClientInfoResponse { get; set; }
-            public MemClientInfo(ClientInfoResponse latestClientInfoResponse)
+            public DateTime LatestClientInfoDatetime { get; set; } = DateTime.Now.AddSeconds(-61);
+            private ClientInfoResponse latestClientInfoResponse;
+            public ClientInfoResponse LatestClientInfoResponse
             {
-                LatestClientInfoResponse = latestClientInfoResponse;
-                LatestClientInfoDatetime = DateTime.Now;
-                LatestStatementResponseDatetime = LatestClientInfoDatetime.AddSeconds(-61);
+                get => latestClientInfoResponse; set
+                {
+                    latestClientInfoResponse = value;
+                    LatestClientInfoDatetime = DateTime.Now;
+                }
             }
 
-            public DateTime LatestStatementResponseDatetime { get; set; }
-            public List<StatementResponse> LatestStatementResponse { get; set; }
+            public DateTime LatestStatementResponseDatetime { get; set; } = DateTime.Now.AddSeconds(-61);
 
-            public MemClientInfo(List<StatementResponse> latestStatementResponse)
+            private List<StatementResponse> latestStatementResponse;
+            public List<StatementResponse> LatestStatementResponse
             {
-                LatestStatementResponse = latestStatementResponse;
-                LatestStatementResponseDatetime = DateTime.Now;
-                LatestClientInfoDatetime = LatestStatementResponseDatetime.AddSeconds(-61);
+                get => latestStatementResponse; set
+                {
+                    latestStatementResponse = value;
+                    LatestStatementResponseDatetime = DateTime.Now;
+                }
             }
         }
 
@@ -54,7 +52,7 @@ namespace WepApi.Features.Services
         {
             try
             {
-                if (memoryCache.TryGetValue(token, out MemClientInfo clientInfo))
+                if (memoryCache.TryGetValue(token, out MemClientInfo? clientInfo))
                 {
                     if (clientInfo is not null && clientInfo.LatestClientInfoResponse is not null)
                     {
@@ -72,11 +70,13 @@ namespace WepApi.Features.Services
                 httpRequest.Headers.Add("X-Token", token);
 
 
-                HttpResponseMessage response = await client.SendAsync(httpRequest);
+                HttpResponseMessage response = await Client.SendAsync(httpRequest);
                 string responseContext = await response.Content.ReadAsStringAsync();
                 var res = JsonSerializer.Deserialize<ClientInfoResponse>(responseContext) ?? throw new AppException("Response empty");
 
-                memoryCache.Set(token, new MemClientInfo(res));
+                clientInfo ??= new MemClientInfo();
+                clientInfo.LatestClientInfoResponse = res;
+                memoryCache.Set(token, clientInfo);
 
                 return res;
             }
@@ -90,8 +90,21 @@ namespace WepApi.Features.Services
         //Todo if list => 500, while send request for append list (last date in transaction replace 'to' date)
         public async Task<List<StatementResponse>> GetStatement(string token, string account, long from, long to)
         {
+            if (string.IsNullOrEmpty(account))
+            {
+                account = "0";
+            }
+
             try
             {
+                if (memoryCache.TryGetValue(token, out MemClientInfo? clientInfo))
+                {
+                    if (clientInfo is not null && clientInfo.LatestStatementResponse is not null)
+                    {
+                        //Return when lower 60 sec last response
+                        if (AppUtil.DateExpired(clientInfo.LatestClientInfoDatetime, TimeSpan.FromSeconds(61))) { return clientInfo.LatestStatementResponse; }
+                    }
+                }
                 HttpRequestMessage httpRequest = new()
                 {
                     Method = HttpMethod.Get,
@@ -100,11 +113,13 @@ namespace WepApi.Features.Services
 
                 httpRequest.Headers.Add("X-Token", token);
 
-                HttpResponseMessage response = await client.SendAsync(httpRequest);
+                HttpResponseMessage response = await Client.SendAsync(httpRequest);
                 string responseContext = await response.Content.ReadAsStringAsync();
                 var res = JsonSerializer.Deserialize<List<StatementResponse>>(responseContext) ?? throw new AppException("Response empty");
 
-                //memoryCache.Set(token, new MemClientInfo(res));
+                clientInfo ??= new MemClientInfo();
+                clientInfo.LatestStatementResponse = res;
+                memoryCache.Set(token, clientInfo);
 
                 return res;
             }
@@ -115,6 +130,16 @@ namespace WepApi.Features.Services
             }
         }
 
-        public async Task<List<StatementResponse>> GetStatement(string token, string account = "0") => await GetStatement(token, account, DateTimeOffset.UtcNow.AddDays(-31).ToUnixTimeSeconds(), DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+        //public async Task<List<StatementResponse>> GetStatement(string token, string account = "0") => await GetStatement(token, account, DateTimeOffset.UtcNow.AddDays(-31).ToUnixTimeSeconds(), DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+        public async Task<List<StatementResponse>> GetStatement(string token, string account, int month, int year)
+        {
+            var firstDayOfMonth = new DateTime(year, month, 1);
+            var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddSeconds(-1);
+
+            return await GetStatement(token,
+                                      account,
+                                      from: ((DateTimeOffset)DateTime.SpecifyKind(firstDayOfMonth, DateTimeKind.Utc)).ToUnixTimeSeconds(),
+                                      to: ((DateTimeOffset)DateTime.SpecifyKind(lastDayOfMonth, DateTimeKind.Utc)).ToUnixTimeSeconds());
+        }
     }
 }

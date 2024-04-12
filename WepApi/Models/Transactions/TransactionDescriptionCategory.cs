@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using WepApi.Models.Budgets;
 using WepApi.Models.Common;
 
@@ -7,6 +8,12 @@ namespace WepApi.Models.Transactions;
 public class TransactionDescriptionCategory : ModelBase
 {
     public string Name { get; set; }
+
+    /// <summary>
+    /// External category name for bank category mapping. Excluded DB
+    /// </summary>
+    [NotMapped]
+    public string ExternalName { get; set; }
 
     public bool Income { get; set; }
 

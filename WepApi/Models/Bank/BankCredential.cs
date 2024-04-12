@@ -1,9 +1,9 @@
 ﻿using System.Text.Json.Serialization;
 using WepApi.Models.Common;
 
-namespace WepApi.Models.Privat24;
+namespace WepApi.Models.Bank;
 
-public class Privat24Credential : ModelBase
+public class BankCredential : ModelBase
 {
     public string MerchantID { get; set; }
 
@@ -12,5 +12,11 @@ public class Privat24Credential : ModelBase
 
     public string CardNumber { get; set; }
 
-    public DateTime StartDate { get; set; }
+    public BankTypes BankType { get; set; }
+}
+
+public enum BankTypes : int
+{
+    PribatBank = 0,
+    MonoBank = 1,
 }

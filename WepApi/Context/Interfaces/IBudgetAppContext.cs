@@ -1,6 +1,6 @@
 ﻿using WepApi.Models.Auth;
 using WepApi.Models.Budgets;
-using WepApi.Models.Privat24;
+using WepApi.Models.Bank;
 using WepApi.Models.Transactions;
 
 namespace WepApi.Context.Interfaces;
@@ -13,7 +13,7 @@ public interface IBudgetAppContext
     DbSet<PlannedBudget> PlannedBudgets { get; set; }
     DbSet<TransactionDescription> TransactionsDescription { get; set; }
     DbSet<TransactionDescriptionCategory> TransactionDescriptionCategories { get; set; }
-    DbSet<Privat24Credential> Privat24Credentials { get; set; }
+    DbSet<BankCredential> BankCredentials { get; set; }
 
     Task<int> SaveChangesAsync();
 }

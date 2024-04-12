@@ -29,7 +29,7 @@ public class SignInManagerService
     {
         if (!IsAuthenticated)
         {
-            throw new AppException("Need to log in.", statusCode: System.Net.HttpStatusCode.BadRequest);
+            throw new AppException("Need to log in.");
         }
     }
 
@@ -38,13 +38,13 @@ public class SignInManagerService
         try
         {
             CheckAuthenticated();
-            Guid userID = new(_user.FindFirst("UserId").Value);
+            Guid userID = new(_user.FindFirst("UserId")?.Value ?? throw new AppException("Need to re-log in.", statusCode: System.Net.HttpStatusCode.Unauthorized));
             AppIdentityUser? user = await _context.AppIdentityUsers
                                                   .FirstOrDefaultAsync(u => u.ID == userID);
 
             if (user is null)
             {
-                throw new AppException("User not found in the System.");
+                throw new AppException("User not found in the System. Need to re-log in.", statusCode: System.Net.HttpStatusCode.Unauthorized);
             }
             return user;
         }

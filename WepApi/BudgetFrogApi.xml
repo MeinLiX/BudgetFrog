@@ -44,14 +44,14 @@
             Leave from Budget (If the user is last, Budget will be deleted)
             </summary>
         </member>
-        <member name="M:WepApi.Controllers.Api.BudgetController.AddP24(System.String,WepApi.Features.BudgetFutures.Commands.AddP24credentialCommand)">
+        <member name="M:WepApi.Controllers.Api.BudgetController.AddBank(System.String,WepApi.Features.BudgetFutures.Commands.AddBankCredentialCommand)">
             <summary>
-            Add privat24 creds.
+            Add bank creds.
             </summary>
         </member>
-        <member name="M:WepApi.Controllers.Api.BudgetController.RemoveP24(System.String,WepApi.Features.BudgetFutures.Commands.RemoveP24credentialCommand)">
+        <member name="M:WepApi.Controllers.Api.BudgetController.RemoveBank(System.String,WepApi.Features.BudgetFutures.Commands.RemoveBankCredentialCommand)">
             <summary>
-            Add privat24 creds.
+            Add bank creds.
             </summary>
         </member>
         <member name="M:WepApi.Controllers.Api.PlannedBudgetController.Get(System.String)">
@@ -162,6 +162,11 @@
             <param name="forceupdate">Request to monobank api every 60sec when true</param>
             <returns></returns>
             <exception cref="T:WepApi.Utils.Exceptions.AppException"></exception>
+        </member>
+        <member name="P:WepApi.Models.Transactions.TransactionDescriptionCategory.ExternalName">
+            <summary>
+            External category name for bank category mapping. Excluded DB
+            </summary>
         </member>
         <member name="M:WepApi.Utils.CryptoEngine.GetHashValue(System.String)">
             <summary>

@@ -1,7 +1,7 @@
 ﻿using WepApi.Context.Interfaces;
 using WepApi.Models.Auth;
 using WepApi.Models.Budgets;
-using WepApi.Models.Privat24;
+using WepApi.Models.Bank;
 using WepApi.Models.Transactions;
 
 namespace WepApi.Context;
@@ -21,7 +21,7 @@ public class BudgetAppContext : DbContext, IBudgetAppContext
     public DbSet<PlannedBudget> PlannedBudgets { get; set; }
     public DbSet<TransactionDescription> TransactionsDescription { get; set; }
     public DbSet<TransactionDescriptionCategory> TransactionDescriptionCategories { get; set; }
-    public DbSet<Privat24Credential> Privat24Credentials { get; set; }
+    public DbSet<BankCredential> BankCredentials { get; set; }
 
 
     public async Task<int> SaveChangesAsync() => await base.SaveChangesAsync();
@@ -34,6 +34,6 @@ public class BudgetAppContext : DbContext, IBudgetAppContext
         modelBuilder.BuildPlannedBudget();
         modelBuilder.BuildTransactionDescription();
         modelBuilder.BuildTransactionDescriptionCategory();
-        modelBuilder.BuildPrivat24Credential();
+        modelBuilder.BuildBankCredential();
     }
 }
