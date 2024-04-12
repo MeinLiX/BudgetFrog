@@ -55,7 +55,7 @@ namespace WepApi.Features.BudgetFutures.Commands
                     switch (bankCreds.BankType)
                     {
                         case BankTypes.PribatBank:
-                            await privat24.NET.Source.BankClient.Balance(bankCreds.MerchantID, bankCreds.MerchantPassword, bankCreds.CardNumber); //trow when incorrect creds
+                            await privat24.NET.Source.P24Client.Balance(bankCreds.MerchantID, bankCreds.MerchantPassword, bankCreds.CardNumber); //trow when incorrect creds
 
                             userBudget.BankCredentials.Add(bankCreds);
 
