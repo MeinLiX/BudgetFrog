@@ -163,7 +163,7 @@
             <returns></returns>
             <exception cref="T:WepApi.Utils.Exceptions.AppException"></exception>
         </member>
-        <member name="P:WepApi.Models.Transactions.TransactionDescriptionCategory.ExternalName">
+        <member name="P:WepApi.Models.Transactions.TransactionDescriptionCategory.MMC">
             <summary>
             External category name for bank category mapping. Excluded DB
             </summary>

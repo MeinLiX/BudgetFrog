@@ -86,7 +86,7 @@ public class GetBudgetTransactionLastDaysQuery : IRequest<Result<List<Transactio
                         transactions.Add(new TransactionDescription()
                         {
                             Date = DateTimeOffset.FromUnixTimeSeconds(sp.time).UtcDateTime,
-                            Notes = sp.description + sp.comment,
+                            Notes = sp.description + " " + sp.comment,
                             AutoGen = true,
                             Balance = new Models.Budgets.Balance()
                             {
@@ -96,6 +96,7 @@ public class GetBudgetTransactionLastDaysQuery : IRequest<Result<List<Transactio
                             TransactionDescriptionCategory = new TransactionDescriptionCategory()
                             {
                                 Name = "MonoBank",
+                                MMC = sp.mcc,
                                 Income = sp.operationAmount > 0,
                                 Color = "#292929"
                             }

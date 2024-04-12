@@ -26,6 +26,6 @@ public static class TransactionDescriptionCategoryBuilder
         
         
         MB.Entity<TransactionDescriptionCategory>()
-            .Ignore(p => p.ExternalName); //External category name for bank category mapping. Excluded DB
+            .Ignore(p => p.MMC); //External category name for bank category mapping. Excluded DB
     }
 }

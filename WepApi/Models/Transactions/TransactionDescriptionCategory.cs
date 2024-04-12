@@ -13,7 +13,7 @@ public class TransactionDescriptionCategory : ModelBase
     /// External category name for bank category mapping. Excluded DB
     /// </summary>
     [NotMapped]
-    public string ExternalName { get; set; }
+    public int MMC { get; set; }
 
     public bool Income { get; set; }
 
