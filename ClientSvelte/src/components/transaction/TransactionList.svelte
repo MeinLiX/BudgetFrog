@@ -1,5 +1,4 @@
 <script>
-    import { writable } from "svelte/store";
     import Request from "../../services/RequestController";
     import { ErrorWrapper } from "../../services/RequestWrapper";
     import { ShowInfo } from "../../services/Utils";

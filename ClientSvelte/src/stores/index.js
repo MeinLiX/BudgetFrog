@@ -46,5 +46,5 @@ export const LocalStorage = {
             auth.set(value != null);
         }
     },
-    
+
 }
