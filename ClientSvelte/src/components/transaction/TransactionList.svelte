@@ -1,7 +1,7 @@
 <script>
     import Request from "../../services/RequestController";
     import { ErrorWrapper } from "../../services/RequestWrapper";
-    import { ShowInfo } from "../../services/Utils";
+    import { ShowInfo, GetDescriptionMCC } from "../../services/Utils";
     import Dialog from "../Dialog.svelte";
 
     const ActionToRemove = async ({ id }) => {
@@ -32,11 +32,19 @@
                 date: key,
                 transactions: value,
                 income: value.reduce(
-                    (ps, t) => ps + (t.transactionDescriptionCategory?.income ? t.balance.amount : 0),
+                    (ps, t) =>
+                        ps +
+                        (t.transactionDescriptionCategory?.income
+                            ? t.balance.amount
+                            : 0),
                     0,
                 ),
                 outcome: value.reduce(
-                    (ps, t) => ps + (!t.transactionDescriptionCategory?.income ? t.balance.amount : 0),
+                    (ps, t) =>
+                        ps +
+                        (!t.transactionDescriptionCategory?.income
+                            ? t.balance.amount
+                            : 0),
                     0,
                 ),
                 currency: value[0].balance.currency,
@@ -129,6 +137,33 @@
                                     {transaction.transactionDescriptionCategory
                                         ?.name}
                                 </p>
+                                {#if transaction.transactionDescriptionCategory.mmc != null && transaction.transactionDescriptionCategory.mmc != 0}
+                                    <div
+                                        class="tooltip tooltip-left"
+                                        data-tip={GetDescriptionMCC(
+                                            transaction
+                                                .transactionDescriptionCategory
+                                                .mmc,
+                                            false,
+                                            "uk",
+                                        )}
+                                    >
+                                        <p
+                                            class="text-sm text-gray-500 truncate"
+                                            style="color:{transaction
+                                                .transactionDescriptionCategory
+                                                ?.color}"
+                                        >
+                                            {GetDescriptionMCC(
+                                                transaction
+                                                    .transactionDescriptionCategory
+                                                    .mmc,
+                                                true,
+                                                "uk",
+                                            )}
+                                        </p>
+                                    </div>
+                                {/if}
                                 <p class="text-sm text-gray-500 truncate">
                                     {new Date(transaction.date)
                                         .toLocaleString()
