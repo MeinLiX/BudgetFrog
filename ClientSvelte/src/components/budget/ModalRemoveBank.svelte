@@ -2,7 +2,7 @@
     import Request from "../../services/RequestController";
     import { ErrorWrapper } from "../../services/RequestWrapper";
     import { CloseModelIfOpened } from "../../services/Utils";
-    
+
     const toDelete = async () => {
         try {
             modelToRequest.BudgetID = budget.id;
@@ -18,7 +18,7 @@
     export let budget;
     export let ID = "budget-remove-modal-";
     const internalID = ID;
-    export let SuccessAction = () => {};
+    export let SuccessAction = async () => {};
 
     const P24Bank = "p24";
     const MonoBank = "mono";

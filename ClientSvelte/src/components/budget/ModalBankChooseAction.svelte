@@ -6,7 +6,6 @@
     const CloseModal = () => {
         CloseModelIfOpened(ID);
     };
-
     export let budget = {};
     export let ID = "budget-choose-action-bank-modal";
     export let SuccessAction = () => {};
@@ -26,9 +25,9 @@
     let GetCreds = () => {
         var creds = [];
         if (ID.includes(P24Bank)) {
-            creds = budget.bankCredentials.filter((e) => e.bankType == 0);
+            creds = (budget).bankCredentials.filter((e) => e.bankType == 0);
         } else if (ID.includes(MonoBank)) {
-            creds = budget.bankCredentials.filter((e) => e.bankType == 1);
+            creds = (budget).bankCredentials.filter((e) => e.bankType == 1);
         }
         return creds;
     };

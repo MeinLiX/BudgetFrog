@@ -4,8 +4,10 @@
     import Request from "../../services/RequestController";
     import { ErrorWrapper } from "../../services/RequestWrapper";
     import ModalBankChooseAction from "./ModalBankChooseAction.svelte";
+    import { writable } from "svelte/store";
 
-    export let budgets = [];
+    export let budgets = writable([]);
+    export let UpdateBudgets = async () => {};
 
     const ActionToLeave = async ({ id }) => {
         try {
@@ -16,18 +18,11 @@
         }
     };
 
-    const UpdateBudgets = async () => {
-        try {
-            budgets = (await Request.budget.getList()).data;
-        } catch (err) {
-            ErrorWrapper(err);
-        }
-    };
-
     const copyToClipboard = async (data) =>
         await navigator.clipboard.writeText(data);
     const nullOrEmpty = (data) =>
         data != null && data !== "" && data !== undefined;
+
     let GetP24Creds = (budget) => {
         return budget.bankCredentials.filter((e) => e.bankType == 0);
     };
@@ -36,7 +31,7 @@
     };
 </script>
 
-{#each budgets as budget}
+{#each $budgets as budget}
     <Dialog
         ModalID="modal_leve_{budget.id}"
         ConfirmFunction={ActionToLeave}
