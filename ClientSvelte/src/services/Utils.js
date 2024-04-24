@@ -25,3 +25,14 @@ export const GetDescriptionMCC = (code, short = true, lg = "en") => {
     }
     return desc;
 }
+
+export const CloseModelIfOpened = (id) => {
+    try {
+        var el = document.getElementById(id);
+        if (el.checked) {
+            el.click();
+        }
+    } catch {
+
+    }
+}

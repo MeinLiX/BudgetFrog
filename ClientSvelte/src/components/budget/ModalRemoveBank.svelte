@@ -1,15 +1,15 @@
 <script>
     import Request from "../../services/RequestController";
     import { ErrorWrapper } from "../../services/RequestWrapper";
-
+    import { CloseModelIfOpened } from "../../services/Utils";
+    
     const toDelete = async () => {
         try {
             modelToRequest.BudgetID = budget.id;
             await Request.budget.bank.delete(modelToRequest);
             await SuccessAction();
-            try {
-                document.getElementById(ID).click(); //to close.
-            } catch {}
+            CloseModelIfOpened(ID);
+
             modelToRequest = initialRequestModel;
         } catch (err) {
             ErrorWrapper(err);
@@ -17,6 +17,7 @@
     };
     export let budget;
     export let ID = "budget-remove-modal-";
+    const internalID = ID;
     export let SuccessAction = () => {};
 
     const P24Bank = "p24";
@@ -39,8 +40,8 @@
     };
 </script>
 
-<input type="checkbox" id={ID} class="modal-toggle" />
-<label for={ID} class="modal cursor-pointer">
+<input type="checkbox" id={internalID} class="modal-toggle" />
+<label for={internalID} class="modal cursor-pointer">
     <div class="modal-box relative form-control">
         <div class="form-control">
             <control class="label">

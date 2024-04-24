@@ -18,6 +18,7 @@
     };
 
     const toGroup = (transactionsArray) => {
+        console.log(transactionsArray);
         let groups = []; // {date:transactions}[]
 
         transactionsArray.forEach((t) => {
@@ -56,6 +57,8 @@
     export let budgetID;
     export let transactions = [];
     $: groupedTransactions = toGroup(transactions);
+    const getModalIDRemove = (transaction) =>
+        `modal_remove_t_${budgetID}_${transaction.id}`;
 </script>
 
 {#each groupedTransactions as groupedTransaction}
@@ -84,7 +87,7 @@
             <ul class="divide-y divide-gray-200">
                 {#each groupedTransaction.transactions as transaction}
                     <Dialog
-                        ModalID="modal_remove_t_{transaction.id}"
+                        ModalID="{getModalIDRemove(transaction)}"
                         ConfirmFunction={ActionToRemove}
                         ConfirmFunctionParams={{ id: transaction.id }}
                     >
@@ -228,7 +231,7 @@
                                     >
                                 {:else}
                                     <label
-                                        for="modal_remove_t_{transaction.id}"
+                                        for="{getModalIDRemove(transaction)}"
                                         class="label"
                                     >
                                         <span class="btn btn-sm btn-outline"

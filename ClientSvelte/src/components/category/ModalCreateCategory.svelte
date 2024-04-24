@@ -1,65 +1,85 @@
 <script>
     import Request from "../../services/RequestController";
-    import {ErrorWrapper} from "../../services/RequestWrapper";
+    import { ErrorWrapper } from "../../services/RequestWrapper";
+    import { CloseModelIfOpened } from "../../services/Utils";
 
     const create = async () => {
         try {
             modelToRequest.BudgetID = budgetID;
             await Request.category.create(modelToRequest);
             await SuccessAction();
-            try {
-                document.getElementById(ID).click(); //to close.
-            } catch {
-            }
+            CloseModelIfOpened(ID);
         } catch (err) {
             ErrorWrapper(err);
         }
     };
     export let ID = "budget-create-modal";
     export let budgetID;
-    export let SuccessAction = () => {
-    };
+    export let SuccessAction = () => {};
     let modelToRequest = {
         BudgetID: "",
         Name: "",
         Income: false,
-        Color: "#000000"
+        Color: "#000000",
     };
 </script>
 
-<input type="checkbox" id={ID} class="modal-toggle"/>
+<input type="checkbox" id={ID} class="modal-toggle" />
 <div class="modal">
     <div class="modal-box relative">
-        <label for={ID} class="btn btn-sm btn-circle absolute right-2 top-2">✕</label>
+        <label for={ID} class="btn btn-sm btn-circle absolute right-2 top-2"
+            >✕</label
+        >
         <form on:submit|preventDefault={create}>
             <div class="form-control">
-                <label class="label">
+                <control class="label">
                     <span class="label-text">Category name</span>
-                </label>
-                <input type="text" placeholder="Category name" class="input input-bordered"
-                       bind:value={modelToRequest.Name}/>
+                </control>
+                <input
+                    type="text"
+                    placeholder="Category name"
+                    class="input input-bordered"
+                    bind:value={modelToRequest.Name}
+                />
             </div>
             <div class="form-control">
-                <label class="label">
+                <control class="label">
                     <span class="label-text">Input color (hex):</span>
-                </label>
+                </control>
                 <div class="flex w-full">
                     <div class="input-group flex-grow">
-                        <input type="color" bind:value={modelToRequest.Color} style="height: 50px;">
-                        <input type="text" placeholder="#FFFFFF" class="input input-bordered"
-                               bind:value={modelToRequest.Color}/>
+                        <input
+                            type="color"
+                            bind:value={modelToRequest.Color}
+                            style="height: 50px;"
+                        />
+                        <input
+                            type="text"
+                            placeholder="#FFFFFF"
+                            class="input input-bordered"
+                            bind:value={modelToRequest.Color}
+                        />
                     </div>
                     <div class="flex-grow">
                         <label class="label cursor-pointer p-2">
-                            <span class="label-text text-lg" style="color: {modelToRequest.Income?'green':'red'}">
-                                {modelToRequest.Income ? 'income ' : 'outcome '}
+                            <span
+                                class="label-text text-lg"
+                                style="color: {modelToRequest.Income
+                                    ? 'green'
+                                    : 'red'}"
+                            >
+                                {modelToRequest.Income ? "income " : "outcome "}
                             </span>
-                            <input type="checkbox" class="toggle p-2" bind:checked={modelToRequest.Income}/>
+                            <input
+                                type="checkbox"
+                                class="toggle p-2"
+                                bind:checked={modelToRequest.Income}
+                            />
                         </label>
                     </div>
                 </div>
             </div>
-            <br/>
+            <br />
             <div class="form-control">
                 <button class="btn btn-primary">Create</button>
             </div>

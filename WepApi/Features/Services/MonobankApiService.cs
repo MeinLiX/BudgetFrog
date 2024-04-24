@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
+using Microsoft.VisualBasic;
 using System.Text.Json;
 using WepApi.Models.Externals.MonobankApi;
 using WepApi.Utils;
@@ -38,6 +39,7 @@ namespace WepApi.Features.Services
                     LatestStatementResponseDatetime = DateTime.Now;
                 }
             }
+            public KeyValuePair<long, long>? LatestRequestDays { get; set; }
         }
 
 
@@ -102,7 +104,8 @@ namespace WepApi.Features.Services
                     if (clientInfo is not null && clientInfo.LatestStatementResponse is not null)
                     {
                         //Return when lower 60 sec last response
-                        if (AppUtil.DateExpired(clientInfo.LatestClientInfoDatetime, TimeSpan.FromSeconds(61))) { return clientInfo.LatestStatementResponse; }
+                        if (clientInfo.LatestRequestDays != null && clientInfo.LatestRequestDays.Value.Key == from && clientInfo.LatestRequestDays.Value.Value == to)
+                            if (AppUtil.DateExpired(clientInfo.LatestClientInfoDatetime, TimeSpan.FromSeconds(61))) { return clientInfo.LatestStatementResponse; }
                     }
                 }
                 HttpRequestMessage httpRequest = new()
@@ -119,6 +122,7 @@ namespace WepApi.Features.Services
 
                 clientInfo ??= new MemClientInfo();
                 clientInfo.LatestStatementResponse = res;
+                clientInfo.LatestRequestDays = new KeyValuePair<long, long>(from, to);
                 memoryCache.Set(token, clientInfo);
 
                 return res;

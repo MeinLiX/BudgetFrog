@@ -1,17 +1,17 @@
 <script>
     import Request from "../../services/RequestController";
     import { ErrorWrapper } from "../../services/RequestWrapper";
+    import { CloseModelIfOpened } from "../../services/Utils";
 
     const toAdd = async () => {
         try {
             modelToRequest.BudgetID = budget.id;
             modelToRequest.BankType = bankType();
-            console.log(modelToRequest);
             await Request.budget.bank.add(modelToRequest);
+
             await SuccessAction();
-            try {
-                document.getElementById(ID).click(); //to close.
-            } catch {}
+            CloseModelIfOpened(ID);
+
             modelToRequest = initialRequestModel;
         } catch (err) {
             ErrorWrapper(err);

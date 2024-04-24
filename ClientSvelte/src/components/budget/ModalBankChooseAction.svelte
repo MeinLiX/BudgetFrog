@@ -1,14 +1,13 @@
 <script>
     import ModalAddBank from "./ModalAddBank.svelte";
     import ModalRemoveBank from "./ModalRemoveBank.svelte";
+    import { CloseModelIfOpened } from "../../services/Utils";
 
     const CloseModal = () => {
-        try {
-            document.getElementById(ID).click(); //to close.
-        } catch {}
+        CloseModelIfOpened(ID);
     };
 
-    export let budget = [];
+    export let budget = {};
     export let ID = "budget-choose-action-bank-modal";
     export let SuccessAction = () => {};
 
