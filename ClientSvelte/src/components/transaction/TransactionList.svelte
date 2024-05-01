@@ -18,7 +18,6 @@
     };
 
     const toGroup = (transactionsArray) => {
-        console.log(transactionsArray);
         let groups = []; // {date:transactions}[]
 
         transactionsArray.forEach((t) => {
@@ -87,7 +86,7 @@
             <ul class="divide-y divide-gray-200">
                 {#each groupedTransaction.transactions as transaction}
                     <Dialog
-                        ModalID="{getModalIDRemove(transaction)}"
+                        ModalID={getModalIDRemove(transaction)}
                         ConfirmFunction={ActionToRemove}
                         ConfirmFunctionParams={{ id: transaction.id }}
                     >
@@ -131,7 +130,7 @@
                     </Dialog>
                     <li class="py-3 sm:py-4">
                         <div class="flex items-center space-x-4">
-                            <div class="flex-0 min-w-0">
+                            <div class="flex-0 min-w-0 w-32">
                                 <p
                                     class="text-sm font-medium text-gray-900 truncate"
                                     style="color:{transaction
@@ -176,38 +175,30 @@
                             <div class="flex-1">
                                 {#if transaction.notes}
                                     {#if transaction.notes.length > 20}
-                                        <div tabindex="0" class="collapse">
-                                            <div class="collapse-title">
-                                                <p
-                                                    class="text-sm text-gray-600 truncate"
-                                                >
-                                                    {transaction.notes.substring(
-                                                        0,
-                                                        20,
-                                                    )}
-                                                    ...
-                                                </p>
-                                            </div>
-                                            <div class="collapse-content">
-                                                <p
-                                                    class="text-sm text-gray-600 truncate"
-                                                >
-                                                    {transaction.notes}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    {:else}
-                                        <div class="collapse-title">
+                                        <div
+                                            class="tooltip"
+                                            data-tip={transaction.notes}
+                                        >
                                             <p
-                                                class="text-sm text-gray-600 truncate"
+                                                class="text-sm text-gray-600 truncate pl-5"
                                             >
-                                                {transaction.notes}
+                                                {transaction.notes.substring(
+                                                    0,
+                                                    20,
+                                                )}
+                                                ...
                                             </p>
                                         </div>
+                                    {:else}
+                                        <p
+                                            class="text-sm text-gray-600 truncate pl-5"
+                                        >
+                                            {transaction.notes}
+                                        </p>
                                     {/if}
                                 {/if}
                             </div>
-                            <div class="flex-0"></div>
+                            <div class="flex-3"></div>
                             <div
                                 class="inline-flex text-xl items-center text-base font-semibold"
                                 style="color:{transaction
@@ -231,7 +222,7 @@
                                     >
                                 {:else}
                                     <label
-                                        for="{getModalIDRemove(transaction)}"
+                                        for={getModalIDRemove(transaction)}
                                         class="label"
                                     >
                                         <span class="btn btn-sm btn-outline"
