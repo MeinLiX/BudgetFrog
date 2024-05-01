@@ -5,7 +5,6 @@ using WepApi.Models.Bank;
 using WepApi.Models.Transactions;
 using WepApi.Utils.Exceptions;
 using WepApi.Utils.Wrapper;
-using static WepApi.Models.Externals.MonobankApi.ClientInfoResponse;
 
 namespace WepApi.Features.TransactionDescriptionFutures.Queries;
 

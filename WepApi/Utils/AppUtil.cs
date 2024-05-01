@@ -4,6 +4,6 @@
     {
         public static DateTime DatetimeNow => DateTime.Now;
 
-        public static bool DateExpired(DateTime dt, TimeSpan timeToExpired) => DatetimeNow >= dt.Add(timeToExpired);
+        public static bool DateExpired(DateTime dt, TimeSpan timeToExpired) => DatetimeNow <= dt.Add(timeToExpired);
     }
 }
