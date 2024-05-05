@@ -28,6 +28,10 @@ export const Request = async (path = `/`, method = `get`, data = null, params = 
 
 
 export default {
+    assistent: {
+        AnalysesTransaction: ({ BudgetID }) => Request(`/assistant/analysis/${BudgetID}`, `get`),
+        AnalysesTransactionPeriod: ({ BudgetID, Year, Month, IncludeBanks }) => Request(`/assistant/analysis/${BudgetID}/${Year}/${Month}/${IncludeBanks}`, `get`),
+    },
     status: {
         ping: () => Request(`/status/ping/`, `get`),
         status: () => Request(`/status/`, `get`)
