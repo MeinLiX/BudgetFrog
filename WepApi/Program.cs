@@ -43,7 +43,8 @@ builder.Services.AddScoped<IExchangeRateContext>(provider =>
 
 builder.Services.AddScoped<SignInManagerService>();
 builder.Services.AddScoped<ExchangeRateService>();
-builder.Services.AddSingleton<MonobankApiService>();
+builder.Services.AddScoped<OllamaService>();
+builder.Services.AddScoped<MonobankApiService>();
 
 builder.Services.AddHostedService<ExchangeRatesFFUpdaterHostedService>();
 

@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WepApi.Features.TransactionDescriptionFutures.Commands;
 using WepApi.Features.TransactionDescriptionFutures.Queries;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace WepApi.Controllers.Api;
 
@@ -27,7 +26,7 @@ public class TransactionDescriptionController : BaseController
     }
 
     /// <summary>
-    /// Get transaction.  
+    /// Get list of transactions. 
     /// </summary>
     [HttpGet("{budgetID}/{year}/{month}")]
     [ProducesResponseType(StatusCodes.Status200OK)]

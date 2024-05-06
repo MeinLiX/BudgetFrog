@@ -1,10 +1,10 @@
 ﻿using WepApi.Features.TransactionDescriptionFutures.Queries;
+using WepApi.Utils;
 
 namespace WepApi.Features.TransactionDescriptionFutures.Validators;
 
 public class GetBudgetTransactionLastDaysQueryValidator : AbstractValidator<GetBudgetTransactionLastDaysQuery>
 {
-    public static int AvaliableYear => DateTime.Now.Year + 10;
     public GetBudgetTransactionLastDaysQueryValidator()
     {
         RuleFor(c => c.BudgetID)
@@ -16,8 +16,8 @@ public class GetBudgetTransactionLastDaysQueryValidator : AbstractValidator<GetB
         RuleFor(c => c.Year)
             .NotEmpty()
             .WithMessage("Year is empty.")
-            .Must(y => y >= 2000 && y <= AvaliableYear)
-            .WithMessage($"Must be no earlier than 2000 and not later than {AvaliableYear}.");
+            .Must(y => y >= 2000 && y <= Constants.AvaliableYear)
+            .WithMessage($"Must be no earlier than 2000 and not later than {Constants.AvaliableYear}.");
 
         RuleFor(c => c.Month)
           .NotEmpty()

@@ -26,4 +26,10 @@
     <ProjectReference Include="..\privat24.NET\privat24.NET.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="mcc_en">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

@@ -4,6 +4,16 @@
         <name>WepApi</name>
     </assembly>
     <members>
+        <member name="M:WepApi.Controllers.Api.AssistantController.GetAnalysisTransaction(System.String)">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:WepApi.Controllers.Api.AssistantController.GetAnalysisTransaction(System.String,System.Int32,System.Int32,System.Int32)">
+            <summary>
+             
+            </summary>
+        </member>
         <member name="M:WepApi.Controllers.Api.BudgetController.Get">
             <summary>
              Get list of user's own Budgets with details.
@@ -106,7 +116,7 @@
         </member>
         <member name="M:WepApi.Controllers.Api.TransactionDescriptionController.GetTransaction(System.String,System.Int32,System.Int32)">
             <summary>
-            Get transaction.  
+            Get list of transactions. 
             </summary>
         </member>
         <member name="M:WepApi.Controllers.Api.TransactionDescriptionController.CreateTransaction(System.String,WepApi.Features.TransactionDescriptionFutures.Commands.CreateTransactionCommand)">
