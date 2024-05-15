@@ -36,17 +36,20 @@ public class RegisterCommand : IRequest<Result<TokenResponse>>
                 throw new AppException("Email already taken.", statusCode: System.Net.HttpStatusCode.BadRequest);
             }
 
+            var hashSalt = CryptoEngine.PasswordHasher.HashPassword(command.Password);
+
             AppIdentityUser user = (await _context.AppIdentityUsers.AddAsync(new AppIdentityUser
             {
                 FirstName = command.Firstname,
                 LastName = command.Lastname,
                 Email = command.Email,
-                Password = CryptoEngine.GetHashValue(command.Password)
+                PasswordHash = hashSalt.Hash,
+                PasswordSalt = hashSalt.Salt,
             }, cancellationToken)).Entity;
 
             await _context.SaveChangesAsync();
 
-            var identity = await AppIdentity.GetIdentity((command.Email, command.Password), _context);
+            var identity = await AppIdentity.GetIdentity((command.Email, hashSalt.Hash, hashSalt.Salt), _context);
             _signInManager.AddIdentity(identity);
 
             return Result<TokenResponse>.Success(new TokenResponse { token = AuthEngine.GenerateTokenJWT(identity.Claims) });

@@ -24,7 +24,12 @@ public static class AppIdentityUserBuilder
           .IsRequired();
 
         MB.Entity<AppIdentityUser>()
-          .Property(u => u.Password)
+          .Property(u => u.PasswordHash)
+          .HasColumnType("VARCHAR(64)")
+          .IsRequired();
+
+        MB.Entity<AppIdentityUser>()
+          .Property(u => u.PasswordSalt)
           .HasColumnType("VARCHAR(64)")
           .IsRequired();
 

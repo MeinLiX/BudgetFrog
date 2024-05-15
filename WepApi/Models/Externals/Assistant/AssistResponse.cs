@@ -13,4 +13,13 @@ public class AssistResponse
     public int prompt_eval_duration { get; set; }
     public int eval_count { get; set; }
     public long eval_duration { get; set; }
+
+    public MessageResponse message { get; set; }
+
+    public class MessageResponse
+    {
+        public string role { get; set; }
+        public string content { get; set; }
+    }
+
 }

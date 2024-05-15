@@ -4,42 +4,44 @@ namespace WepApi.Utils;
 
 public class CryptoEngine
 {
-    private const int itterations = 9999;
-    private const int saltSize = 16;
-    private const int hashSize = 20;
-    private const int Zero = 0;
-    private static readonly HashAlgorithmName pwd_HashAlgorithmName = HashAlgorithmName.SHA512;
-    /// <summary>
-    /// Generation Hash from the password. 
-    /// </summary>
-    public static string GetHashValue(string password)
+    public static class PasswordHasher
     {
-        byte[] salt = new byte[saltSize];
-        using var rng = RandomNumberGenerator.Create();
-        rng.GetBytes(salt);
-        var pbkdf2 = new Rfc2898DeriveBytes(password, salt, itterations, pwd_HashAlgorithmName);
-        byte[] hash = pbkdf2.GetBytes(hashSize);
-        byte[] hashBytes = new byte[salt.Length + hash.Length];
-        Array.Copy(salt, Zero, hashBytes, Zero, salt.Length);
-        Array.Copy(hash, Zero, hashBytes, salt.Length, hash.Length);
+        private const int SaltSize = 16; // 128 біт
+        private const int HashSize = 32; // 256-біт
+        private const int Iterations = 100000;
+        private static readonly HashAlgorithmName HashAlgorithm = HashAlgorithmName.SHA512;
 
-        return Convert.ToBase64String(hashBytes);
-    }
+        public static (string Hash, string Salt) HashPassword(string password)
+        {
+            byte[] salt = RandomNumberGenerator.GetBytes(SaltSize);
 
-    /// <summary>
-    /// Compare the hash and password.
-    /// </summary>
-    public static bool EqualHashValue(string password, string passwordHash)
-    {
-        byte[] hashBytes = Convert.FromBase64String(passwordHash);
-        byte[] salt = new byte[saltSize];
-        Array.Copy(hashBytes, Zero, salt, Zero, salt.Length);
-        var pbkdf2 = new Rfc2898DeriveBytes(password, salt, itterations, pwd_HashAlgorithmName);
-        byte[] hash = pbkdf2.GetBytes(hashSize);
-        for (int i = 0; i < hash.Length; i++)
-            if (hashBytes[i + salt.Length] != hash[i])
+            var pbkdf2 = new Rfc2898DeriveBytes(password, salt, Iterations, HashAlgorithm);
+            byte[] hash = pbkdf2.GetBytes(HashSize);
+
+            return (Convert.ToBase64String(hash), Convert.ToBase64String(salt));
+        }
+
+        public static bool VerifyPassword(string password, string savedHash, string savedSalt)
+        {
+            byte[] hashBytes = Convert.FromBase64String(savedHash);
+            byte[] saltBytes = Convert.FromBase64String(savedSalt);
+
+            var pbkdf2 = new Rfc2898DeriveBytes(password, saltBytes, Iterations, HashAlgorithm);
+            byte[] newHash = pbkdf2.GetBytes(HashSize);
+
+            return CryptographicOperations.FixedTimeEquals(hashBytes, newHash);
+        }
+
+        public static bool HashesEqual(string lhash, string rhash)
+        {
+            if (string.IsNullOrEmpty(lhash) || string.IsNullOrEmpty(rhash))
                 return false;
+            
 
-        return true;
+            byte[] lhashBytes = Convert.FromBase64String(lhash);
+            byte[] rhashBytes = Convert.FromBase64String(rhash);
+
+            return lhashBytes.Length == rhashBytes.Length && CryptographicOperations.FixedTimeEquals(lhashBytes, rhashBytes);
+        }
     }
 }

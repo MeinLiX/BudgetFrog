@@ -21,7 +21,7 @@ namespace WepApi.Controllers.Api
         public async Task<IActionResult> GetAnalysisTransaction([FromRoute] string budgetID)
         {
             var date = DateTime.Now;
-            return Ok(await _mediator.Send(new GetAnalysisTransactionInSelectedPeriod() { BudgetID = budgetID, Year = date.Year, Month = date.Month, IncludeBanks = 1 }));
+            return Ok(await _mediator.Send(new GetAnalysisTransactionInSelectedPeriodQuery() { BudgetID = budgetID, Year = date.Year, Month = date.Month, IncludeBanks = 1 }));
         }
 
         /// <summary>
@@ -32,7 +32,15 @@ namespace WepApi.Controllers.Api
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> GetAnalysisTransaction([FromRoute] string budgetID, [FromRoute] int year, [FromRoute] int month, [FromRoute] int includeBanks)
         {
-            return Ok(await _mediator.Send(new GetAnalysisTransactionInSelectedPeriod() { BudgetID = budgetID, Year = year, Month = month, IncludeBanks = includeBanks }));
+            return Ok(await _mediator.Send(new GetAnalysisTransactionInSelectedPeriodQuery() { BudgetID = budgetID, Year = year, Month = month, IncludeBanks = includeBanks }));
+        }
+
+        [HttpPost("chat")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> SendChatMessage([FromBody] SendChatMessageQuery query)
+        {
+            return Ok(await _mediator.Send(query));
         }
     }
 }

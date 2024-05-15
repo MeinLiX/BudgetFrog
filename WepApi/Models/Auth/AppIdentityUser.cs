@@ -13,7 +13,10 @@ public class AppIdentityUser : ModelBase
     public string LastName { get; set; }
 
     [JsonIgnore]
-    public string Password { get; set; }
+    public string PasswordHash { get; set; }
+
+    [JsonIgnore]
+    public string PasswordSalt { get; set; }
 
     public string PhotoUrl { get; set; }
 

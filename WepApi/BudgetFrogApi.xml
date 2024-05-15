@@ -178,18 +178,5 @@
             External category name for bank category mapping. Excluded DB
             </summary>
         </member>
-        <member name="M:WepApi.Utils.CryptoEngine.GetHashValue(System.String)">
-            <summary>
-            Generation Hash from the password. 
-            </summary>
-        </member>
-        <member name="M:WepApi.Utils.CryptoEngine.EqualHashValue(System.String,System.String)">
-            <summary>
-            Compare the hash and password.
-            </summary>
-        </member>
-        <member name="M:WepApi.Utils.FAuth.AppIdentity.GetIdentity(System.ValueTuple{System.String,System.String},WepApi.Context.Interfaces.IBudgetAppContext)">
-            <param name="loggingUser">item1: email; item2: password;</param>
-        </member>
     </members>
 </doc>

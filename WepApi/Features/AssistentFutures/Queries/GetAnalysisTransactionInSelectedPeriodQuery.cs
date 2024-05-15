@@ -7,7 +7,7 @@ using WepApi.Utils.Wrapper;
 
 namespace WepApi.Features.AssistentFutures.Queries;
 
-public class GetAnalysisTransactionInSelectedPeriod : IRequest<Result<string>>
+public class GetAnalysisTransactionInSelectedPeriodQuery : IRequest<Result<string>>
 {
     public string BudgetID { get; set; }
     private Guid GetBudgetID { get => Guid.Parse(BudgetID); }
@@ -21,14 +21,14 @@ public class GetAnalysisTransactionInSelectedPeriod : IRequest<Result<string>>
     // 2 - only banks
     public int IncludeBanks { get; set; } = 2;
 
-    public class GetBudgetTransactionLastDaysQueryHandler : IRequestHandler<GetAnalysisTransactionInSelectedPeriod, Result<string>>
+    public class GetAnalysisTransactionInSelectedPeriodQueryHandler : IRequestHandler<GetAnalysisTransactionInSelectedPeriodQuery, Result<string>>
     {
         private readonly IBudgetAppContext _context;
         private readonly SignInManagerService _signInManager;
         private readonly MonobankApiService _monobankApiService;
         private readonly OllamaService _ollamaService;
 
-        public GetBudgetTransactionLastDaysQueryHandler(IBudgetAppContext context, SignInManagerService signInManager, MonobankApiService monobankApiService, OllamaService ollamaService)
+        public GetAnalysisTransactionInSelectedPeriodQueryHandler(IBudgetAppContext context, SignInManagerService signInManager, MonobankApiService monobankApiService, OllamaService ollamaService)
         {
             _context = context;
             _signInManager = signInManager;
@@ -38,7 +38,7 @@ public class GetAnalysisTransactionInSelectedPeriod : IRequest<Result<string>>
 
         }
 
-        public async Task<Result<string>> Handle(GetAnalysisTransactionInSelectedPeriod query, CancellationToken cancellationToken)
+        public async Task<Result<string>> Handle(GetAnalysisTransactionInSelectedPeriodQuery query, CancellationToken cancellationToken)
         {
             var user = await _signInManager.GetUser();
 

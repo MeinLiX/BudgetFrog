@@ -33,14 +33,14 @@ public class LoginCommand : IRequest<Result<TokenResponse>>
 
                 var user = await _context.AppIdentityUsers.FirstOrDefaultAsync(u => u.Email == command.Email, cancellationToken);
 
-                if (user is null || !CryptoEngine.EqualHashValue(command.Password, user.Password))
+                if (user is null || !CryptoEngine.PasswordHasher.VerifyPassword(command.Password, user.PasswordHash, user.PasswordSalt))
                 {
                     throw new AppException("Email or password incorrect.", statusCode: System.Net.HttpStatusCode.BadRequest);
                 }
 
                 await _context.SaveChangesAsync();
 
-                var identity = await AppIdentity.GetIdentity((command.Email, command.Password), _context);
+                var identity = await AppIdentity.GetIdentity((command.Email, user.PasswordHash, user.PasswordSalt), _context);
                 _signInManager.AddIdentity(identity);
 
                 return Result<TokenResponse>.Success(new TokenResponse { token = AuthEngine.GenerateTokenJWT(identity.Claims) });

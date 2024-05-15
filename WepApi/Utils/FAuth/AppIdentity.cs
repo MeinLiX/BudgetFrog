@@ -13,7 +13,7 @@ public class AppIdentity
         if (loggingUser is null) { throw new AppException("Identity not fount. Something wrong.."); }
 
         AppIdentityUser FoundUser = await ctx.AppIdentityUsers.FirstAsync(x => x.Email == loggingUser.Email);
-        if (FoundUser is not null && CryptoEngine.EqualHashValue(loggingUser.Password, FoundUser.Password))
+        if (FoundUser is not null && CryptoEngine.PasswordHasher.HashesEqual(loggingUser.PasswordHash, FoundUser.PasswordHash))
         {
             List<Claim> claims = new()
             {
@@ -31,6 +31,5 @@ public class AppIdentity
     }
 
 
-    /// <param name="loggingUser">item1: email; item2: password;</param>
-    internal static async Task<ClaimsIdentity> GetIdentity((string, string) loggingUser, IBudgetAppContext ctx) => await GetIdentity(new AppIdentityUser() { Email = loggingUser.Item1, Password = loggingUser.Item2 }, ctx);
+    internal static async Task<ClaimsIdentity> GetIdentity((string email, string hash, string salt) loggingUser, IBudgetAppContext ctx) => await GetIdentity(new AppIdentityUser() { Email = loggingUser.email, PasswordHash = loggingUser.hash, PasswordSalt = loggingUser.salt }, ctx);
 }

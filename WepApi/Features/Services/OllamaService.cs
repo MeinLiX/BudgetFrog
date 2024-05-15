@@ -11,6 +11,7 @@ namespace WepApi.Features.Services
         {
             private HttpClient Client { get; } = new();
             public string SelectedModel { get; set; }
+            public static string AssistantModel = "BudgetAssistant";
 
             private Uri UriBase { get; set; }
             private Uri GetUrl(string endPoint) => new($"{UriBase}{endPoint}");
@@ -42,6 +43,32 @@ namespace WepApi.Features.Services
                 string responseContext = await response.Content.ReadAsStringAsync();
                 return JsonSerializer.Deserialize<AssistResponse>(responseContext)!;
             }
+
+            public async Task<AssistResponse> RequestChat(List<AssistRequest.MessageChat> messages)
+            {
+                var requestContent = new AssistRequest()
+                {
+                    model = AssistantModel,
+                    messages = messages,
+                    stream = false
+                };
+
+                HttpRequestMessage httpRequest = new()
+                {
+                    Method = HttpMethod.Post,
+                    RequestUri = GetUrl("api/chat"),
+                    Content = new StringContent(JsonSerializer.Serialize(requestContent), Encoding.UTF8, "application/json")
+                };
+
+                HttpResponseMessage response = await Client.SendAsync(httpRequest);
+                string responseContext = await response.Content.ReadAsStringAsync();
+                return JsonSerializer.Deserialize<AssistResponse>(responseContext)!;
+            }
+
+            public async Task<AssistResponse> RequestChat(List<string> messages)
+            {
+                return await RequestChat(messages.Select((m, i) => new AssistRequest.MessageChat() { role = i % 2 != 0 ? "user" : "assistant", content = m }).ToList());
+            }
         }
 
         private readonly OllamaApiClientCustom OllamaClient;
@@ -69,5 +96,16 @@ namespace WepApi.Features.Services
             return res.response;
         }
 
+        public async Task<string> SendChatMessage(List<string> message)
+        {
+            var res = await OllamaClient.RequestChat(message);
+            return res.message.content;
+        }
+
+        public async Task<string> SendChatMessage(List<AssistRequest.MessageChat> message)
+        {
+            var res = await OllamaClient.RequestChat(message);
+            return res.message.content;
+        }
     }
 }

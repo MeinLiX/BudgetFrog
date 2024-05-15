@@ -3,7 +3,7 @@ using WepApi.Utils;
 
 namespace WepApi.Features.AssistentFutures.Validators
 {
-    public class GetAnalysisTransactionInSelectedPeriodValidator : AbstractValidator<GetAnalysisTransactionInSelectedPeriod>
+    public class GetAnalysisTransactionInSelectedPeriodValidator : AbstractValidator<GetAnalysisTransactionInSelectedPeriodQuery>
     {
         public GetAnalysisTransactionInSelectedPeriodValidator()
         {
