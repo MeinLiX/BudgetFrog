@@ -31,7 +31,7 @@
 <ModalCreateBudget ID={CreateBudgetModalID} SuccessAction={UpdateBudgets} />
 
 <div class="center_content">
-    <div class="btn-group">
+    <div class="btn-group mb-3">
         <label class="btn btn-wide" for={JoinBudgetModalID}>Join Budget</label>
         <label class="btn btn-wide" for={CreateBudgetModalID}
             >Create Budget</label

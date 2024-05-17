@@ -1,7 +1,7 @@
 <script>
-    import {onMount} from "svelte";
-    import {userDetails} from "../stores";
-    import Request from "../services/RequestController"
+    import { onMount } from "svelte";
+    import { userDetails } from "../stores";
+    import Request from "../services/RequestController";
 
     onMount(async () => {
         try {
@@ -14,12 +14,14 @@
 </script>
 
 <div class="center_content">
-    <div class="card w-96 glass">
-        <figure><img src="https://random.imagecdn.app/250/250" alt="Avatar"></figure>
+    <div class="card card-side bg-base-100 shadow-xl">
+        <figure>
+            <img src="https://random.imagecdn.app/250/250" alt="Avatar" />
+        </figure>
         <div class="card-body">
-            <p class="card-title">{$userDetails.firstName}</p>
-            <p class="card-title">{$userDetails.lastName}</p>
-            <p class="card-title">{$userDetails.email}</p>
+            <kbd class="kbd kbd-lg">{$userDetails.firstName}</kbd>
+            <kbd class="kbd kbd-lg">{$userDetails.lastName}</kbd>
+            <kbd class="kbd kbd-lg">{$userDetails.email}</kbd>
         </div>
     </div>
 </div>

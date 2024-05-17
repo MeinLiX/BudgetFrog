@@ -47,21 +47,22 @@
                     <span class="label-text">Input color (hex):</span>
                 </control>
                 <div class="flex w-full">
-                    <div class="input-group flex-grow">
+                    <div class="join m-1">
                         <input
-                            type="color"
-                            bind:value={modelToRequest.Color}
-                            style="height: 50px;"
-                        />
-                        <input
-                            type="text"
-                            placeholder="#FFFFFF"
-                            class="input input-bordered"
-                            bind:value={modelToRequest.Color}
-                        />
+                        type="color"
+                        class="join-item"
+                        bind:value={modelToRequest.Color}
+                        style="height: 50px;"
+                    />
+                    <input
+                        type="text"
+                        placeholder="#FFFFFF"
+                        class="input input-bordered join-item"
+                        bind:value={modelToRequest.Color}
+                    />
                     </div>
                     <div class="flex-grow">
-                        <label class="label cursor-pointer p-2">
+                        <label class="label cursor-pointer p-3">
                             <span
                                 class="label-text text-lg"
                                 style="color: {modelToRequest.Income
