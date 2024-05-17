@@ -109,7 +109,7 @@
     <label
         class="btn mb-5 btn-ghost"
         on:click={AnalyzeBankTransactions}
-        for="modal-AI-Analyze">Bank analys</label
+        for="modal-AI-Analyze">Bank analysis</label
     >
 
     <TransactionList

@@ -11714,7 +11714,7 @@ var app = (function () {
     			create_component(periodselector.$$.fragment);
     			t4 = space();
     			label1 = element("label");
-    			label1.textContent = "Bank analys";
+    			label1.textContent = "Bank analysis";
     			t6 = space();
     			create_component(transactionlist.$$.fragment);
     			attr_dev(label0, "class", "btn btn-wide btn-outline mb-5 rounded-full");

@@ -77,7 +77,7 @@ namespace WepApi.Features.Services
         {
             OllamaClient = new OllamaApiClientCustom(new Uri(configuration["Ollama:URL"]))
             {
-                SelectedModel = configuration["Ollama:PreferModel"]
+                SelectedModel = OllamaApiClientCustom.AssistantModel//configuration["Ollama:PreferModel"]
             };
         }
 
